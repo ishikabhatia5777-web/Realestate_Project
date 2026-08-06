@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: realestate-api
+    name: realestate-project-1d0x
     runtime: node
     rootDir: server
     buildCommand: npm install
@@ -10,19 +10,21 @@ services:
         value: production
       - key: PORT
         value: 5001
-      - key: MONGO_URI
-        sync: false   # Set in Render Dashboard: mongodb+srv://ishikabhatia5777_db_user:...@cluster0.afbmlyd.mongodb.net/realestate_db
-      - key: JWT_SECRET
-        sync: false   # Set in Render Dashboard
       - key: JWT_EXPIRE
         value: 30d
       - key: CLIENT_URL
         value: https://realestate-project-g77z0ekyk-technical-team1.vercel.app
+      - key: MONGO_URI
+        sync: false   # Set in Render Dashboard
+      - key: JWT_SECRET
+        sync: false   # Set in Render Dashboard
       - key: STRIPE_SECRET_KEY
+        sync: false   # Set in Render Dashboard
+      - key: STRIPE_PUBLISHABLE_KEY
         sync: false   # Set in Render Dashboard
       - key: GROQ_API_KEY
         sync: false   # Set in Render Dashboard
       - key: GOOGLE_MAPS_API_KEY
-        sync: false
+        sync: false   # Set in Render Dashboard
       - key: NEWSDATA_API_KEY
-        sync: false
+        sync: false   # Set in Render Dashboard

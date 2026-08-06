@@ -7,7 +7,7 @@ A high-performance, enterprise-scale luxury Real Estate Marketplace built from s
 | Service | URL |
 |---------|-----|
 | 🖥️ **Frontend (Vercel)** | https://realestate-project-g77z0ekyk-technical-team1.vercel.app |
-| ⚙️ **Backend (Render)** | https://realestate-api.onrender.com |
+| ⚙️ **Backend (Render)** | https://realestate-project-1d0x.onrender.com |
 | 📦 **GitHub** | https://github.com/ishikabhatia5777-web/Realestate_Project |
 
 ---
