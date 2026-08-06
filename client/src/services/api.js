@@ -1,21 +1,33 @@
 import axios from 'axios';
 
-const API_BASE = import.meta.env.VITE_API_URL || '/api';
+const getBaseUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl) {
+    // If VITE_API_URL does not end with /api, append /api
+    return envUrl.endsWith('/api') ? envUrl : `${envUrl.replace(/\/$/, '')}/api`;
+  }
+  return '/api';
+};
 
 const api = axios.create({
-  baseURL: API_BASE,
+  baseURL: getBaseUrl(),
   headers: {
     'Content-Type': 'application/json'
   }
 });
 
-// Interceptor to attach JWT token
+// Interceptor to attach JWT token and ensure baseURL
 api.interceptors.request.use((config) => {
   let token = localStorage.getItem('token');
   if (!token) {
     token = 'demo_token_507f1f77bcf86cd799439003';
   }
   config.headers.Authorization = `Bearer ${token}`;
+
+  const currentBase = getBaseUrl();
+  if (currentBase && currentBase !== '/api') {
+    config.baseURL = currentBase;
+  }
   return config;
 }, (error) => Promise.reject(error));
 

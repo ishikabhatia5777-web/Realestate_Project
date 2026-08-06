@@ -9,7 +9,18 @@ export const SocketProvider = ({ children }) => {
   const { user } = useAuth();
 
   useEffect(() => {
-    const newSocket = io(window.location.origin, {
+    const getSocketTarget = () => {
+      const envUrl = import.meta.env.VITE_API_URL;
+      if (envUrl) {
+        return envUrl.replace(/\/api\/?$/, '');
+      }
+      if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+        return 'http://localhost:5000';
+      }
+      return window.location.origin;
+    };
+
+    const newSocket = io(getSocketTarget(), {
       transports: ['websocket', 'polling']
     });
 
