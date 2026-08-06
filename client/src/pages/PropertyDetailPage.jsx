@@ -28,7 +28,18 @@ const PropertyDetailPage = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [isOfferOpen, setIsOfferOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [isPaymentOpen, setIsPaymentOpen] = useState(searchParams.get('buy') === 'true');
+  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get('buy') === 'true' && property) {
+      if (!user) {
+        requireAuth('Please sign in to buy or reserve this property');
+        setIsPaymentOpen(false);
+      } else {
+        setIsPaymentOpen(true);
+      }
+    }
+  }, [searchParams, property, user]);
 
   useEffect(() => {
     const loadDetail = async () => {

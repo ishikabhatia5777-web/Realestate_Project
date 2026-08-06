@@ -94,8 +94,11 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
     }
   };
 
+  const exchangeRateAUDToINR = 55; // 1 AUD ≈ 55 INR
+  const inrAmount = Math.round(amount * exchangeRateAUDToINR);
+
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(
-    `upi://pay?pa=auraestates@icici&pn=AuraEstates&am=${amount}&cu=INR&tn=${encodeURIComponent(packageType)}`
+    `upi://pay?pa=auraestates@icici&pn=AuraEstates&am=${inrAmount}&cu=INR&tn=${encodeURIComponent(packageType)}`
   )}`;
 
   return (
@@ -264,8 +267,11 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
                     alt="UPI Payment QR Code"
                     className="w-44 h-44 mx-auto rounded-lg"
                   />
-                  <span className="text-[10px] text-slate-800 font-extrabold block mt-1 uppercase tracking-wider">
-                    SCAN TO PAY AUD ${amount}
+                  <span className="text-[11px] text-slate-900 font-black block mt-1.5 uppercase tracking-wider">
+                    SCAN TO PAY: ₹{inrAmount.toLocaleString('en-IN')} INR
+                  </span>
+                  <span className="text-[9px] text-slate-500 font-semibold block">
+                    (AUD ${amount} converted @ ₹55/AUD)
                   </span>
                 </div>
 
