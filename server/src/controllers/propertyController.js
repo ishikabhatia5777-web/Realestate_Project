@@ -65,13 +65,17 @@ const getProperties = async (req, res, next) => {
     const query = {};
 
     if (status) {
-      query.status = status;
+      query.status = { $regex: new RegExp(`^${status}$`, 'i') };
     } else {
-      query.status = 'Published';
+      query.status = { $in: ['Published', 'Approved'] };
     }
 
-    if (propertyType) query.propertyType = propertyType;
-    if (listingType) query.listingType = listingType;
+    if (propertyType) {
+      query.propertyType = { $regex: new RegExp(`^${propertyType}$`, 'i') };
+    }
+    if (listingType) {
+      query.listingType = { $regex: new RegExp(`^${listingType}$`, 'i') };
+    }
     if (tier) query.tier = tier;
 
     if (minPrice || maxPrice) {
