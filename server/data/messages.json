@@ -1,0 +1,56 @@
+[
+  {
+    "_id": "msg_seed_1",
+    "senderId": "507f1f77bcf86cd799439005",
+    "receiverId": "507f1f77bcf86cd799439004",
+    "propertyId": "507f1f77bcf86cd799439000",
+    "text": "Hi Marcus, I am interested in The Grand Waterfront Villa at Point Piper. Is a private inspection available this Saturday?",
+    "isRead": false,
+    "createdAt": "2026-07-31T07:30:00.000Z"
+  },
+  {
+    "_id": "msg_seed_2",
+    "senderId": "507f1f77bcf86cd7994390158",
+    "receiverId": "507f1f77bcf86cd799439004",
+    "propertyId": "507f1f77bcf86cd799439000",
+    "text": "hi i like this villa , can you provide me discount",
+    "isRead": false,
+    "createdAt": "2026-07-31T07:44:00.000Z"
+  },
+  {
+    "_id": "msg_1785912392455_0xb53",
+    "senderId": "6a7160a7f19bbfac9498bfa4",
+    "receiverId": "507f1f77bcf86cd799439003",
+    "propertyId": null,
+    "text": "",
+    "isRead": false,
+    "createdAt": "2026-08-05T06:46:32.455Z"
+  },
+  {
+    "_id": "msg_1785912421498_06q8d",
+    "senderId": "6a7160a7f19bbfac9498bfa4",
+    "receiverId": "507f1f77bcf86cd799439003",
+    "propertyId": null,
+    "text": "",
+    "isRead": false,
+    "createdAt": "2026-08-05T06:47:01.498Z"
+  },
+  {
+    "_id": "msg_1785912424679_l5ngx",
+    "senderId": "6a7160a7f19bbfac9498bfa4",
+    "receiverId": "undefined",
+    "propertyId": null,
+    "text": "Hello",
+    "isRead": false,
+    "createdAt": "2026-08-05T06:47:04.679Z"
+  },
+  {
+    "_id": "msg_1785912425058_9bsbl",
+    "senderId": "undefined",
+    "receiverId": "6a7160a7f19bbfac9498bfa4",
+    "propertyId": null,
+    "text": "Hello Updated Buyer Name, I'm Samantha Reed, Senior Real Estate Specialist at Prestige Realty. How can I assist you with **this executive property** in Sydney?",
+    "isRead": false,
+    "createdAt": "2026-08-05T06:47:05.548Z"
+  }
+]

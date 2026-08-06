@@ -1,0 +1,320 @@
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import { 
+  Building2, 
+  Search, 
+  Heart, 
+  User, 
+  Bot, 
+  Sun, 
+  Moon, 
+  LogOut, 
+  LayoutDashboard, 
+  ShieldAlert,
+  Menu,
+  X,
+  Home
+} from 'lucide-react';
+
+const Navbar = ({ onOpenAIChat }) => {
+  const { user, logout, savedProperties, requireAuth } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const getDashboardRoute = () => {
+    if (!user) return '/login';
+    switch (user.role) {
+      case 'super_admin':
+      case 'admin':
+        return '/dashboard/admin';
+      case 'agency':
+        return '/dashboard/agency';
+      case 'agent':
+        return '/dashboard/agent';
+      case 'seller':
+        return '/dashboard/seller';
+      default:
+        return '/dashboard/buyer';
+    }
+  };
+
+  return (
+    <header className="sticky top-0 z-50 glass-panel border-b border-slate-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-20">
+          
+          {/* Brand Logo */}
+          <Link to="/" className="flex items-center space-x-3 group">
+            <div className="w-11 h-11 rounded-xl gold-gradient-bg flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform duration-300">
+              <Building2 className="w-6 h-6 text-slate-950 font-bold" />
+            </div>
+            <div>
+              <span className="text-xl font-extrabold tracking-tight text-white block">
+                AURA<span className="gold-gradient-text">ESTATES</span>
+              </span>
+              <span className="text-[10px] tracking-widest uppercase text-slate-400 font-semibold block">
+                Luxury Real Estate
+              </span>
+            </div>
+          </Link>
+
+          {/* Desktop Navigation Links */}
+          <nav className="hidden md:flex items-center space-x-7">
+            <Link to="/" className="text-slate-300 hover:text-amber-400 font-bold transition-colors">
+              Home
+            </Link>
+
+            {/* Show Buy, Explore All, Agencies ONLY to Buyer or Guest users */}
+            {(!user || user.role === 'buyer') && (
+              <>
+                <Link to="/properties?listingType=Sale" className="text-slate-300 hover:text-amber-400 font-medium transition-colors">
+                  Buy
+                </Link>
+                <Link to="/properties" className="text-slate-300 hover:text-amber-400 font-medium transition-colors">
+                  Explore All
+                </Link>
+                <Link to="/agencies" className="text-slate-300 hover:text-amber-400 font-medium transition-colors">
+                  Agencies
+                </Link>
+              </>
+            )}
+
+            {/* Market Insights visible to Buyer, Seller, Agent, Guest (hidden for Admin) */}
+            {(!user || user.role !== 'admin') && (
+              <Link to="/blogs" className="text-slate-300 hover:text-amber-400 font-medium transition-colors">
+                Market Insights
+              </Link>
+            )}
+
+            {/* Direct Dashboard Nav Link for Logged In Users */}
+            {user && (
+              <Link 
+                to={getDashboardRoute()} 
+                className="px-3.5 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold text-xs flex items-center space-x-1.5 hover:bg-amber-500/20 transition-all shadow-sm"
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                <span>Dashboard</span>
+              </Link>
+            )}
+          </nav>
+
+          {/* Actions & Profile */}
+          <div className="hidden md:flex items-center space-x-4">
+            
+            {/* AI Assistant Button */}
+            <button
+              onClick={onOpenAIChat}
+              className="flex items-center space-x-2 px-3.5 py-2 rounded-lg bg-gradient-to-r from-cyan-900/60 to-blue-900/60 border border-cyan-500/30 text-cyan-300 hover:text-white hover:border-cyan-400 transition-all shadow-sm"
+            >
+              <Bot className="w-4 h-4 text-cyan-400 animate-pulse" />
+              <span className="text-xs font-bold">Aura AI</span>
+            </button>
+
+
+            {/* Saved Wishlist (Shown ONLY to Buyer and Guest users) */}
+            {(!user || user.role === 'buyer') && (
+              <button
+                onClick={() => {
+                  if (requireAuth('Sign in to view your saved properties')) {
+                    navigate('/wishlist');
+                  }
+                }}
+                className="relative p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-rose-400 transition-colors"
+                title="Saved Wishlist"
+              >
+                <Heart className="w-5 h-5" />
+                {savedProperties.length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-rose-500 text-white text-[11px] font-bold flex items-center justify-center">
+                    {savedProperties.length}
+                  </span>
+                )}
+              </button>
+            )}
+
+            {/* User Profile / Auth State */}
+            {user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                  className="flex items-center space-x-3 p-1.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-amber-500/50 transition-all"
+                >
+                  <img
+                    src={user.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400'}
+                    alt={user.name}
+                    className="w-8 h-8 rounded-lg object-cover"
+                  />
+                  <div className="text-left hidden lg:block pr-1">
+                    <span className="text-xs font-bold text-white block leading-tight">{user.name}</span>
+                    <span className="text-[10px] text-amber-400 font-semibold uppercase tracking-wider block">
+                      {user.role.replace('_', ' ')}
+                    </span>
+                  </div>
+                </button>
+
+                {/* Dropdown Menu */}
+                {userDropdownOpen && (
+                  <div className="absolute right-0 mt-3 w-56 glass-panel rounded-xl shadow-2xl py-2 border border-slate-800 z-50">
+                    <div className="px-4 py-2 border-b border-slate-800/80">
+                      <p className="text-sm font-bold text-white">{user.name}</p>
+                      <p className="text-xs text-slate-400 truncate">{user.email}</p>
+                    </div>
+
+                    <Link
+                      to="/"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="flex items-center space-x-2.5 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800/60 hover:text-amber-400 transition-colors"
+                    >
+                      <Home className="w-4 h-4 text-amber-400" />
+                      <span>Home Page</span>
+                    </Link>
+                    
+                    <Link
+                      to={getDashboardRoute()}
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="flex items-center space-x-2.5 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800/60 hover:text-amber-400 transition-colors"
+                    >
+                      <LayoutDashboard className="w-4 h-4 text-amber-400" />
+                      <span>My Dashboard</span>
+                    </Link>
+
+                    <button
+                      onClick={() => {
+                        setUserDropdownOpen(false);
+                        logout();
+                        navigate('/login');
+                      }}
+                      className="w-full flex items-center space-x-2.5 px-4 py-2.5 text-sm text-rose-400 hover:bg-rose-500/10 transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center space-x-3">
+                <Link
+                  to="/login"
+                  className="px-4 py-2 rounded-lg text-sm font-semibold text-slate-300 hover:text-white transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/register"
+                  className="px-4 py-2 rounded-lg text-sm font-bold bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 hover:from-amber-400 hover:to-amber-500 transition-all shadow-md shadow-amber-500/20"
+                >
+                  Get Started
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="flex md:hidden items-center space-x-3">
+            <button
+              onClick={onOpenAIChat}
+              className="p-2 rounded-lg bg-cyan-950/60 text-cyan-400 border border-cyan-500/30"
+            >
+              <Bot className="w-5 h-5" />
+            </button>
+
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-300"
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Mobile Drawer */}
+      {mobileMenuOpen && (
+        <div className="md:hidden glass-panel border-t border-slate-800 px-4 pt-4 pb-6 space-y-4">
+          <Link
+            to="/"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block text-amber-400 font-bold py-2"
+          >
+            Home Page
+          </Link>
+
+          {(!user || user.role === 'buyer') && (
+            <>
+              <Link
+                to="/properties?listingType=Sale"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-slate-300 font-medium py-2 hover:text-amber-400"
+              >
+                Buy Properties
+              </Link>
+              <Link
+                to="/agencies"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-slate-300 font-medium py-2 hover:text-amber-400"
+              >
+                Real Estate Agencies
+              </Link>
+            </>
+          )}
+
+          {(!user || user.role !== 'admin') && (
+            <Link
+              to="/blogs"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-slate-300 font-medium py-2 hover:text-amber-400"
+            >
+              Market Insights & News
+            </Link>
+          )}
+
+          {user ? (
+            <div className="pt-4 border-t border-slate-800 space-y-3">
+              <Link
+                to={getDashboardRoute()}
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full flex items-center justify-center space-x-2 py-2.5 rounded-lg bg-amber-500 text-slate-950 font-bold text-sm"
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                <span>Go to Dashboard ({user.role})</span>
+              </Link>
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  logout();
+                }}
+                className="w-full text-center py-2 text-rose-400 text-sm font-semibold"
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <div className="pt-4 border-t border-slate-800 flex flex-col space-y-2">
+              <Link
+                to="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full text-center py-2.5 rounded-lg border border-slate-700 text-white font-semibold text-sm"
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/register"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full text-center py-2.5 rounded-lg bg-amber-500 text-slate-950 font-bold text-sm"
+              >
+                Create Account
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
+    </header>
+  );
+};
+
+export default Navbar;

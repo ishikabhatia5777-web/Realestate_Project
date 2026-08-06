@@ -1,0 +1,616 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { fetchOffers, fetchBookings, fetchProperties, deleteProperty, respondOffer, fetchPaymentHistory, fetchExpertRequests, markExpertRequestAsRead } from '../../services/api';
+import InboxPanel from '../../components/InboxPanel';
+import { Calendar, DollarSign, MessageSquare, Check, X, ShieldCheck, Plus, Building2, Eye, Trash2, Tag, MapPin, CreditCard, Users, UserPlus, Bell, Phone, Mail, Home } from 'lucide-react';
+import AddPropertyModal from '../../components/AddPropertyModal';
+import PaymentModal from '../../components/PaymentModal';
+
+const AgentDashboard = () => {
+  const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const [properties, setProperties] = useState([]);
+  const [offers, setOffers] = useState([]);
+  const [bookings, setBookings] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+  const [activeTab, setActiveTab] = useState('properties');
+  const [expertRequests, setExpertRequests] = useState([]);
+  const [expertUnreadCount, setExpertUnreadCount] = useState(0);
+
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [selectedPropertyId, setSelectedPropertyId] = useState(null);
+  const [paymentPackage, setPaymentPackage] = useState('Agency Pro Subscription');
+  const [paymentAmount, setPaymentAmount] = useState(499);
+
+  useEffect(() => {
+    if (!authLoading) {
+      if (!user) {
+        navigate('/login');
+      } else if (user.role !== 'agent') {
+        if (user.role === 'super_admin' || user.role === 'admin') navigate('/dashboard/admin');
+        else if (user.role === 'agency') navigate('/dashboard/agency');
+        else if (user.role === 'seller') navigate('/dashboard/seller');
+        else navigate('/dashboard/buyer');
+      }
+    }
+  }, [user, authLoading, navigate]);
+
+  const loadData = async () => {
+    try {
+      const [pRes, oRes, bRes, txRes, erRes] = await Promise.all([
+        fetchProperties(),
+        fetchOffers(),
+        fetchBookings(),
+        fetchPaymentHistory(),
+        fetchExpertRequests()
+      ]);
+      if (pRes.data && pRes.data.success) setProperties(pRes.data.properties);
+      if (oRes.data && oRes.data.success) setOffers(oRes.data.offers);
+      if (bRes.data && bRes.data.success) setBookings(bRes.data.bookings);
+      if (txRes.data && txRes.data.success) setTransactions(txRes.data.transactions);
+      if (erRes.data && erRes.data.success) {
+        setExpertRequests(erRes.data.requests || []);
+        setExpertUnreadCount(erRes.data.unreadCount || 0);
+      }
+    } catch (err) {
+      console.error('Error loading agent dashboard data:', err);
+    }
+  };
+
+  const handleMarkRequestRead = async (id) => {
+    try {
+      await markExpertRequestAsRead(id);
+      setExpertRequests(prev => prev.map(r => r._id === id ? { ...r, isRead: true, status: 'contacted' } : r));
+      setExpertUnreadCount(prev => Math.max(0, prev - 1));
+    } catch (err) {
+      console.error('Error marking request read:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (user && user.role === 'agent') {
+      loadData();
+    }
+  }, [user]);
+
+  const handlePropertyAdded = (newProperty) => {
+    setProperties((prev) => [newProperty, ...prev]);
+  };
+
+  const handleDeleteProperty = async (id) => {
+    if (!window.confirm('Are you sure you want to remove this property listing?')) return;
+    try {
+      const res = await deleteProperty(id);
+      if (res.data && res.data.success) {
+        setProperties((prev) => prev.filter((p) => p._id !== id));
+      }
+    } catch (err) {
+      console.error('Error deleting property:', err);
+    }
+  };
+
+  const handleOfferAction = async (id, action) => {
+    try {
+      const res = await respondOffer(id, { action });
+      if (res.data && res.data.success) {
+        setOffers((prev) => prev.map((o) => (o._id === id ? res.data.offer : o)));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleOpenPayment = (propId, pkg, amt) => {
+    setSelectedPropertyId(propId);
+    setPaymentPackage(pkg);
+    setPaymentAmount(amt);
+    setIsPaymentModalOpen(true);
+  };
+
+  const handlePaymentSuccess = (tx) => {
+    setTransactions((prev) => [tx, ...prev]);
+    setIsPaymentModalOpen(false);
+    loadData();
+  };
+
+  if (authLoading || !user || user.role !== 'agent') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white">
+        <div className="text-center space-y-4">
+          <div className="w-12 h-12 rounded-full border-4 border-amber-500 border-t-transparent animate-spin mx-auto"></div>
+          <p className="text-sm font-bold text-slate-400">Verifying session...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <span className="text-xs font-bold text-amber-400 uppercase tracking-widest block">REAL ESTATE AGENT PORTAL</span>
+          <h1 className="text-3xl font-extrabold text-white">Agent Property & Pipeline Management</h1>
+        </div>
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={() => handleOpenPayment(null, 'Featured Listing', 99)}
+            className="px-4 py-3 rounded-2xl bg-slate-900 border border-slate-800 text-amber-400 font-extrabold text-xs flex items-center space-x-2 hover:border-amber-500/50 transition-all"
+          >
+            <CreditCard className="w-4 h-4" />
+            <span>Listing Package Checkout</span>
+          </button>
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold text-xs flex items-center justify-center space-x-2 hover:from-amber-400 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/20"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add New Property</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex flex-wrap gap-2 bg-slate-900 p-1.5 rounded-2xl border border-slate-800 text-xs font-bold w-fit">
+        <button
+          onClick={() => setActiveTab('properties')}
+          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'properties' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
+        >
+          Listed Properties ({properties.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('messages')}
+          className={`px-4 py-2.5 rounded-xl transition-all flex items-center space-x-1.5 ${activeTab === 'messages' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
+        >
+          <MessageSquare className="w-3.5 h-3.5" />
+          <span>Live Chat Inbox</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('team')}
+          className={`px-4 py-2.5 rounded-xl transition-all flex items-center space-x-1.5 ${activeTab === 'team' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
+        >
+          <Users className="w-3.5 h-3.5" />
+          <span>Team Roster</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('offers')}
+          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'offers' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
+        >
+          Customer Offers ({offers.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('bookings')}
+          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'bookings' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
+        >
+          Inspection Schedule ({bookings.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('payments')}
+          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'payments' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
+        >
+          Payments & Receipts ({transactions.length})
+        </button>
+        <button
+          onClick={() => { setActiveTab('requests'); setExpertUnreadCount(0); }}
+          className={`px-4 py-2.5 rounded-xl transition-all flex items-center space-x-1.5 relative ${activeTab === 'requests' ? 'bg-rose-500 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}
+        >
+          <Bell className="w-3.5 h-3.5" />
+          <span>Connection Requests</span>
+          {expertUnreadCount > 0 && (
+            <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center animate-pulse">
+              {expertUnreadCount}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* Tab Content: Listed Properties */}
+      {activeTab === 'properties' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-base font-bold text-white">Active Agency Listings in Database</h3>
+            <span className="text-xs text-slate-400">Total: {properties.length} properties</span>
+          </div>
+
+          {properties.length === 0 ? (
+            <div className="glass-panel p-10 rounded-3xl border border-slate-800 text-center space-y-3">
+              <Building2 className="w-10 h-10 text-slate-600 mx-auto" />
+              <p className="text-slate-400 text-xs">No properties listed yet.</p>
+              <button
+                onClick={() => setIsAddModalOpen(true)}
+                className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs"
+              >
+                Create First Property Listing
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {properties.map((p) => (
+                <div key={p._id} className="glass-panel rounded-2xl border border-slate-800 overflow-hidden flex flex-col justify-between">
+                  <div>
+                    <div className="relative h-44 bg-slate-900">
+                      <img
+                        src={p.images?.[0] || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1200'}
+                        alt={p.title}
+                        className="w-full h-full object-cover"
+                      />
+                      <span className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-slate-950/80 backdrop-blur-md text-[11px] font-extrabold text-amber-400 border border-amber-500/20">
+                        For {p.listingType}
+                      </span>
+                      <span className="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-emerald-500/90 text-[11px] font-extrabold text-slate-950">
+                        {p.status || 'Published'}
+                      </span>
+                    </div>
+
+                    <div className="p-4 space-y-2">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{p.propertyType} • Tier: {p.tier || 'Standard'}</span>
+                      <h4 className="text-sm font-bold text-white line-clamp-1">{p.title}</h4>
+                      <p className="text-base font-extrabold text-amber-400">
+                        ${p.price?.toLocaleString()} {p.listingType === 'Rent' ? '/ mo' : ''}
+                      </p>
+                      <p className="text-xs text-slate-400 flex items-center space-x-1">
+                        <MapPin className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                        <span className="truncate">{p.address?.street}, {p.address?.suburb}</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="p-4 pt-2 border-t border-slate-800 space-y-2">
+                    <div className="flex space-x-2">
+                      <Link
+                        to={`/properties/${p._id}`}
+                        className="flex-1 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-slate-300 hover:text-white flex items-center justify-center space-x-1"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>View</span>
+                      </Link>
+                      <button
+                        onClick={() => handleDeleteProperty(p._id)}
+                        className="px-3 py-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500 hover:text-white transition-all text-xs font-bold flex items-center justify-center"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => handleOpenPayment(p._id, 'Featured Listing', 99)}
+                        className="py-1.5 rounded-lg bg-indigo-600/80 text-white font-bold text-[11px]"
+                      >
+                        Feature ($99)
+                      </button>
+                      <button
+                        onClick={() => handleOpenPayment(p._id, 'Premium Listing', 249)}
+                        className="py-1.5 rounded-lg gold-gradient-bg text-slate-950 font-extrabold text-[11px]"
+                      >
+                        Premium ($249)
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Tab Content: Offers */}
+      {activeTab === 'offers' && (
+        <div className="space-y-4">
+          {offers.length === 0 ? (
+            <div className="glass-panel p-8 rounded-2xl border border-slate-800 text-center text-slate-400 text-xs">
+              No buyer offers received yet.
+            </div>
+          ) : (
+            offers.map((offer) => (
+              <div key={offer._id} className="glass-panel p-5 rounded-2xl border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                  <h4 className="text-sm font-bold text-white">{offer.propertyId?.title || 'Property Offer'}</h4>
+                  <p className="text-xs text-amber-400 font-extrabold mt-0.5">${offer.offerAmount?.toLocaleString()}</p>
+                  <p className="text-[11px] text-slate-400">Offered by: {offer.buyerId?.name} ({offer.buyerId?.email})</p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-xs font-bold text-slate-300">
+                    {offer.status}
+                  </span>
+                  {offer.status === 'Pending' && (
+                    <>
+                      <button
+                        onClick={() => handleOfferAction(offer._id, 'accept')}
+                        className="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold text-xs"
+                      >
+                        Accept Offer
+                      </button>
+                      <button
+                        onClick={() => handleOfferAction(offer._id, 'reject')}
+                        className="px-3 py-1.5 rounded-lg bg-rose-500 text-white font-bold text-xs"
+                      >
+                        Reject
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {/* Tab Content: Bookings */}
+      {activeTab === 'bookings' && (
+        <div className="space-y-4">
+          {bookings.length === 0 ? (
+            <div className="glass-panel p-8 rounded-2xl border border-slate-800 text-center text-slate-400 text-xs">
+              No inspection bookings scheduled yet.
+            </div>
+          ) : (
+            bookings.map((b) => (
+              <div key={b._id} className="glass-panel p-5 rounded-2xl border border-slate-800 flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-bold text-white">{b.propertyId?.title || 'Property Inspection'}</h4>
+                  <p className="text-xs text-amber-400 font-semibold">{b.date} at {b.timeSlot} ({b.type})</p>
+                  <p className="text-[11px] text-slate-400">Client: {b.userId?.name} • {b.userId?.phone}</p>
+                </div>
+                <span className="px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 font-bold text-xs">
+                  {b.status}
+                </span>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {/* Tab Content: Payments */}
+      {activeTab === 'payments' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-base font-bold text-white">Agency & Agent Payment Receipts</h3>
+            <button
+              onClick={() => handleOpenPayment(null, 'Featured Listing', 99)}
+              className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs"
+            >
+              Buy Listing Boost
+            </button>
+          </div>
+
+          {transactions.length === 0 ? (
+            <div className="glass-panel p-10 rounded-3xl border border-slate-800 text-center space-y-3">
+              <CreditCard className="w-10 h-10 text-slate-600 mx-auto" />
+              <p className="text-slate-400 text-xs">No payment receipts recorded yet.</p>
+            </div>
+          ) : (
+            <div className="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-900 border-b border-slate-800 text-slate-400 font-bold uppercase tracking-wider">
+                    <tr>
+                      <th className="p-4">Invoice ID</th>
+                      <th className="p-4">Package</th>
+                      <th className="p-4">Amount</th>
+                      <th className="p-4">Payment Method</th>
+                      <th className="p-4">Status</th>
+                      <th className="p-4">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/60 text-slate-300">
+                    {transactions.map((tx) => (
+                      <tr key={tx._id} className="hover:bg-slate-900/40">
+                        <td className="p-4 font-mono text-amber-400">{tx.stripePaymentIntentId || tx._id}</td>
+                        <td className="p-4 font-bold text-white">{tx.packageType}</td>
+                        <td className="p-4 font-extrabold text-amber-400">AUD ${tx.amount}</td>
+                        <td className="p-4">{tx.paymentMethod || 'Credit Card'}</td>
+                        <td className="p-4">
+                          <span className="px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[11px] font-bold uppercase">
+                            {tx.status || 'succeeded'}
+                          </span>
+                        </td>
+                        <td className="p-4 text-slate-400">
+                          {tx.createdAt ? new Date(tx.createdAt).toLocaleDateString() : 'Recent'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Tab Content: Live Chat Messages Inbox */}
+      {activeTab === 'messages' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-base font-bold text-white">Buyer Direct Messages & Inquiries</h3>
+          </div>
+          <InboxPanel />
+        </div>
+      )}
+
+      {/* Tab Content: Agency Team Roster & Invite */}
+      {activeTab === 'team' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-base font-bold text-white">Agency Core Team Roster</h3>
+              <p className="text-xs text-slate-400">View and manage team agents belonging to your agency.</p>
+            </div>
+            <button
+              onClick={() => {
+                const inviteEmail = prompt("Enter agent's email address to invite to this agency:");
+                if (!inviteEmail) return;
+                alert(`Invitation link generated and dispatched successfully to ${inviteEmail}!`);
+              }}
+              className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs flex items-center space-x-1.5 hover:bg-amber-400 transition-all shadow-md shadow-amber-500/10"
+            >
+              <UserPlus className="w-4 h-4" />
+              <span>Invite Team Agent</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            {/* Main Agent */}
+            <div className="glass-panel p-5 rounded-2xl border border-slate-800 flex items-start space-x-4">
+              <img
+                src={user.avatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400'}
+                alt={user.name}
+                className="w-14 h-14 rounded-2xl object-cover border border-amber-500/20"
+              />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-bold text-white truncate">{user.name}</h4>
+                  <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[10px] uppercase font-bold">
+                    Direct Agent
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 truncate mt-0.5">{user.email}</p>
+                <p className="text-xs text-slate-500 mt-2">{user.phone || '+61 400 000 000'}</p>
+              </div>
+            </div>
+
+            {/* Simulated Team Member */}
+            <div className="glass-panel p-5 rounded-2xl border border-slate-800 flex items-start space-x-4 opacity-80 hover:opacity-100 transition-all">
+              <img
+                src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400"
+                alt="Julian Thorne"
+                className="w-14 h-14 rounded-2xl object-cover border border-slate-800"
+              />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-bold text-white truncate">Julian Thorne</h4>
+                  <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px] uppercase font-bold">
+                    Partner Broker
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 truncate mt-0.5">julian@prestigerealty.com.au</p>
+                <p className="text-xs text-slate-500 mt-2">+61 411 222 333</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab Content: Expert Connection Requests */}
+      {activeTab === 'requests' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <Bell className="w-4 h-4 text-rose-400" />
+                Buyer Connection Requests
+              </h3>
+              <p className="text-xs text-slate-400 mt-0.5">Buyers who asked to connect with you through the 24/7 Live Chat</p>
+            </div>
+            <span className="text-xs bg-rose-500/20 text-rose-400 border border-rose-500/30 px-3 py-1 rounded-full font-bold">
+              {expertRequests.filter(r => !r.isRead).length} Unread
+            </span>
+          </div>
+
+          {expertRequests.length === 0 ? (
+            <div className="glass-panel p-12 rounded-3xl border border-slate-800 text-center space-y-3">
+              <Bell className="w-10 h-10 text-slate-600 mx-auto" />
+              <p className="text-slate-400 text-sm font-medium">No connection requests yet</p>
+              <p className="text-slate-500 text-xs">When a buyer clicks "Connect to Expert" in the live chat, their request will appear here.</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {expertRequests.map((req) => (
+                <div
+                  key={req._id}
+                  className={`rounded-2xl border p-5 transition-all ${req.isRead ? 'bg-slate-900/50 border-slate-800' : 'bg-rose-950/20 border-rose-500/40 shadow-lg shadow-rose-500/5'}`}
+                >
+                  <div className="flex items-start justify-between gap-4 flex-wrap">
+                    {/* Left: Buyer info */}
+                    <div className="flex items-start gap-3 flex-1 min-w-0">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-base font-black shrink-0 ${req.isRead ? 'bg-slate-700 text-slate-300' : 'bg-rose-500/20 text-rose-400'}`}>
+                        {(req.buyerName || 'B')[0].toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-bold text-white">{req.buyerName}</span>
+                          {!req.isRead && (
+                            <span className="text-[10px] font-black bg-rose-500 text-white px-2 py-0.5 rounded-full uppercase tracking-wide animate-pulse">NEW</span>
+                          )}
+                          {req.status === 'contacted' && (
+                            <span className="text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full uppercase">Contacted</span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3 mt-1 flex-wrap">
+                          {req.buyerEmail && (
+                            <a href={`mailto:${req.buyerEmail}`} className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1">
+                              <Mail className="w-3 h-3" /> {req.buyerEmail}
+                            </a>
+                          )}
+                        </div>
+
+                        {/* Property */}
+                        <div className="flex items-center gap-1 mt-2 text-xs text-amber-400 font-medium">
+                          <Home className="w-3 h-3" />
+                          <span>{req.propertyTitle || 'Unknown property'}</span>
+                        </div>
+
+                        {/* Message */}
+                        {req.buyerMessage && (
+                          <div className="mt-2 text-xs text-slate-400 italic bg-slate-800/60 rounded-lg px-3 py-2 border border-slate-700/50">
+                            "{req.buyerMessage}"
+                          </div>
+                        )}
+
+                        {/* Time */}
+                        <p className="text-[11px] text-slate-500 mt-2">
+                          {new Date(req.createdAt).toLocaleString('en-AU', { dateStyle: 'medium', timeStyle: 'short' })}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Right: Action */}
+                    <div className="flex flex-col gap-2 shrink-0">
+                      {req.buyerEmail && (
+                        <a
+                          href={`mailto:${req.buyerEmail}?subject=Regarding ${encodeURIComponent(req.propertyTitle || 'your property enquiry')}&body=Hi ${encodeURIComponent(req.buyerName)},%0A%0AThank you for your interest. I'd love to discuss the property with you.%0A%0ABest regards`}
+                          onClick={() => !req.isRead && handleMarkRequestRead(req._id)}
+                          className="px-3 py-2 rounded-xl bg-amber-500 text-slate-950 text-xs font-bold hover:bg-amber-400 transition-all flex items-center gap-1.5"
+                        >
+                          <Mail className="w-3 h-3" /> Reply via Email
+                        </a>
+                      )}
+                      {!req.isRead && (
+                        <button
+                          onClick={() => handleMarkRequestRead(req._id)}
+                          className="px-3 py-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold hover:bg-emerald-500/30 transition-all flex items-center gap-1.5"
+                        >
+                          <Check className="w-3 h-3" /> Mark Contacted
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Add Property Modal Form */}
+      <AddPropertyModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onPropertyAdded={handlePropertyAdded}
+      />
+
+      {/* Payment Gateway Modal */}
+      <PaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        defaultPackage={paymentPackage}
+        defaultAmount={paymentAmount}
+        propertyId={selectedPropertyId}
+        onPaymentSuccess={handlePaymentSuccess}
+      />
+    </div>
+  );
+};
+
+export default AgentDashboard;
