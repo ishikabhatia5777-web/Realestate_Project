@@ -2,6 +2,16 @@
 
 A high-performance, enterprise-scale luxury Real Estate Marketplace built from scratch with **MongoDB, Express.js, React (Vite), Node.js, Tailwind CSS, Framer Motion, Leaflet Maps, Stripe Payments, Socket.io Chat, and Built-in AI Engines**.
 
+## 🌐 Live Deployment
+
+| Service | URL |
+|---------|-----|
+| 🖥️ **Frontend (Vercel)** | https://realestate-project-g77z0ekyk-technical-team1.vercel.app |
+| ⚙️ **Backend (Render)** | https://realestate-api.onrender.com |
+| 📦 **GitHub** | https://github.com/ishikabhatia5777-web/Realestate_Project |
+
+---
+
 ---
 
 ## Key Features

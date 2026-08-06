@@ -11,17 +11,17 @@ services:
       - key: PORT
         value: 5001
       - key: MONGO_URI
-        sync: false   # Set this in Render Dashboard → don't commit to git
+        sync: false   # Set in Render Dashboard: mongodb+srv://ishikabhatia5777_db_user:...@cluster0.afbmlyd.mongodb.net/realestate_db
       - key: JWT_SECRET
-        sync: false   # Set this in Render Dashboard
+        sync: false   # Set in Render Dashboard
       - key: JWT_EXPIRE
         value: 30d
       - key: CLIENT_URL
-        sync: false   # Set this to your Vercel URL in Render Dashboard
+        value: https://realestate-project-g77z0ekyk-technical-team1.vercel.app
       - key: STRIPE_SECRET_KEY
-        sync: false   # Set this in Render Dashboard
+        sync: false   # Set in Render Dashboard
       - key: GROQ_API_KEY
-        sync: false   # Set this in Render Dashboard
+        sync: false   # Set in Render Dashboard
       - key: GOOGLE_MAPS_API_KEY
         sync: false
       - key: NEWSDATA_API_KEY
