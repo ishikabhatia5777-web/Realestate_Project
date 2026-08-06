@@ -48,6 +48,8 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+const path = require('path');
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/properties', propertyRoutes);
@@ -58,6 +60,17 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/admin', adminRoutes);
+
+// Serve Frontend Static Build if available
+const clientDistPath = path.join(__dirname, '../../client/dist');
+const fs = require('fs');
+if (fs.existsSync(clientDistPath)) {
+  app.use(express.static(clientDistPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) return next();
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+}
 
 // Socket.io Real-time Chat & Alert Handler
 io.on('connection', (socket) => {
