@@ -177,14 +177,14 @@ test.describe('API Integration Test Suite', () => {
       const response = await request.put('/api/auth/profile', {
         headers: { Authorization: `Bearer ${buyerToken}` },
         data: {
-          name: 'Updated Buyer Name',
+          name: 'Buyer',
           phone: '+61 411 999 888'
         }
       });
       expect(response.ok()).toBeTruthy();
       const body = await response.json();
       expect(body.success).toBe(true);
-      expect(body.user.name).toBe('Updated Buyer Name');
+      expect(body.user.name).toBe('Buyer');
     });
 
     test('TC-A-012: Toggle property wishlist state', async ({ request }) => {
