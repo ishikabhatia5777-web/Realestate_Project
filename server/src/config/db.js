@@ -1,17 +1,26 @@
 const mongoose = require('mongoose');
 const dns = require('dns');
 
-// Use Google & Cloudflare DNS to resolve MongoDB Atlas SRV records
-// (Router DNS often fails to resolve MongoDB SRV records)
-dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
+// Use Google & Cloudflare DNS to resolve MongoDB Atlas SRV records when on local Node
+if (process.env.NODE_ENV !== 'production') {
+  try {
+    dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
+  } catch (dnsErr) {
+    // Ignore DNS override errors in cloud containers
+  }
+}
+
+const DEFAULT_ATLAS_URI = 'mongodb+srv://ishikabhatia5777_db_user:New_password@cluster0.afbmlyd.mongodb.net/realestate_db?retryWrites=true&w=majority';
 
 const connectDB = async () => {
   try {
     // Disable command buffering up front so operations fail fast if DB is disconnected
     mongoose.set('bufferCommands', false);
 
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 3000,
+    const mongoUri = process.env.MONGO_URI || DEFAULT_ATLAS_URI;
+
+    const conn = await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 10000,
       socketTimeoutMS: 45000,
     });
 
