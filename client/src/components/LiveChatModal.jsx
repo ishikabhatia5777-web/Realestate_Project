@@ -308,9 +308,9 @@ const LiveChatModal = ({ agent, property, isOpen, onClose }) => {
               // User/Buyer messages are positioned on the RIGHT side
               const isMe = !isFromAgent;
 
-              const buyerDisplayName = (isMe && user?.name) ? user.name : 'Buyer';
+              const buyerDisplayName = user?.name || 'Buyer';
               const senderBadge = isMe
-                ? `🔑 BUYER (${buyerDisplayName.toUpperCase()})`
+                ? '🔑 BUYER'
                 : `👩‍💼 ${recipient.name.toUpperCase()}`;
 
               return (
