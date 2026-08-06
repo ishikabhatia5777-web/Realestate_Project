@@ -199,5 +199,16 @@
     "twoFactorEnabled": false,
     "savedProperties": [],
     "password": "$2a$10$4oYQTMeQAwbu6cjo7TElY.uJziJZ4tOkGhpoIvHO3ViRgqCDtXBtu"
+  },
+  {
+    "_id": "6a7412c843290307c75f7493",
+    "name": "ram",
+    "email": "ram@gmail.com",
+    "role": "buyer",
+    "phone": "9878787656",
+    "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400",
+    "twoFactorEnabled": false,
+    "savedProperties": [],
+    "password": "$2a$10$3w56oY/Fi4OZqOFWK7LqvuoxeVfOLVpgfXLH.45AK7otsPV202vMS"
   }
 ]

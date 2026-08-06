@@ -297,19 +297,27 @@ const LiveChatModal = ({ agent, property, isOpen, onClose }) => {
             </div>
           ) : (
             messages.map((msg, idx) => {
-              const senderIdStr = String(msg.senderId?._id || msg.senderId);
-              const currentUserIdStr = String(user?._id);
-              const isMe = senderIdStr === currentUserIdStr;
+              const senderIdStr = String(msg.senderId?._id || msg.senderId || '');
+              const recipientIdStr = String(recipient?._id || recipient || '');
+              const currentUserIdStr = user ? String(user._id || '') : '';
 
+              // Message is from Agent if sender matches recipient ID or role is agent/admin/agency
+              const isFromAgent = (senderIdStr && senderIdStr === recipientIdStr) ||
+                                  (msg.senderId?.role && ['agent', 'agency', 'admin', 'super_admin', 'seller'].includes(msg.senderId.role) && senderIdStr !== currentUserIdStr);
+
+              // User/Buyer messages are positioned on the RIGHT side
+              const isMe = !isFromAgent;
+
+              const buyerDisplayName = (isMe && user?.name) ? user.name : 'Buyer';
               const senderBadge = isMe
-                ? '🔑 YOU (BUYER)'
+                ? `🔑 BUYER (${buyerDisplayName.toUpperCase()})`
                 : `👩‍💼 ${recipient.name.toUpperCase()}`;
 
               return (
                 <div key={msg._id || idx} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                   <div className={`p-3 rounded-2xl max-w-[85%] leading-relaxed shadow-lg ${
                     isMe
-                      ? 'bg-amber-500 text-slate-950 font-medium rounded-tr-none'
+                      ? 'bg-amber-500 text-slate-950 font-medium rounded-tr-none shadow-amber-500/10'
                       : 'bg-slate-900 border border-cyan-500/30 text-slate-200 rounded-tl-none'
                   }`}>
                     <div className="flex items-center justify-between space-x-2 mb-1 pb-1 border-b border-black/10 text-[9px] font-black tracking-wider">
@@ -317,7 +325,7 @@ const LiveChatModal = ({ agent, property, isOpen, onClose }) => {
                         <span>{senderBadge}</span>
                       </span>
                       <span className={isMe ? 'text-slate-900 font-semibold' : 'text-slate-400'}>
-                        {isMe ? user?.name : recipient.name}
+                        {isMe ? buyerDisplayName : recipient.name}
                       </span>
                     </div>
                     {renderFormattedContent(msg.text)}
