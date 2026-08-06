@@ -3,32 +3,43 @@ import { X, Calendar, Clock, CheckCircle } from 'lucide-react';
 import { createBooking } from '../services/api';
 
 const InspectionBookingModal = ({ property, isOpen, onClose }) => {
-  const [selectedDate, setSelectedDate] = useState('2026-08-01');
+  const getTodayString = () => new Date().toISOString().split('T')[0];
+
+  const [selectedDate, setSelectedDate] = useState(getTodayString());
   const [selectedTime, setSelectedTime] = useState('11:00 AM');
   const [inspectionType, setInspectionType] = useState('In-Person');
   const [notes, setNotes] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   if (!isOpen || !property) return null;
 
   const handleBooking = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
+
     try {
       const res = await createBooking({
         propertyId: property._id,
-        date: selectedDate,
+        date: selectedDate || getTodayString(),
         timeSlot: selectedTime,
         type: inspectionType,
         notes
       });
 
-      if (res.data.success) {
+      if (res.data && res.data.success) {
         setSuccess(true);
+        // Automatically close modal after 2.5 seconds
+        setTimeout(() => {
+          setSuccess(false);
+          onClose();
+        }, 2500);
       }
     } catch (err) {
-      console.error(err);
+      console.error('Booking failed:', err);
+      setError(err.response?.data?.message || 'Failed to confirm booking. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -66,6 +77,12 @@ const InspectionBookingModal = ({ property, isOpen, onClose }) => {
               <p className="text-xs text-slate-400 truncate">{property.title}</p>
             </div>
 
+            {error && (
+              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs">
+                {error}
+              </div>
+            )}
+
             {/* Type selector */}
             <div className="space-y-1 text-xs">
               <label className="font-bold text-slate-300">Inspection Format</label>
@@ -92,6 +109,7 @@ const InspectionBookingModal = ({ property, isOpen, onClose }) => {
               <label className="font-bold text-slate-300">Preferred Date</label>
               <input
                 type="date"
+                min={getTodayString()}
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
                 className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white focus:border-amber-500"
