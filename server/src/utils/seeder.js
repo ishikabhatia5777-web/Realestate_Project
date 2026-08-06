@@ -7,6 +7,10 @@ const Blog = require('../models/Blog');
 const ActivityLog = require('../models/ActivityLog');
 const Booking = require('../models/Booking');
 const Offer = require('../models/Offer');
+const Transaction = require('../models/Transaction');
+const Message = require('../models/Message');
+const Review = require('../models/Review');
+const ContactRequest = require('../models/ContactRequest');
 
 const { sampleUsers, sampleAgencies, sampleProperties, sampleBlogs } = require('./seedData');
 
@@ -26,6 +30,10 @@ const seedDB = async () => {
     await ActivityLog.deleteMany();
     await Booking.deleteMany();
     await Offer.deleteMany();
+    await Transaction.deleteMany();
+    await Message.deleteMany();
+    await Review.deleteMany();
+    await ContactRequest.deleteMany();
 
     console.log('🗑️  Cleared old database records.');
 
@@ -121,6 +129,106 @@ const seedDB = async () => {
       console.log(`\n💰 Seeded 2 sample Offers.`);
     }
 
+    // Seed sample Transactions (Payments & Deposits)
+    if (createdProperties.length > 0) {
+      await Transaction.create({
+        userId: buyerUser._id,
+        propertyId: createdProperties[0]._id,
+        packageType: 'Holding Deposit',
+        amount: 50000,
+        currency: 'AUD',
+        status: 'succeeded',
+        paymentMethod: 'Credit Card (Stripe Test)',
+        stripePaymentIntentId: 'pi_test_3N2x1y4Z8K199'
+      });
+      await Transaction.create({
+        userId: agencyOwner._id,
+        packageType: 'Agency Pro Subscription',
+        amount: 499,
+        currency: 'AUD',
+        status: 'succeeded',
+        paymentMethod: 'Credit Card',
+        stripePaymentIntentId: 'pi_test_9A8b7C6d5E4f3'
+      });
+      await Transaction.create({
+        userId: sellerUser._id,
+        propertyId: createdProperties[2]._id,
+        packageType: 'Featured Listing',
+        amount: 299,
+        currency: 'AUD',
+        status: 'succeeded',
+        paymentMethod: 'Credit Card',
+        stripePaymentIntentId: 'pi_test_1X2Y3Z4A5B6C'
+      });
+      console.log(`\n💳 Seeded 3 sample Transactions / Payments.`);
+    }
+
+    // Seed sample Messages (Real-time Buyer <-> Agent Chat)
+    if (createdProperties.length > 0) {
+      await Message.create({
+        senderId: buyerUser._id,
+        receiverId: agentUser._id,
+        propertyId: createdProperties[0]._id,
+        text: 'Hi Samantha! Is the Grand Waterfront Villa still available for inspection this weekend?',
+        isRead: true
+      });
+      await Message.create({
+        senderId: agentUser._id,
+        receiverId: buyerUser._id,
+        propertyId: createdProperties[0]._id,
+        text: 'Hello Clara! Yes, it is. I have booked your private inspection for Saturday at 11:00 AM.',
+        isRead: true
+      });
+      await Message.create({
+        senderId: buyerUser._id,
+        receiverId: agentUser._id,
+        propertyId: createdProperties[0]._id,
+        text: 'Wonderful, thank you so much! See you then.',
+        isRead: false
+      });
+      console.log(`\n💬 Seeded 3 sample Chat Messages.`);
+    }
+
+    // Seed sample Reviews
+    if (createdAgencies.length > 0) {
+      await Review.create({
+        reviewerId: buyerUser._id,
+        targetType: 'Agency',
+        targetId: createdAgencies[0]._id,
+        rating: 5,
+        title: 'Outstanding Luxury Property Service!',
+        comment: 'Prestige Property Group handled our waterfront property purchase with absolute professionalism. Highly recommended!',
+        isVerifiedPurchase: true
+      });
+      await Review.create({
+        reviewerId: sellerUser._id,
+        targetType: 'Agent',
+        targetId: agentUser._id,
+        rating: 5,
+        title: 'Best Agent in Point Piper',
+        comment: 'Samantha Reed was attentive, knowledgeable, and helped us secure a great deal in record time.',
+        isVerifiedPurchase: true
+      });
+      console.log(`\n⭐ Seeded 2 sample Reviews.`);
+    }
+
+    // Seed sample Contact Requests
+    if (createdProperties.length > 0) {
+      await ContactRequest.create({
+        buyerName: buyerUser.name,
+        buyerEmail: buyerUser.email,
+        buyerId: buyerUser._id,
+        agentId: agentUser._id,
+        agentName: agentUser.name,
+        propertyId: createdProperties[0]._id,
+        propertyTitle: createdProperties[0].title,
+        buyerMessage: 'I am interested in getting a expert consultation regarding financing for this waterfront villa.',
+        status: 'pending',
+        isRead: false
+      });
+      console.log(`\n📞 Seeded 1 sample Contact Request.`);
+    }
+
     // Seed Blogs
     await Blog.insertMany(sampleBlogs);
     console.log(`\n📰 Seeded ${sampleBlogs.length} Blog articles.`);
@@ -130,20 +238,24 @@ const seedDB = async () => {
       userId: adminUser._id,
       userName: adminUser.name,
       action: 'SYSTEM_SEED',
-      details: `Database seeded successfully with ${createdUsers.length} users (all 6 roles), ${createdAgencies.length} agencies, ${createdProperties.length} properties, 2 bookings, 2 offers, and ${sampleBlogs.length} blog articles.`,
+      details: `Database seeded successfully with ${createdUsers.length} users (all 6 roles), ${createdAgencies.length} agencies, ${createdProperties.length} properties, 2 bookings, 2 offers, 3 transactions, 3 messages, 2 reviews, 1 contact request, and ${sampleBlogs.length} blog articles.`,
       level: 'info'
     });
 
     console.log('\n✅ ================================');
     console.log('   DATABASE SEEDING COMPLETE!');
     console.log('   Collections created in realestate_db:');
-    console.log('   - users       (6 records - all roles)');
-    console.log('   - agencies    (2 records)');
-    console.log(`   - properties  (${createdProperties.length} records)`);
-    console.log('   - bookings    (2 records)');
-    console.log('   - offers      (2 records)');
-    console.log(`   - blogs       (${sampleBlogs.length} records)`);
-    console.log('   - activitylogs (1 record)');
+    console.log('   - users           (6 records - all roles)');
+    console.log('   - agencies        (2 records)');
+    console.log(`   - properties      (${createdProperties.length} records)`);
+    console.log('   - bookings        (2 records)');
+    console.log('   - offers          (2 records)');
+    console.log('   - transactions    (3 records - payments & deposits)');
+    console.log('   - messages        (3 records - live chat)');
+    console.log('   - reviews         (2 records - ratings)');
+    console.log('   - contactrequests (1 record - expert inquiries)');
+    console.log(`   - blogs           (${sampleBlogs.length} records)`);
+    console.log('   - activitylogs    (1 record)');
     console.log('✅ ================================\n');
     console.log('   Demo Login Credentials:');
     console.log('   super_admin : admin@realestate.com      / password123');
