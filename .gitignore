@@ -1,0 +1,24 @@
+# dependencies
+/node_modules
+/*/node_modules
+client/node_modules
+server/node_modules
+
+# build & logs
+/dist
+client/dist
+playwright-report
+test-results
+*.log
+
+# environment & secrets
+.env
+server/.env
+client/.env
+*.env.local
+
+# IDE & OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
