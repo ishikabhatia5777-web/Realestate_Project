@@ -1,17 +1,22 @@
 const mongoose = require('mongoose');
 const dns = require('dns');
+const autoSeedIfEmpty = require('../utils/autoSeed');
 
-// Use Google & Cloudflare DNS to resolve MongoDB Atlas SRV records
-// (Router DNS often fails to resolve MongoDB SRV records)
-dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
+// Try setting Google & Cloudflare DNS for SRV lookup if network allows
+try {
+  dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
+} catch (e) {
+  console.log('Using system DNS servers.');
+}
 
 const connectDB = async () => {
   try {
     // Disable command buffering up front so operations fail fast if DB is disconnected
     mongoose.set('bufferCommands', false);
 
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 3000,
+    const mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/realestate_db';
+    const conn = await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 10000,
       socketTimeoutMS: 45000,
     });
 
@@ -20,6 +25,9 @@ const connectDB = async () => {
 
     // Re-enable command buffering once successfully connected
     mongoose.set('bufferCommands', true);
+
+    // Auto-seed if database is empty
+    await autoSeedIfEmpty();
 
     mongoose.connection.on('disconnected', () => {
       console.warn('⚠️  MongoDB disconnected. Switching to offline mode...');
