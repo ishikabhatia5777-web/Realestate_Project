@@ -4,6 +4,9 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const { Server } = require('socket.io');
 
+// ✅ Load env vars FIRST before anything else reads them
+dotenv.config();
+
 const connectDB = require('./config/db');
 const errorHandler = require('./middlewares/errorHandler');
 
@@ -18,16 +21,46 @@ const aiRoutes = require('./routes/aiRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 
-dotenv.config();
-
 const app = express();
 const server = http.createServer(app);
 
-// Initialize Socket.io
+// ✅ Build allowed origins list from env — supports Vercel + localhost
+const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000';
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5173',
+  CLIENT_URL,
+  // Allow any vercel.app subdomain automatically
+  /https:\/\/.*\.vercel\.app$/,
+  // Allow any onrender.com subdomain
+  /https:\/\/.*\.onrender\.com$/,
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (server-to-server, curl, Postman)
+    if (!origin) return callback(null, true);
+    const allowed = allowedOrigins.some((o) =>
+      typeof o === 'string' ? o === origin : o.test(origin)
+    );
+    if (allowed) {
+      callback(null, true);
+    } else {
+      console.warn(`CORS blocked: ${origin}`);
+      callback(new Error(`Origin ${origin} not allowed by CORS`));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-test-mode'],
+};
+
+// ✅ Initialize Socket.io with dynamic CORS
 const io = new Server(server, {
   cors: {
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE']
+    origin: allowedOrigins,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
   }
 });
 
@@ -35,7 +68,8 @@ const io = new Server(server, {
 connectDB();
 
 // Express Middleware
-app.use(cors());
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Handle preflight for all routes
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
@@ -44,7 +78,9 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'online',
     timestamp: new Date(),
-    service: 'Real Estate Marketplace API Server'
+    service: 'Real Estate Marketplace API Server',
+    environment: process.env.NODE_ENV || 'development',
+    clientUrl: CLIENT_URL
   });
 });
 

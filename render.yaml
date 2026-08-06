@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: realestate-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5001
+      - key: MONGO_URI
+        sync: false   # Set this in Render Dashboard → don't commit to git
+      - key: JWT_SECRET
+        sync: false   # Set this in Render Dashboard
+      - key: JWT_EXPIRE
+        value: 30d
+      - key: CLIENT_URL
+        sync: false   # Set this to your Vercel URL in Render Dashboard
+      - key: STRIPE_SECRET_KEY
+        sync: false   # Set this in Render Dashboard
+      - key: GROQ_API_KEY
+        sync: false   # Set this in Render Dashboard
+      - key: GOOGLE_MAPS_API_KEY
+        sync: false
+      - key: NEWSDATA_API_KEY
+        sync: false
