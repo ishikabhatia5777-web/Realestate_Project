@@ -26,7 +26,8 @@ const RegisterPage = () => {
         navigate('/'); // Redirect to Homepage with Dashboard button shown in Navbar
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed');
+      const msg = err.response?.data?.message || err.message || 'Registration failed. Please try again.';
+      setError(msg);
     } finally {
       setLoading(false);
     }

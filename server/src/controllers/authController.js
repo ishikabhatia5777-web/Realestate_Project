@@ -85,9 +85,8 @@ const register = async (req, res, next) => {
       if (mongoose.connection.readyState !== 1) {
         throw new Error('Database is offline');
       }
-      const userExists = await User.findOne({ email });
       if (userExists) {
-        return res.status(400).json({ success: false, message: 'User with this email already exists' });
+        return res.status(400).json({ success: false, message: `An account with ${email} already exists. Please sign in or use a different email address.` });
       }
       user = await User.create({ name, email, password, role: role || 'buyer', phone: phone || '' });
     } catch (dbErr) {
