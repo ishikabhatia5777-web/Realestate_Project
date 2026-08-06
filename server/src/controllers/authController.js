@@ -133,15 +133,18 @@ const login = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Please provide email and password' });
     }
 
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanPassword = password.trim();
+
     let user = null;
     let passwordMatch = false;
 
     // 1. Try MongoDB first (if connected)
     if (mongoose.connection.readyState === 1) {
       try {
-        const dbUser = await User.findOne({ email: email.toLowerCase() }).select('+password');
+        const dbUser = await User.findOne({ email: cleanEmail }).select('+password');
         if (dbUser) {
-          const isMatch = await dbUser.matchPassword(password);
+          const isMatch = await dbUser.matchPassword(cleanPassword);
           if (isMatch) {
             user = dbUser;
             passwordMatch = true;
@@ -159,7 +162,7 @@ const login = async (req, res, next) => {
     if (!user) {
       console.log('User not found in MongoDB. Checking local file storage...');
       const localUsers = getLocalUsers();
-      const matchedUser = localUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+      const matchedUser = localUsers.find(u => u.email.toLowerCase() === cleanEmail);
 
       if (!matchedUser) {
         return res.status(401).json({ success: false, message: 'Invalid email or password' });
@@ -167,10 +170,10 @@ const login = async (req, res, next) => {
 
       // Verify password against stored bcrypt hash (or plain fallback)
       if (matchedUser.password && matchedUser.password.startsWith('$2')) {
-        passwordMatch = await bcrypt.compare(password, matchedUser.password);
+        passwordMatch = await bcrypt.compare(cleanPassword, matchedUser.password);
       } else {
         // Plaintext fallback (legacy mock users without hash)
-        passwordMatch = (password === matchedUser.password || password === 'password123');
+        passwordMatch = (cleanPassword === matchedUser.password || cleanPassword === 'password123');
       }
 
       if (!passwordMatch) {
