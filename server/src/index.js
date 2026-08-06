@@ -39,6 +39,21 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
+// Root endpoint welcome & status check
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: '🚀 AuraEstate API Server is Online & Running!',
+    status: 'online',
+    timestamp: new Date(),
+    endpoints: {
+      health: '/api/health',
+      properties: '/api/properties',
+      auth: '/api/auth'
+    }
+  });
+});
+
 // API Health check
 app.get('/api/health', (req, res) => {
   res.json({
