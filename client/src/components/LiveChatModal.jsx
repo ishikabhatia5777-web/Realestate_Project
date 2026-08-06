@@ -324,9 +324,11 @@ const LiveChatModal = ({ agent, property, isOpen, onClose }) => {
                       <span className={isMe ? 'text-slate-950 font-extrabold' : 'text-cyan-400 flex items-center space-x-1'}>
                         <span>{senderBadge}</span>
                       </span>
-                      <span className={isMe ? 'text-slate-900 font-semibold' : 'text-slate-400'}>
-                        {isMe ? buyerDisplayName : recipient.name}
-                      </span>
+                      {!isMe && (
+                        <span className="text-slate-400">
+                          {recipient.name}
+                        </span>
+                      )}
                     </div>
                     {renderFormattedContent(msg.text)}
                   </div>
