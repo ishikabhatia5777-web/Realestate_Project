@@ -48,7 +48,7 @@ const AIChatbot = ({ isOpen, onClose }) => {
     } catch (err) {
       setMessages(prev => [
         ...prev,
-        { sender: 'ai', text: "I'm having a momentary connectivity issue. Please try again in a few seconds!" }
+        { sender: 'ai', text: "Aura AI failed" }
       ]);
     } finally {
       setLoading(false);

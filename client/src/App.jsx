@@ -7,7 +7,6 @@ import { SocketProvider } from './context/SocketContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import AIChatbot from './components/AIChatbot';
-import { Bot } from 'lucide-react';
 
 import HomePage from './pages/HomePage';
 import PropertiesPage from './pages/PropertiesPage';
@@ -62,16 +61,6 @@ const AppLayout = ({ isAIChatOpen, setIsAIChatOpen }) => {
 
       {!isAuthPage && <Footer />}
 
-      {/* Floating AI Assistant Concierge Toggle Bubble */}
-      {!isAuthPage && !isAIChatOpen && (
-        <button
-          onClick={() => setIsAIChatOpen(true)}
-          className="fixed bottom-6 right-6 z-40 p-4 rounded-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold shadow-lg shadow-cyan-500/20 hover:scale-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center border border-cyan-400/40"
-          title="Chat with Aura AI"
-        >
-          <Bot className="w-6 h-6 animate-pulse" />
-        </button>
-      )}
 
       {/* Floating AI Assistant Concierge Drawer */}
       <AIChatbot isOpen={isAIChatOpen} onClose={() => setIsAIChatOpen(false)} />
