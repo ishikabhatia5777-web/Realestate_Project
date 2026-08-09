@@ -72,10 +72,10 @@ const Footer = () => {
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500">
           <p>© 2026 AuraEstates Platform. Production-Ready Enterprise Release.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <span className="hover:text-slate-400 cursor-pointer">Privacy Policy</span>
-            <span className="hover:text-slate-400 cursor-pointer">Terms of Service</span>
-            <span className="hover:text-slate-400 cursor-pointer">Security & Compliance</span>
-            <span className="hover:text-slate-400 cursor-pointer">Sitemap</span>
+            <Link to="/privacy" className="hover:text-amber-400 transition-colors">Privacy Policy</Link>
+            <Link to="/terms" className="hover:text-amber-400 transition-colors">Terms of Service</Link>
+            <Link to="/security" className="hover:text-amber-400 transition-colors">Security &amp; Compliance</Link>
+            <Link to="/sitemap" className="hover:text-amber-400 transition-colors">Sitemap</Link>
           </div>
         </div>
       </div>

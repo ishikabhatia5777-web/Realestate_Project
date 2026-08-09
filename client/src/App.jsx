@@ -16,6 +16,10 @@ import AgencyDetailPage from './pages/AgencyDetailPage';
 import BlogsPage from './pages/BlogsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import TermsOfServicePage from './pages/TermsOfServicePage';
+import SecurityPage from './pages/SecurityPage';
+import SitemapPage from './pages/SitemapPage';
 
 import WishlistPage from './pages/WishlistPage';
 
@@ -49,6 +53,10 @@ const AppLayout = ({ isAIChatOpen, setIsAIChatOpen }) => {
           <Route path="/wishlist" element={<WishlistPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/terms" element={<TermsOfServicePage />} />
+          <Route path="/security" element={<SecurityPage />} />
+          <Route path="/sitemap" element={<SitemapPage />} />
 
           {/* Dashboards */}
           <Route path="/dashboard/admin" element={<AdminDashboard />} />
