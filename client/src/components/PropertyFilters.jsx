@@ -170,18 +170,6 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
         </select>
       </div>
 
-      {/* Active filter summary */}
-      {(filters.listingType || filters.propertyType || filters.bedrooms || filters.search || filters.suburb || filters.minPrice || filters.maxPrice) && (
-        <div className="flex items-center justify-between pt-2 border-t border-slate-800">
-          <span className="text-[11px] text-amber-400 font-semibold">Filters active</span>
-          <button
-            onClick={onReset}
-            className="text-[11px] text-slate-400 hover:text-white underline underline-offset-2 transition-colors"
-          >
-            Clear all
-          </button>
-        </div>
-      )}
 
     </div>
   );
