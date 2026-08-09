@@ -213,13 +213,6 @@ const AuthPromptModal = ({ isOpen, onClose, message = 'Please sign in to continu
                   {!loading && <ArrowRight className="w-4 h-4" />}
                 </button>
               </form>
-
-              {/* Demo Credentials */}
-              {mode === 'login' && (
-                <div className="text-center">
-                  <p className="text-[10px] text-slate-500">Demo: any role — use password <span className="text-amber-400 font-bold">password123</span></p>
-                </div>
-              )}
             </div>
           </motion.div>
         </div>
