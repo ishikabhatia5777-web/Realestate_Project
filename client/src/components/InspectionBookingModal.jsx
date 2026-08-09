@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { X, Calendar, Clock, CheckCircle } from 'lucide-react';
 import { createBooking } from '../services/api';
 
+const today = new Date().toISOString().split('T')[0];
+
 const InspectionBookingModal = ({ property, isOpen, onClose }) => {
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState(today);
   const [selectedTime, setSelectedTime] = useState('11:00 AM');
   const [inspectionType, setInspectionType] = useState('In-Person');
   const [notes, setNotes] = useState('');
@@ -104,6 +106,7 @@ const InspectionBookingModal = ({ property, isOpen, onClose }) => {
               <input
                 type="date"
                 value={selectedDate}
+                min={today}
                 onChange={(e) => setSelectedDate(e.target.value)}
                 className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white focus:border-amber-500"
                 required

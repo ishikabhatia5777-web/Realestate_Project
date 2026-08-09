@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { fetchAdminMetrics, fetchAdminUsers, updateUserRole, fetchProperties, updatePropertyStatus, approveProperty, rejectProperty } from '../../services/api';
-import { ShieldCheck, Users, Building2, DollarSign, Activity, Check, X, FileText } from 'lucide-react';
+import { fetchAdminMetrics, fetchAdminUsers, updateUserRole, fetchProperties, updatePropertyStatus, approveProperty, rejectProperty, fetchBookings, updateBookingStatus } from '../../services/api';
+import { ShieldCheck, Users, Building2, DollarSign, Activity, Check, X, FileText, Calendar, Video, UserCheck } from 'lucide-react';
 
 const AdminDashboard = () => {
   const { user, loading: authLoading } = useAuth();
@@ -10,6 +10,7 @@ const AdminDashboard = () => {
   const [metrics, setMetrics] = useState(null);
   const [users, setUsers] = useState([]);
   const [pendingProperties, setPendingProperties] = useState([]);
+  const [bookings, setBookings] = useState([]);
   const [logs, setLogs] = useState([]);
   const [activeTab, setActiveTab] = useState('metrics');
   const [loading, setLoading] = useState(true);
@@ -30,10 +31,11 @@ const AdminDashboard = () => {
   const loadAdminData = async () => {
     setLoading(true);
     try {
-      const [mRes, uRes, pRes] = await Promise.all([
+      const [mRes, uRes, pRes, bRes] = await Promise.all([
         fetchAdminMetrics(),
         fetchAdminUsers(),
-        fetchProperties({ status: 'Pending Review' })
+        fetchProperties({ status: 'Pending Review' }),
+        fetchBookings()
       ]);
 
       if (mRes.data.success) {
@@ -42,6 +44,7 @@ const AdminDashboard = () => {
       }
       if (uRes.data.success) setUsers(uRes.data.users);
       if (pRes.data.success) setPendingProperties(pRes.data.properties);
+      if (bRes.data.success) setBookings(bRes.data.bookings || []);
     } catch (err) {
       console.error(err);
     } finally {
@@ -88,6 +91,17 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleBookingStatus = async (bookingId, status) => {
+    try {
+      const res = await updateBookingStatus(bookingId, status);
+      if (res.data.success) {
+        setBookings(prev => prev.map(b => b._id === bookingId ? { ...b, status } : b));
+      }
+    } catch (err) {
+      console.error('Booking status update error:', err);
+    }
+  };
+
   if (authLoading || !user || (user.role !== 'admin' && user.role !== 'super_admin')) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white">
@@ -110,7 +124,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Tab switcher */}
-        <div className="flex space-x-2 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-bold">
+        <div className="flex flex-wrap gap-2 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-bold">
           <button
             onClick={() => setActiveTab('metrics')}
             className={`px-4 py-2 rounded-lg transition-all ${activeTab === 'metrics' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
@@ -128,6 +142,12 @@ const AdminDashboard = () => {
             className={`px-4 py-2 rounded-lg transition-all ${activeTab === 'approvals' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
           >
             Pending Listings ({pendingProperties.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('inspections')}
+            className={`px-4 py-2 rounded-lg transition-all ${activeTab === 'inspections' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
+          >
+            Inspections ({bookings.length})
           </button>
         </div>
       </div>
@@ -339,6 +359,114 @@ const AdminDashboard = () => {
                 </div>
               </div>
             ))
+          )}
+        </div>
+      )}
+      {activeTab === 'inspections' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-base font-bold text-white">Inspection Bookings Management</h3>
+            <span className="text-xs text-slate-400">{bookings.length} total booking{bookings.length !== 1 ? 's' : ''}</span>
+          </div>
+
+          {bookings.length === 0 ? (
+            <div className="glass-panel p-12 rounded-2xl border border-slate-800 text-center space-y-3">
+              <Calendar className="w-10 h-10 text-slate-700 mx-auto stroke-[1.5]" />
+              <p className="text-xs text-slate-500">No inspection bookings have been submitted yet.</p>
+            </div>
+          ) : (
+            <div className="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-900 border-b border-slate-800">
+                    <tr>
+                      <th className="px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Property</th>
+                      <th className="px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Buyer</th>
+                      <th className="px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Type</th>
+                      <th className="px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Date</th>
+                      <th className="px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Time</th>
+                      <th className="px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Status</th>
+                      <th className="px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/60">
+                    {bookings.map((b) => {
+                      const statusColors = {
+                        Confirmed: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                        Pending: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+                        Cancelled: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+                        Completed: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+                      };
+                      const statusClass = statusColors[b.status] || statusColors.Pending;
+                      const propTitle = b.propertyId?.title || 'Unknown Property';
+                      const propSuburb = b.propertyId?.address?.suburb || '';
+                      const buyerName = b.userId?.name || 'Unknown Buyer';
+                      const buyerEmail = b.userId?.email || '';
+
+                      return (
+                        <tr key={b._id} className="hover:bg-slate-900/40 transition-colors">
+                          <td className="px-4 py-3.5">
+                            <p className="font-semibold text-white truncate max-w-[180px]">{propTitle}</p>
+                            {propSuburb && <p className="text-slate-500 text-[10px]">{propSuburb}</p>}
+                          </td>
+                          <td className="px-4 py-3.5">
+                            <p className="text-slate-200 font-semibold">{buyerName}</p>
+                            {buyerEmail && <p className="text-slate-500 text-[10px]">{buyerEmail}</p>}
+                          </td>
+                          <td className="px-4 py-3.5">
+                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold border ${
+                              b.type === 'Video Tour'
+                                ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20'
+                                : 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'
+                            }`}>
+                              {b.type === 'Video Tour' ? <Video className="w-3 h-3" /> : <UserCheck className="w-3 h-3" />}
+                              {b.type || 'In-Person'}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3.5 text-slate-300 whitespace-nowrap font-mono">
+                            {b.date ? new Date(b.date).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
+                          </td>
+                          <td className="px-4 py-3.5 text-slate-300 whitespace-nowrap">{b.timeSlot || '—'}</td>
+                          <td className="px-4 py-3.5">
+                            <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border whitespace-nowrap ${statusClass}`}>
+                              {b.status || 'Pending'}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3.5">
+                            <div className="flex gap-1.5">
+                              {b.status !== 'Confirmed' && b.status !== 'Completed' && (
+                                <button
+                                  onClick={() => handleBookingStatus(b._id, 'Confirmed')}
+                                  className="px-2.5 py-1 rounded-lg bg-emerald-500 text-slate-950 font-bold text-[10px] hover:bg-emerald-400 transition-colors whitespace-nowrap"
+                                >
+                                  ✓ Confirm
+                                </button>
+                              )}
+                              {b.status === 'Confirmed' && (
+                                <button
+                                  onClick={() => handleBookingStatus(b._id, 'Completed')}
+                                  className="px-2.5 py-1 rounded-lg bg-blue-500 text-white font-bold text-[10px] hover:bg-blue-400 transition-colors whitespace-nowrap"
+                                >
+                                  ✓ Complete
+                                </button>
+                              )}
+                              {b.status !== 'Cancelled' && b.status !== 'Completed' && (
+                                <button
+                                  onClick={() => handleBookingStatus(b._id, 'Cancelled')}
+                                  className="px-2.5 py-1 rounded-lg bg-slate-800 border border-rose-500/30 text-rose-400 font-bold text-[10px] hover:bg-rose-500/10 transition-colors whitespace-nowrap"
+                                >
+                                  Cancel
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           )}
         </div>
       )}
