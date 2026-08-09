@@ -62,7 +62,9 @@ const getProperties = async (req, res, next) => {
       radiusKm = 10
     } = req.query;
 
-    const query = {};
+    const query = {
+      'address.country': 'Australia'
+    };
 
     if (status) {
       query.status = status;
@@ -257,6 +259,10 @@ const createProperty = async (req, res, next) => {
 
     if (!req.body.address || !req.body.address.street) {
       return res.status(400).json({ success: false, message: 'Please provide street address' });
+    }
+
+    if (req.body.address.country && req.body.address.country.toLowerCase() !== 'australia') {
+      return res.status(400).json({ success: false, message: 'Only properties located in Australia are allowed on this platform.' });
     }
 
     const propertyData = { ...req.body };
