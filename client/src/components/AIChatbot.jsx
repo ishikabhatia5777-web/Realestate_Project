@@ -48,7 +48,10 @@ const AIChatbot = ({ isOpen, onClose }) => {
     } catch (err) {
       setMessages(prev => [
         ...prev,
-        { sender: 'ai', text: "Aura AI failed" }
+        {
+          sender: 'ai',
+          text: "I'm having trouble connecting right now. Please try again in a moment, or browse our [Explore All Properties](/properties) page directly."
+        }
       ]);
     } finally {
       setLoading(false);
@@ -164,7 +167,7 @@ const AIChatbot = ({ isOpen, onClose }) => {
         elements.push(
           <a
             key={match.index}
-            href={url}
+            href={rawUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="font-bold text-amber-400 underline hover:text-amber-300"

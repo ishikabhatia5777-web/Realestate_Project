@@ -1,4 +1,5 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { sampleProperties } = require('./seedData');
 
 // ─── Format property list into a readable context string for AI ───────────
 const buildPropertyContext = (properties) => {
@@ -95,9 +96,12 @@ Example Property Table:
         : 'https://api.openai.com/v1/chat/completions';
       
       const primaryModel = isGroq ? 'llama-3.3-70b-versatile' : 'gpt-4o-mini';
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
 
       const response = await fetch(endpoint, {
         method: 'POST',
+        signal: controller.signal,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${groqKey}`
@@ -112,14 +116,23 @@ Example Property Table:
           max_tokens: 650
         })
       });
+      clearTimeout(timeoutId);
 
       const data = await response.json();
+      // Fast-fail on invalid API key — go straight to keyword fallback
+      if (data.error?.code === 'invalid_api_key' || data.error?.type === 'invalid_request_error') {
+        console.warn('Groq API key is invalid — using keyword fallback engine.');
+        return fallbackKeywordChat(userQuery, propertyContext);
+      }
       if (data.choices && data.choices[0] && data.choices[0].message) {
         return data.choices[0].message.content;
       } else if (data.error && isGroq) {
         console.warn('Groq Primary Model Error, switching to fallback llama-3.1-8b-instant:', data.error.message || data.error.code);
+        const ctrl2 = new AbortController();
+        const tid2 = setTimeout(() => ctrl2.abort(), 10000);
         const fallbackRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
           method: 'POST',
+          signal: ctrl2.signal,
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${groqKey}`
@@ -134,6 +147,7 @@ Example Property Table:
             max_tokens: 650
           })
         });
+        clearTimeout(tid2);
         const fbData = await fallbackRes.json();
         if (fbData.choices && fbData.choices[0] && fbData.choices[0].message) {
           return fbData.choices[0].message.content;
@@ -186,7 +200,6 @@ const fallbackKeywordChat = (userQuery, properties = []) => {
   });
 
   if (matchedSuburbProps.length > 0) {
-    const { sampleProperties } = require('./seedData');
     const tableRows = matchedSuburbProps.slice(0, 6).map((p, index) => {
       const price = p.listing === 'Sale'
         ? `AUD $${p.price?.toLocaleString()}`
