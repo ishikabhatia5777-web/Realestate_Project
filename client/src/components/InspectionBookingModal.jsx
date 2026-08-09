@@ -3,18 +3,20 @@ import { X, Calendar, Clock, CheckCircle } from 'lucide-react';
 import { createBooking } from '../services/api';
 
 const InspectionBookingModal = ({ property, isOpen, onClose }) => {
-  const [selectedDate, setSelectedDate] = useState('2026-08-01');
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [selectedTime, setSelectedTime] = useState('11:00 AM');
   const [inspectionType, setInspectionType] = useState('In-Person');
   const [notes, setNotes] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   if (!isOpen || !property) return null;
 
   const handleBooking = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
     try {
       const res = await createBooking({
         propertyId: property._id,
@@ -26,9 +28,12 @@ const InspectionBookingModal = ({ property, isOpen, onClose }) => {
 
       if (res.data.success) {
         setSuccess(true);
+      } else {
+        setError(res.data.message || 'Failed to book inspection. Please try another slot.');
       }
     } catch (err) {
       console.error(err);
+      setError(err.response?.data?.message || 'Error occurred while scheduling your inspection. Make sure the date is not in the past.');
     } finally {
       setLoading(false);
     }
@@ -65,6 +70,12 @@ const InspectionBookingModal = ({ property, isOpen, onClose }) => {
               <h3 className="text-base font-bold text-white">Schedule Private Inspection</h3>
               <p className="text-xs text-slate-400 truncate">{property.title}</p>
             </div>
+
+            {error && (
+              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-semibold">
+                {error}
+              </div>
+            )}
 
             {/* Type selector */}
             <div className="space-y-1 text-xs">
