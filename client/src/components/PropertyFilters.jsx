@@ -148,7 +148,7 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
                   : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white hover:border-slate-600'
               }`}
             >
-              {num === '' ? 'Any' : `${num}+`}
+              {num === '' ? 'Any' : num === '5' ? '5+' : num}
             </button>
           ))}
         </div>
