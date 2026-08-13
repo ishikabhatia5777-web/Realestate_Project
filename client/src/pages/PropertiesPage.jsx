@@ -113,11 +113,11 @@ const PropertiesPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 glass-panel p-6 rounded-2xl border border-slate-800">
         <div>
           <h1 className="text-2xl font-extrabold text-white">Explore Luxury Properties</h1>
-          <p className="text-xs text-slate-400 mt-1 flex items-center gap-2">
-            {loading
-              ? <><Loader2 className="w-3 h-3 animate-spin inline" /> Searching...</>
-              : `Showing ${properties.length} of ${total} properties`}
-          </p>
+          {loading && (
+            <p className="text-xs text-slate-400 mt-1 flex items-center gap-2">
+              <Loader2 className="w-3 h-3 animate-spin inline" /> Searching...
+            </p>
+          )}
         </div>
 
         {/* View Mode Switchers */}
