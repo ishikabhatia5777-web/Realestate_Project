@@ -4,7 +4,7 @@ import PropertyCard from '../components/PropertyCard';
 import PropertyMap from '../components/PropertyMap';
 import PropertyFilters from '../components/PropertyFilters';
 import { fetchProperties } from '../services/api';
-import { Map, Grid, Search, Loader2 } from 'lucide-react';
+import { Map, Grid, Search, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const PropertiesPage = () => {
   const [searchParams] = useSearchParams();
@@ -46,7 +46,7 @@ const PropertiesPage = () => {
   const doFetch = useCallback(async (activeFilters, activePage) => {
     setLoading(true);
     try {
-      const params = { page: activePage, limit: 200 };
+      const params = { page: activePage, limit: 9 };
       if (activeFilters.search)       params.search       = activeFilters.search;
       if (activeFilters.suburb)       params.suburb       = activeFilters.suburb;
       if (activeFilters.listingType)  params.listingType  = activeFilters.listingType;
@@ -231,21 +231,29 @@ const PropertiesPage = () => {
 
           {/* Pagination */}
           {!loading && totalPages > 1 && (
-            <div className="flex items-center justify-between pt-4 border-t border-slate-800">
+            <div className="flex items-center justify-between pt-6 border-t border-slate-800/60 mt-4">
               <button
                 disabled={page <= 1}
                 onClick={() => setPage(p => p - 1)}
-                className="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-slate-300 disabled:opacity-40 hover:border-amber-500/50 transition-colors"
+                className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs font-extrabold text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-800 hover:border-amber-500/50 hover:text-white transition-all"
               >
-                ← Previous
+                <ChevronLeft className="w-4 h-4" />
+                <span>Previous</span>
               </button>
-              <span className="text-xs font-bold text-slate-400">Page {page} of {totalPages}</span>
+              
+              <div className="flex items-center space-x-1">
+                <span className="text-xs font-bold text-slate-400">Page</span>
+                <span className="text-xs font-extrabold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">{page}</span>
+                <span className="text-xs font-bold text-slate-400">of {totalPages}</span>
+              </div>
+
               <button
                 disabled={page >= totalPages}
                 onClick={() => setPage(p => p + 1)}
-                className="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-slate-300 disabled:opacity-40 hover:border-amber-500/50 transition-colors"
+                className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs font-extrabold text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-800 hover:border-amber-500/50 hover:text-white transition-all"
               >
-                Next →
+                <span>Next</span>
+                <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           )}
