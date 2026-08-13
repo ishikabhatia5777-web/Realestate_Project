@@ -107,6 +107,7 @@ const AgentDashboard = () => {
 
   const handlePropertyAdded = (newProperty) => {
     setProperties((prev) => [newProperty, ...prev]);
+    window.alert('Success! Your property has been successfully created and published.');
   };
 
   const handleDeleteProperty = async (id) => {
