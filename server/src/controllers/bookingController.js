@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Booking = require('../models/Booking');
 const Property = require('../models/Property');
+const { sendInspectionRequestAlert } = require('../services/emailService');
 
 // @desc    Book property inspection
 // @route   POST /api/bookings
@@ -25,7 +26,7 @@ const createBooking = async (req, res, next) => {
       if (mongoose.connection.readyState !== 1) {
         throw new Error('Database offline');
       }
-      const property = await Property.findById(propertyId);
+      const property = await Property.findById(propertyId).populate('agentId ownerId');
       if (!property) {
         return res.status(404).json({ success: false, message: 'Property not found' });
       }
@@ -50,6 +51,51 @@ const createBooking = async (req, res, next) => {
         notes: notes || '',
         status: 'Pending'
       };
+    }
+    if (booking && booking.propertyId) {
+      try {
+        const prop = await Property.findById(booking.propertyId).populate('agentId ownerId');
+        if (prop) {
+          const recipient = prop.agentId || prop.ownerId;
+          if (recipient && recipient.email) {
+            sendInspectionRequestAlert({
+              toEmail: recipient.email,
+              toName: recipient.name,
+              buyerName: req.user.name,
+              buyerEmail: req.user.email,
+              buyerPhone: req.user.phone,
+              propertyTitle: prop.title,
+              propertyId: prop._id,
+              date,
+              timeSlot,
+              type,
+              notes
+            }).catch(err => console.error('Failed to send inspection alert:', err.message));
+          }
+
+          // Also send to all admins
+          const admins = await mongoose.model('User').find({ role: { $in: ['admin', 'super_admin'] } });
+          for (const admin of admins) {
+            if (admin.email && admin.email !== (recipient?.email)) {
+              sendInspectionRequestAlert({
+                toEmail: admin.email,
+                toName: admin.name,
+                buyerName: req.user.name,
+                buyerEmail: req.user.email,
+                buyerPhone: req.user.phone,
+                propertyTitle: prop.title,
+                propertyId: prop._id,
+                date,
+                timeSlot,
+                type,
+                notes
+              }).catch(err => console.error('Failed to send admin inspection alert:', err.message));
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Error looking up property for inspection email:', err.message);
+      }
     }
 
     res.status(201).json({ success: true, booking });
