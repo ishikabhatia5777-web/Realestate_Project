@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Transaction = require('../models/Transaction');
 const Property = require('../models/Property');
 const Stripe = require('stripe');
+const { sendReservationAlert, sendReservationConfirmation } = require('../services/emailService');
 
 // Mock memory store for offline mode fallback
 const mockTransactions = [
@@ -101,7 +102,65 @@ const processPayment = async (req, res, next) => {
         stripePaymentIntentId: intentId,
         createdAt: new Date()
       };
-      mockTransactions.unshift(transaction);
+       mockTransactions.unshift(transaction);
+    }
+
+    if (packageType === 'Holding Deposit') {
+      try {
+        const prop = await Property.findById(propertyId).populate('agentId ownerId');
+        if (prop) {
+          const recipient = prop.agentId || prop.ownerId;
+          
+          if (req.user && req.user.email) {
+            sendReservationConfirmation({
+              toEmail: req.user.email,
+              toName: req.user.name,
+              propertyTitle: prop.title,
+              propertyId: prop._id,
+              amount: Number(amount),
+              packageType,
+              paymentMethod,
+              transactionId: intentId
+            }).catch(err => console.error('Error sending buyer reservation confirmation:', err.message));
+          }
+
+          if (recipient && recipient.email) {
+            sendReservationAlert({
+              toEmail: recipient.email,
+              toName: recipient.name,
+              buyerName: req.user.name,
+              buyerEmail: req.user.email,
+              buyerPhone: req.user.phone,
+              propertyTitle: prop.title,
+              propertyId: prop._id,
+              amount: Number(amount),
+              packageType,
+              paymentMethod
+            }).catch(err => console.error('Error sending agent reservation alert:', err.message));
+          }
+
+          // Send to all admins
+          const admins = await mongoose.model('User').find({ role: { $in: ['admin', 'super_admin'] } });
+          for (const admin of admins) {
+            if (admin.email && admin.email !== (recipient?.email)) {
+              sendReservationAlert({
+                toEmail: admin.email,
+                toName: admin.name,
+                buyerName: req.user.name,
+                buyerEmail: req.user.email,
+                buyerPhone: req.user.phone,
+                propertyTitle: prop.title,
+                propertyId: prop._id,
+                amount: Number(amount),
+                packageType,
+                paymentMethod
+              }).catch(err => console.error('Error sending admin reservation alert:', err.message));
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Error looking up property for reservation emails:', err.message);
+      }
     }
 
     res.json({

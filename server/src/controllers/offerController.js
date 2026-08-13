@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const Offer = require('../models/Offer');
 const Property = require('../models/Property');
-const { sendNewOfferEmail } = require('../services/emailService');
+const User = require('../models/User');
+const { sendOfferRequestAlert, sendOfferStatusUpdate } = require('../services/emailService');
 
 // @desc    Submit buying/renting offer
 // @route   POST /api/offers
@@ -14,21 +15,20 @@ const createOffer = async (req, res, next) => {
 
     let offer;
 
+    let propertyTitle = 'Luxury Property';
     try {
       if (mongoose.connection.readyState !== 1) {
         throw new Error('Database offline');
       }
-      const property = await Property.findById(propertyId)
-        .populate('agentId', 'name email')
-        .populate('ownerId', 'name email');
-      if (!property) {
-        return res.status(404).json({ success: false, message: 'Property not found' });
+      const property = await Property.findById(propertyId);
+      if (property) {
+        propertyTitle = property.title || propertyTitle;
       }
 
       offer = await Offer.create({
         propertyId,
         buyerId: req.user._id,
-        agentId: property.agentId || property.ownerId,
+        agentId: property?.agentId?._id || property?.ownerId?._id,
         offerAmount,
         depositAmount: depositAmount || 10000,
         conditions: conditions || 'Subject to building inspection'
@@ -45,29 +45,21 @@ const createOffer = async (req, res, next) => {
       };
     }
 
-    // Try to send email to agent/owner
-    try {
-      const propertyForEmail = await Property.findById(propertyId)
-        .populate('agentId', 'name email')
-        .populate('ownerId', 'name email');
-        
-      if (propertyForEmail) {
-        const recipient = propertyForEmail.agentId || propertyForEmail.ownerId;
-        if (recipient && recipient.email) {
-          await sendNewOfferEmail({
-            toEmail: recipient.email,
-            toName: recipient.name || 'Agent',
-            buyerName: req.user.name || 'A Buyer',
-            propertyTitle: propertyForEmail.title,
-            offerAmount,
-            conditions: conditions || 'Subject to building inspection',
-            propertyId
-          });
-        }
-      }
-    } catch (emailErr) {
-      console.error('Failed to send offer email:', emailErr.message);
-    }
+    // Send Email notification directly to Admin (ishbhatia484@gmail.com & ishikabhatia5777@gmail.com)
+    const adminEmail = `${process.env.GMAIL_USER || 'ishbhatia484@gmail.com'}, ishikabhatia5777@gmail.com`;
+    console.log(`📧 [OFFER] Sending offer email to ${adminEmail} for property: ${propertyTitle}`);
+    sendOfferRequestAlert({
+      toEmail: adminEmail,
+      toName: 'Admin',
+      buyerName: req.user.name || 'Buyer',
+      buyerEmail: req.user.email || 'buyer@example.com',
+      buyerPhone: req.user.phone || '',
+      propertyTitle,
+      propertyId,
+      offerAmount,
+      depositAmount: depositAmount || 10000,
+      conditions: conditions || 'Subject to building inspection'
+    }).then(() => console.log('✅ Offer email sent!')).catch(err => console.error('❌ Offer email error:', err.message));
 
     res.status(201).json({ success: true, offer });
   } catch (error) {
@@ -126,23 +118,8 @@ const getOffers = async (req, res, next) => {
           .sort({ createdAt: -1 });
       }
     } catch (dbErr) {
-      console.log('Database error/offline. Serving mock offers.');
-      offers = [
-        {
-          _id: '507f1f77bcf86cd799439400',
-          propertyId: {
-            title: 'Sky Penthouse at Crown Towers Barangaroo',
-            price: 12800000,
-            address: { street: '100 Barangaroo Ave', suburb: 'Barangaroo' },
-            images: ['https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=400']
-          },
-          buyerId: { name: 'Clara Bennett', email: 'buyer@gmail.com', phone: '+61 444 555 666' },
-          offerAmount: 12800000,
-          depositAmount: 20000,
-          conditions: 'Subject to finance approval & pest inspection within 14 days',
-          status: 'Pending'
-        }
-      ];
+      console.log('Database error/offline. Serving empty offers.');
+      offers = [];
     }
 
     res.json({ success: true, count: offers.length, offers });
@@ -162,7 +139,14 @@ const respondOffer = async (req, res, next) => {
     if ((action === 'accept' || action === 'reject') && req.user.role === 'buyer') {
       return res.status(403).json({ success: false, message: 'Buyers are not authorized to accept or reject offers' });
     }
+
     let offer;
+    let buyerEmail = null;
+    let buyerName = null;
+    let propertyTitle = 'Property';
+    let finalOfferAmount = counterAmount || 0;
+    let finalStatus = action === 'accept' ? 'Accepted' : action === 'reject' ? 'Rejected' : 'Countered';
+
     try {
       if (mongoose.connection.readyState !== 1) {
         throw new Error('Database offline');
@@ -197,14 +181,72 @@ const respondOffer = async (req, res, next) => {
       }
 
       await offer.save();
+
+      // Populate buyer and property info for the email
+      const populatedOffer = await Offer.findById(offer._id)
+        .populate('propertyId', 'title')
+        .populate('buyerId', 'name email');
+
+      if (populatedOffer) {
+        buyerEmail = populatedOffer.buyerId?.email || null;
+        buyerName = populatedOffer.buyerId?.name || 'Buyer';
+        propertyTitle = populatedOffer.propertyId?.title || 'Property';
+        finalOfferAmount = populatedOffer.offerAmount || finalOfferAmount;
+        finalStatus = populatedOffer.status;
+      }
     } catch (dbErr) {
+      console.warn('⚠️ [OFFER RESPOND] DB error, using fallback:', dbErr.message);
       offer = {
         _id: req.params.id,
-        status: action === 'accept' ? 'Accepted' : action === 'reject' ? 'Rejected' : 'Countered',
-        offerAmount: counterAmount || 12800000
+        status: finalStatus,
+        offerAmount: finalOfferAmount
       };
+
+      // Attempt to look up buyer info even in fallback mode
+      try {
+        const offDoc = await Offer.findById(req.params.id);
+        if (offDoc?.buyerId) {
+          const buyer = await User.findById(offDoc.buyerId).select('name email');
+          if (buyer) {
+            buyerEmail = buyer.email;
+            buyerName = buyer.name || 'Buyer';
+          }
+          if (offDoc.propertyId) {
+            const prop = await Property.findById(offDoc.propertyId).select('title');
+            propertyTitle = prop?.title || 'Property';
+          }
+          finalOfferAmount = offDoc.offerAmount || finalOfferAmount;
+        }
+      } catch (_) { /* ignore nested error */ }
     }
-    res.json({ success: true, offer });
+
+    // ─── Send email to buyer (accept / reject / counter) ────────────────────
+    if (buyerEmail) {
+      const actionLabel = action === 'accept' ? '✅ Accept' : action === 'reject' ? '❌ Reject' : '🔄 Counter';
+      console.log(`📧 [OFFER ${actionLabel}] Sending status email to buyer: ${buyerEmail} — status: ${finalStatus}`);
+      sendOfferStatusUpdate({
+        toEmail: buyerEmail,
+        toName: buyerName,
+        propertyTitle,
+        offerAmount: finalOfferAmount,
+        status: finalStatus,
+        counterAmount,
+        note,
+        updatedBy: req.user.name || 'Agent/Seller'
+      })
+        .then(() => console.log(`✅ Offer status email sent to ${buyerEmail}`))
+        .catch(err => console.error('❌ Error sending offer status email:', err.message));
+    } else {
+      console.warn(`⚠️ [OFFER RESPOND] Could not find buyer email — skipping status email for offer ${req.params.id}`);
+    }
+
+    // ─── Return fully populated offer to frontend ────────────────────
+    const returnedOffer = await Offer.findById(req.params.id)
+      .populate('propertyId', 'title price address images listingType agentId ownerId')
+      .populate('buyerId', 'name email phone avatar')
+      .populate('agentId', 'name email phone');
+
+    res.json({ success: true, offer: returnedOffer || offer });
   } catch (error) {
     next(error);
   }
