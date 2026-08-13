@@ -28,11 +28,25 @@ const PropertiesPage = () => {
 
   const debounceRef = useRef(null);
 
+  // Sync state with URL if URL changes (e.g. clicking footer links while already on the page)
+  useEffect(() => {
+    setFilters({
+      search: searchParams.get('search') || '',
+      suburb: searchParams.get('suburb') || '',
+      listingType: searchParams.get('listingType') || '',
+      propertyType: searchParams.get('propertyType') || '',
+      minPrice: searchParams.get('minPrice') || '',
+      maxPrice: searchParams.get('maxPrice') || '',
+      bedrooms: searchParams.get('bedrooms') || '',
+      sortBy: searchParams.get('sortBy') || 'newest'
+    });
+  }, [searchParams]);
+
   // Core fetch function — always takes explicit params so no stale closure issues
   const doFetch = useCallback(async (activeFilters, activePage) => {
     setLoading(true);
     try {
-      const params = { page: activePage, limit: 9 };
+      const params = { page: activePage, limit: 200 };
       if (activeFilters.search)       params.search       = activeFilters.search;
       if (activeFilters.suburb)       params.suburb       = activeFilters.suburb;
       if (activeFilters.listingType)  params.listingType  = activeFilters.listingType;

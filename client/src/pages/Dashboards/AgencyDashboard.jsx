@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { fetchAgencyById, fetchProperties } from '../../services/api';
+import { registerUser } from '../../services/api';
 import { Building2, Users, FileText, Plus, CheckCircle } from 'lucide-react';
 
 const AgencyDashboard = () => {
@@ -9,9 +10,13 @@ const AgencyDashboard = () => {
   const navigate = useNavigate();
   const [agencyData, setAgencyData] = useState(null);
   const [agents, setAgents] = useState([
-    { _id: 'a1', name: 'Samantha Reed', email: 'samantha@prestigerealty.com.au', avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400' },
-    { _id: 'a2', name: 'Marcus Thorne', email: 'marcus@prestigerealty.com.au', avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400' }
+    { _id: '507f1f77bcf86cd799439002', name: 'Ishika (Agent)', email: 'ishikabhatia51@gmail.com', avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400' },
+    { _id: '507f1f77bcf86cd799439005', name: 'Upansh (Agent)', email: 'upansh769@gmail.com', avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400' },
+    { _id: '507f1f77bcf86cd799439006', name: 'Reet (Agent)', email: 'reet67711@gmail.com', avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400' },
+    { _id: '507f1f77bcf86cd799439007', name: 'Ruhi (Agent)', email: 'ruhibhatia0022@gmail.com', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400' },
+    { _id: '507f1f77bcf86cd799439008', name: 'Saghun (Agent)', email: 'saghun8699@gmail.com', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400' }
   ]);
+  const [selectedAgentId, setSelectedAgentId] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -50,21 +55,29 @@ const AgencyDashboard = () => {
     load();
   }, [user]);
 
-  const handleInviteAgent = () => {
+  const handleInviteAgent = async () => {
     const email = prompt("Enter agent's email address to invite:");
     if (!email) return;
     const name = prompt("Enter agent's full name:");
     if (!name) return;
 
-    const newAgent = {
-      _id: `invited_${Date.now()}`,
-      name,
-      email,
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400'
-    };
+    try {
+      const res = await registerUser({
+        name,
+        email,
+        password: 'password123',
+        role: 'agent',
+        agencyId: user.agencyId
+      });
 
-    setAgents(prev => [...prev, newAgent]);
-    alert(`Invitation successfully generated and dispatched to ${email}! The agent has been added to your roster.`);
+      if (res.data.success) {
+        const newAgent = res.data.user;
+        setAgents(prev => [...prev, newAgent]);
+        alert(`Invitation successfully generated and dispatched to ${email}! The agent has been added to your roster. Default password: password123`);
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to create agent');
+    }
   };
 
   if (authLoading || !user || user.role !== 'agency') {
@@ -85,18 +98,14 @@ const AgencyDashboard = () => {
         <h1 className="text-3xl font-extrabold text-white">Brokerage Performance Dashboard</h1>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-2">
           <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Assigned Agents</span>
-          <p className="text-3xl font-extrabold text-white">{agencyData?.agents?.length || 4}</p>
+          <p className="text-3xl font-extrabold text-white">{agencyData?.agents?.length || 5}</p>
         </div>
         <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-2">
           <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Active Listings</span>
           <p className="text-3xl font-extrabold text-white">{agencyData?.properties?.length || 12}</p>
-        </div>
-        <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-2">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Agency Rating</span>
-          <p className="text-3xl font-extrabold gold-gradient-text">⭐ {agencyData?.agency?.rating || 4.9}</p>
         </div>
       </div>
 
@@ -113,7 +122,11 @@ const AgencyDashboard = () => {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {agents.map((agent) => (
-            <div key={agent._id} className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex items-center space-x-3">
+            <div 
+              key={agent._id} 
+              onClick={() => setSelectedAgentId(selectedAgentId === agent._id ? null : agent._id)}
+              className={`p-4 rounded-xl border flex items-center space-x-3 cursor-pointer transition-colors ${selectedAgentId === agent._id ? 'bg-slate-800 border-amber-500 ring-1 ring-amber-500' : 'bg-slate-900 border-slate-800 hover:bg-slate-800 hover:border-slate-700'}`}
+            >
               <img src={agent.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400'} alt={agent.name} className="w-10 h-10 rounded-full object-cover border border-slate-800" />
               <div>
                 <h4 className="text-xs font-bold text-white">{agent.name}</h4>
@@ -123,6 +136,38 @@ const AgencyDashboard = () => {
           ))}
         </div>
       </div>
+
+      {/* Selected Agent Properties */}
+      {selectedAgentId && (
+        <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="flex items-center space-x-2 border-b border-slate-800 pb-4">
+            <FileText className="w-5 h-5 text-amber-500" />
+            <h3 className="text-base font-bold text-white">
+              Properties Managed by {agents.find(a => a._id === selectedAgentId)?.name}
+            </h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {agencyData?.properties?.filter(p => (p.agentId?._id || p.agentId) === selectedAgentId).length > 0 ? (
+              agencyData.properties.filter(p => (p.agentId?._id || p.agentId) === selectedAgentId).map((property) => (
+                <div key={property._id} className="p-4 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition-colors flex space-x-4 cursor-pointer" onClick={() => navigate(`/properties/${property._id}`)}>
+                  <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0">
+                    <img src={property.images?.[0] || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80'} alt={property.title} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex-1 flex flex-col justify-center">
+                    <h4 className="text-sm font-bold text-white line-clamp-1">{property.title}</h4>
+                    <p className="text-xs text-amber-400 font-semibold mt-1">${property.price?.toLocaleString()}</p>
+                    <p className="text-[10px] text-slate-400 mt-1 line-clamp-1">{property.address?.suburb}, {property.address?.state}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full py-8 text-center text-slate-500 text-xs">
+                No active properties are currently assigned to this agent.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
     </div>
   );

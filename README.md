@@ -64,8 +64,9 @@ realestate/
 ```bash
 cd server
 npm install
-npm run seed     # Populates MongoDB with realistic sample Australian properties, agencies, & users
-npm run dev      # Starts API server on http://localhost:5000
+npm run seed       # Populates MongoDB with standard sample Australian properties, agencies, & users
+npm run seed:large # Run this to generate ~600 realistic properties assigned to the 4 demo agents
+npm run dev        # Starts API server on http://localhost:5000
 ```
 
 ### 2. Frontend Setup

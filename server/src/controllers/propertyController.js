@@ -2,22 +2,19 @@ const mongoose = require('mongoose');
 const Property = require('../models/Property');
 const { analyzeListingFraud, calculateAIValuation } = require('../utils/aiEngine');
 const { sampleProperties } = require('../utils/seedData');
+const { sendPropertySubmissionEmail } = require('../services/emailService');
 
 const sellerUser = {
-  _id: '507f1f77bcf86cd799439004',
-  name: 'Marcus Sterling',
-  avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400',
-  email: 'seller@gmail.com',
-  phone: '+61 433 444 555',
+  _id: '507f1f77bcf86cd799439003',
+  name: 'Upvansh (Seller)',
+  email: 'upvansh1234@gmail.com',
   role: 'seller'
 };
 
 const agentUser = {
-  _id: '507f1f77bcf86cd799439003',
-  name: 'Samantha Reed',
-  avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400',
-  email: 'samantha@prestigerealty.com.au',
-  phone: '+61 422 333 444',
+  _id: '507f1f77bcf86cd799439002',
+  name: 'Ishika (Agent)',
+  email: 'ishikabhatia51@gmail.com',
   role: 'agent'
 };
 
@@ -59,10 +56,15 @@ const getProperties = async (req, res, next) => {
       limit = 12,
       lat,
       lng,
-      radiusKm = 10
+      radiusKm = 10,
+      agentId,
+      ownerId
     } = req.query;
 
     const query = {};
+
+    if (agentId) query.agentId = agentId;
+    if (ownerId) query.ownerId = ownerId;
 
     if (status) {
       query.status = { $regex: new RegExp(`^${status}$`, 'i') };
@@ -147,7 +149,7 @@ const getProperties = async (req, res, next) => {
         .sort(sortOptions)
         .skip(skip)
         .limit(limitNum);
-      
+
       total = await Property.countDocuments(query);
     } catch (dbErr) {
       console.log('Database offline. Serving mock properties fallback.');
@@ -326,6 +328,12 @@ const createProperty = async (req, res, next) => {
       };
       mockDbProperties.unshift(property);
     }
+
+    sendPropertySubmissionEmail({
+      toEmail: req.user.email,
+      toName: req.user.name,
+      propertyTitle: property.title
+    }).catch(e => console.error('Property submission email error:', e.message));
 
     res.status(201).json({
       success: true,

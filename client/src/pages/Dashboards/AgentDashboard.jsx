@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { fetchOffers, fetchBookings, fetchProperties, deleteProperty, respondOffer, fetchPaymentHistory, fetchExpertRequests, markExpertRequestAsRead } from '../../services/api';
+import { fetchOffers, fetchBookings, fetchProperties, deleteProperty, respondOffer, fetchPaymentHistory, fetchExpertRequests, markExpertRequestAsRead, sendChatMessage, updateBookingStatus } from '../../services/api';
 import InboxPanel from '../../components/InboxPanel';
-import { Calendar, DollarSign, MessageSquare, Check, X, ShieldCheck, Plus, Building2, Eye, Trash2, Tag, MapPin, CreditCard, Users, UserPlus, Bell, Phone, Mail, Home } from 'lucide-react';
+import { Calendar, DollarSign, MessageSquare, Check, X, ShieldCheck, Plus, Building2, Eye, Trash2, Tag, MapPin, CreditCard, Users, UserPlus, Bell, Phone, Mail, Home, User, Edit2 } from 'lucide-react';
 import AddPropertyModal from '../../components/AddPropertyModal';
 import PaymentModal from '../../components/PaymentModal';
+import EditProfileModal from '../../components/EditProfileModal';
 
 const AgentDashboard = () => {
   const { user, loading: authLoading } = useAuth();
@@ -17,9 +18,11 @@ const AgentDashboard = () => {
   const [activeTab, setActiveTab] = useState('properties');
   const [expertRequests, setExpertRequests] = useState([]);
   const [expertUnreadCount, setExpertUnreadCount] = useState(0);
+  const [activeChatRequest, setActiveChatRequest] = useState(null);
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [selectedPropertyId, setSelectedPropertyId] = useState(null);
   const [paymentPackage, setPaymentPackage] = useState('Agency Pro Subscription');
   const [paymentAmount, setPaymentAmount] = useState(499);
@@ -40,7 +43,7 @@ const AgentDashboard = () => {
   const loadData = async () => {
     try {
       const [pRes, oRes, bRes, txRes, erRes] = await Promise.all([
-        fetchProperties(),
+        fetchProperties({ agentId: user._id, limit: 500 }),
         fetchOffers(),
         fetchBookings(),
         fetchPaymentHistory(),
@@ -66,6 +69,33 @@ const AgentDashboard = () => {
       setExpertUnreadCount(prev => Math.max(0, prev - 1));
     } catch (err) {
       console.error('Error marking request read:', err);
+    }
+  };
+
+  const handleConnectToChat = async (req) => {
+    try {
+      const bId = req.buyerId?._id || req.buyerId;
+      const pId = req.propertyId?._id || req.propertyId;
+      
+      // Send the takeover greeting message
+      await sendChatMessage({
+        receiverId: bId,
+        propertyId: pId,
+        text: `Hello ${req.buyerName}, I'm ${user.name} and I have joined the chat to assist you with ${req.propertyTitle}. How can I help you today?`
+      });
+
+      // Mark request as read
+      if (!req.isRead) {
+        await handleMarkRequestRead(req._id);
+      }
+
+      // Switch to inbox panel and pass the target user
+      setActiveChatRequest({ buyerId: bId, propertyId: pId });
+      setActiveTab('messages');
+      loadData(); // refresh inbox data implicitly
+
+    } catch (err) {
+      console.error('Error connecting to chat:', err);
     }
   };
 
@@ -96,6 +126,17 @@ const AgentDashboard = () => {
       const res = await respondOffer(id, { action });
       if (res.data && res.data.success) {
         setOffers((prev) => prev.map((o) => (o._id === id ? res.data.offer : o)));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleBookingAction = async (id, status) => {
+    try {
+      const res = await updateBookingStatus(id, status);
+      if (res.data && res.data.success) {
+        setBookings((prev) => prev.map((b) => (b._id === id ? { ...b, status: res.data.booking.status } : b)));
       }
     } catch (err) {
       console.error(err);
@@ -136,13 +177,6 @@ const AgentDashboard = () => {
         </div>
         <div className="flex items-center space-x-3">
           <button
-            onClick={() => handleOpenPayment(null, 'Featured Listing', 99)}
-            className="px-4 py-3 rounded-2xl bg-slate-900 border border-slate-800 text-amber-400 font-extrabold text-xs flex items-center space-x-2 hover:border-amber-500/50 transition-all"
-          >
-            <CreditCard className="w-4 h-4" />
-            <span>Listing Package Checkout</span>
-          </button>
-          <button
             onClick={() => setIsAddModalOpen(true)}
             className="px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold text-xs flex items-center justify-center space-x-2 hover:from-amber-400 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/20"
           >
@@ -167,13 +201,7 @@ const AgentDashboard = () => {
           <MessageSquare className="w-3.5 h-3.5" />
           <span>Live Chat Inbox</span>
         </button>
-        <button
-          onClick={() => setActiveTab('team')}
-          className={`px-4 py-2.5 rounded-xl transition-all flex items-center space-x-1.5 ${activeTab === 'team' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
-        >
-          <Users className="w-3.5 h-3.5" />
-          <span>Team Roster</span>
-        </button>
+
         <button
           onClick={() => setActiveTab('offers')}
           className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'offers' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
@@ -204,15 +232,62 @@ const AgentDashboard = () => {
             </span>
           )}
         </button>
+        <button
+          onClick={() => setActiveTab('profile')}
+          className={`px-4 py-2.5 rounded-xl transition-all flex items-center space-x-1.5 ${activeTab === 'profile' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
+        >
+          <User className="w-3.5 h-3.5" />
+          <span>Profile Settings</span>
+        </button>
       </div>
+
+      {/* Tab Content: Profile */}
+      {activeTab === 'profile' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-base font-bold text-white">Agent Profile Settings</h3>
+            <button
+              onClick={() => setIsEditProfileOpen(true)}
+              className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs flex items-center space-x-1.5 hover:bg-amber-400 transition-all"
+            >
+              <Edit2 className="w-3.5 h-3.5" />
+              <span>Edit Profile</span>
+            </button>
+          </div>
+          
+          <div className="glass-panel p-6 rounded-2xl border border-slate-800 flex flex-col md:flex-row gap-6 items-start">
+            <div className="w-24 h-24 rounded-full bg-slate-800 overflow-hidden border-2 border-slate-700 shrink-0">
+              <img src={user.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400'} alt="Profile" className="w-full h-full object-cover" />
+            </div>
+            <div className="space-y-4 flex-1">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Full Name</p>
+                  <p className="text-sm font-bold text-white">{user.name}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Email Address</p>
+                  <p className="text-sm font-bold text-white">{user.email}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Phone Number</p>
+                  <p className="text-sm font-bold text-white">{user.phone || 'Not provided'}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Role</p>
+                  <span className="inline-block mt-0.5 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded uppercase">
+                    {user.role}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Tab Content: Listed Properties */}
       {activeTab === 'properties' && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-white">Active Agency Listings in Database</h3>
-            <span className="text-xs text-slate-400">Total: {properties.length} properties</span>
-          </div>
 
           {properties.length === 0 ? (
             <div className="glass-panel p-10 rounded-3xl border border-slate-800 text-center space-y-3">
@@ -353,9 +428,27 @@ const AgentDashboard = () => {
                   <p className="text-xs text-amber-400 font-semibold">{b.date} at {b.timeSlot} ({b.type})</p>
                   <p className="text-[11px] text-slate-400">Client: {b.userId?.name} • {b.userId?.phone}</p>
                 </div>
-                <span className="px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 font-bold text-xs">
-                  {b.status}
-                </span>
+                <div className="flex items-center space-x-2 mt-2 sm:mt-0">
+                  <span className="px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-xs font-bold text-slate-300">
+                    {b.status}
+                  </span>
+                  {b.status === 'Pending' && (
+                    <>
+                      <button
+                        onClick={() => handleBookingAction(b._id, 'Confirmed')}
+                        className="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold text-xs"
+                      >
+                        Accept
+                      </button>
+                      <button
+                        onClick={() => handleBookingAction(b._id, 'Rejected')}
+                        className="px-3 py-1.5 rounded-lg bg-rose-500 text-white font-bold text-xs"
+                      >
+                        Reject
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
             ))
           )}
@@ -367,12 +460,6 @@ const AgentDashboard = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-base font-bold text-white">Agency & Agent Payment Receipts</h3>
-            <button
-              onClick={() => handleOpenPayment(null, 'Featured Listing', 99)}
-              className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs"
-            >
-              Buy Listing Boost
-            </button>
           </div>
 
           {transactions.length === 0 ? (
@@ -425,72 +512,11 @@ const AgentDashboard = () => {
           <div className="flex items-center justify-between">
             <h3 className="text-base font-bold text-white">Buyer Direct Messages & Inquiries</h3>
           </div>
-          <InboxPanel />
+          <InboxPanel activeChatRequest={activeChatRequest} />
         </div>
       )}
 
-      {/* Tab Content: Agency Team Roster & Invite */}
-      {activeTab === 'team' && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-base font-bold text-white">Agency Core Team Roster</h3>
-              <p className="text-xs text-slate-400">View and manage team agents belonging to your agency.</p>
-            </div>
-            <button
-              onClick={() => {
-                const inviteEmail = prompt("Enter agent's email address to invite to this agency:");
-                if (!inviteEmail) return;
-                alert(`Invitation link generated and dispatched successfully to ${inviteEmail}!`);
-              }}
-              className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs flex items-center space-x-1.5 hover:bg-amber-400 transition-all shadow-md shadow-amber-500/10"
-            >
-              <UserPlus className="w-4 h-4" />
-              <span>Invite Team Agent</span>
-            </button>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-            {/* Main Agent */}
-            <div className="glass-panel p-5 rounded-2xl border border-slate-800 flex items-start space-x-4">
-              <img
-                src={user.avatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400'}
-                alt={user.name}
-                className="w-14 h-14 rounded-2xl object-cover border border-amber-500/20"
-              />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-bold text-white truncate">{user.name}</h4>
-                  <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[10px] uppercase font-bold">
-                    Direct Agent
-                  </span>
-                </div>
-                <p className="text-xs text-slate-400 truncate mt-0.5">{user.email}</p>
-                <p className="text-xs text-slate-500 mt-2">{user.phone || '+61 400 000 000'}</p>
-              </div>
-            </div>
-
-            {/* Simulated Team Member */}
-            <div className="glass-panel p-5 rounded-2xl border border-slate-800 flex items-start space-x-4 opacity-80 hover:opacity-100 transition-all">
-              <img
-                src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400"
-                alt="Julian Thorne"
-                className="w-14 h-14 rounded-2xl object-cover border border-slate-800"
-              />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-bold text-white truncate">Julian Thorne</h4>
-                  <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px] uppercase font-bold">
-                    Partner Broker
-                  </span>
-                </div>
-                <p className="text-xs text-slate-400 truncate mt-0.5">julian@prestigerealty.com.au</p>
-                <p className="text-xs text-slate-500 mt-2">+61 411 222 333</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Tab Content: Expert Connection Requests */}
       {activeTab === 'requests' && (
@@ -578,10 +604,10 @@ const AgentDashboard = () => {
                       )}
                       {!req.isRead && (
                         <button
-                          onClick={() => handleMarkRequestRead(req._id)}
+                          onClick={() => handleConnectToChat(req)}
                           className="px-3 py-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold hover:bg-emerald-500/30 transition-all flex items-center gap-1.5"
                         >
-                          <Check className="w-3 h-3" /> Mark Contacted
+                          <Check className="w-3 h-3" /> Approve & Connect
                         </button>
                       )}
                     </div>
@@ -608,6 +634,12 @@ const AgentDashboard = () => {
         defaultAmount={paymentAmount}
         propertyId={selectedPropertyId}
         onPaymentSuccess={handlePaymentSuccess}
+      />
+
+      {/* Edit Profile Modal */}
+      <EditProfileModal
+        isOpen={isEditProfileOpen}
+        onClose={() => setIsEditProfileOpen(false)}
       />
     </div>
   );

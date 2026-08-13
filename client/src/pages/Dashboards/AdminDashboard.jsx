@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { fetchAdminMetrics, fetchAdminUsers, updateUserRole, fetchProperties, updatePropertyStatus, approveProperty, rejectProperty } from '../../services/api';
+import { fetchAdminMetrics, fetchAdminUsers, updateUserRole, fetchProperties, updatePropertyStatus, approveProperty, rejectProperty, fetchAdminProperties } from '../../services/api';
 import { ShieldCheck, Users, Building2, DollarSign, Activity, Check, X, FileText } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -11,6 +11,8 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [pendingProperties, setPendingProperties] = useState([]);
   const [logs, setLogs] = useState([]);
+  const [adminProperties, setAdminProperties] = useState([]);
+  const [selectedAdminAgentId, setSelectedAdminAgentId] = useState(null);
   const [activeTab, setActiveTab] = useState('metrics');
   const [loading, setLoading] = useState(true);
 
@@ -30,10 +32,11 @@ const AdminDashboard = () => {
   const loadAdminData = async () => {
     setLoading(true);
     try {
-      const [mRes, uRes, pRes] = await Promise.all([
+      const [mRes, uRes, pRes, allPropRes] = await Promise.all([
         fetchAdminMetrics(),
         fetchAdminUsers(),
-        fetchProperties({ status: 'Pending Review' })
+        fetchProperties({ status: 'Pending Review' }),
+        fetchAdminProperties()
       ]);
 
       if (mRes.data.success) {
@@ -42,6 +45,7 @@ const AdminDashboard = () => {
       }
       if (uRes.data.success) setUsers(uRes.data.users);
       if (pRes.data.success) setPendingProperties(pRes.data.properties);
+      if (allPropRes.data.success) setAdminProperties(allPropRes.data.properties);
     } catch (err) {
       console.error(err);
     } finally {
@@ -105,8 +109,7 @@ const AdminDashboard = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
         <div>
-          <span className="text-xs font-bold text-amber-400 uppercase tracking-widest block">ADMINISTRATION PANEL</span>
-          <h1 className="text-3xl font-extrabold text-white">Super Admin Command Center</h1>
+          <h1 className="text-3xl font-extrabold text-white">Administrator Panel</h1>
         </div>
 
         {/* Tab switcher */}
@@ -123,36 +126,18 @@ const AdminDashboard = () => {
           >
             Users & RBAC ({users.length})
           </button>
+
           <button
-            onClick={() => setActiveTab('approvals')}
-            className={`px-4 py-2 rounded-lg transition-all ${activeTab === 'approvals' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
+            onClick={() => setActiveTab('agents')}
+            className={`px-4 py-2 rounded-lg transition-all ${activeTab === 'agents' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
           >
-            Pending Listings ({pendingProperties.length})
+            Agents ({users.filter(u => u.role === 'agent').length})
           </button>
         </div>
       </div>
 
       {activeTab === 'metrics' && metrics && (
         <div className="space-y-8">
-          {/* Top KPI Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-2">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Total Platform Users</span>
-              <p className="text-3xl font-extrabold text-white">{metrics.totalUsers}</p>
-            </div>
-            <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-2">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Total Properties</span>
-              <p className="text-3xl font-extrabold text-white">{metrics.totalProperties}</p>
-            </div>
-            <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-2">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Verified Agencies</span>
-              <p className="text-3xl font-extrabold text-white">{metrics.totalAgencies}</p>
-            </div>
-            <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-2">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Stripe Gross Revenue</span>
-              <p className="text-3xl font-extrabold gold-gradient-text">${metrics.totalRevenue?.toLocaleString() || '14,850'}</p>
-            </div>
-          </div>
 
           {/* Activity Logs — Table Format */}
           <div className="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
@@ -205,8 +190,8 @@ const AdminDashboard = () => {
                       if (action.includes('SEED') || action.includes('INIT')) {
                         badge = { label: '⚙ System Init', bg: 'bg-indigo-500/10', text: 'text-indigo-300', border: 'border-indigo-500/20' };
                         what = log.details;
-                      } else if (action.includes('LOGIN') || action.includes('AUTH')) {
-                        badge = { label: '🔐 Login / Auth', bg: 'bg-blue-500/10', text: 'text-blue-300', border: 'border-blue-500/20' };
+                      } else if (action.includes('LOGIN') || action.includes('LOGOUT') || action.includes('AUTH')) {
+                        badge = { label: '🔐 Login / Logout', bg: 'bg-blue-500/10', text: 'text-blue-300', border: 'border-blue-500/20' };
                         what = log.details;
                       } else if (action.includes('REGISTER') || action.includes('CREATE_USER')) {
                         badge = { label: '👤 New User', bg: 'bg-emerald-500/10', text: 'text-emerald-300', border: 'border-emerald-500/20' };
@@ -269,76 +254,118 @@ const AdminDashboard = () => {
       )}
 
       {activeTab === 'users' && (
-        <div className="glass-panel p-6 rounded-2xl border border-slate-800 overflow-x-auto space-y-4">
-          <h3 className="text-base font-bold text-white">Manage Platform Users & Access Control</h3>
-          <table className="w-full text-left text-xs">
-            <thead>
-              <tr className="border-b border-slate-800 text-slate-400 uppercase tracking-wider">
-                <th className="pb-3">User</th>
-                <th className="pb-3">Email</th>
-                <th className="pb-3">Current Role</th>
-                <th className="pb-3">Change Role</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/60">
-              {users.map((u) => (
-                <tr key={u._id} className="text-slate-300">
-                  <td className="py-3 font-semibold text-white">{u.name}</td>
-                  <td className="py-3 text-slate-400">{u.email}</td>
-                  <td className="py-3">
-                    <span className="px-2 py-1 rounded bg-amber-500/10 text-amber-400 font-bold uppercase tracking-wider text-[10px]">
-                      {u.role}
-                    </span>
-                  </td>
-                  <td className="py-3">
-                    <select
-                      value={u.role}
-                      onChange={(e) => handleRoleChange(u._id, e.target.value)}
-                      className="px-2 py-1 rounded bg-slate-900 border border-slate-800 text-xs text-white"
-                    >
-                      <option value="buyer">buyer</option>
-                      <option value="owner">owner</option>
-                      <option value="agent">agent</option>
-                      <option value="agency">agency</option>
-                      <option value="admin">admin</option>
-                      <option value="super_admin">super_admin</option>
-                    </select>
-                  </td>
+        <div className="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
+          {/* Header */}
+          <div className="px-6 py-5 border-b border-slate-800 bg-slate-900/70">
+            <h3 className="text-base font-extrabold text-white">Manage Platform Users & Access Control</h3>
+            <p className="text-[11px] text-slate-500 mt-1">Assign roles and verify platform participants.</p>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-900 border-b border-slate-800">
+                <tr>
+                  <th className="px-6 py-4 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">User</th>
+                  <th className="px-6 py-4 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Email</th>
+                  <th className="px-6 py-4 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Current Role</th>
+                  <th className="px-6 py-4 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest text-right">Change Role</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-800/50">
+                {users.map((u) => {
+                  let roleBadge = { bg: 'bg-slate-800', text: 'text-slate-300' };
+                  if (u.role === 'admin' || u.role === 'super_admin') roleBadge = { bg: 'bg-indigo-500/10', text: 'text-indigo-400' };
+                  if (u.role === 'agent' || u.role === 'agency') roleBadge = { bg: 'bg-amber-500/10', text: 'text-amber-400' };
+                  if (u.role === 'owner') roleBadge = { bg: 'bg-emerald-500/10', text: 'text-emerald-400' };
+                  if (u.role === 'buyer') roleBadge = { bg: 'bg-blue-500/10', text: 'text-blue-400' };
+
+                  return (
+                    <tr key={u._id} className="hover:bg-slate-900/50 transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center space-x-3">
+                          <img src={u.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=random`} alt={u.name} className="w-8 h-8 rounded-full border border-slate-700 object-cover" />
+                          <span className="font-bold text-white">{u.name}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-slate-400">{u.email}</td>
+                      <td className="px-6 py-4">
+                        <span className={`px-2.5 py-1 rounded border border-current opacity-80 ${roleBadge.bg} ${roleBadge.text} font-bold uppercase tracking-wider text-[10px]`}>
+                          {u.role}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <select
+                          value={u.role}
+                          onChange={(e) => handleRoleChange(u._id, e.target.value)}
+                          className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white hover:border-amber-500 transition-colors focus:outline-none focus:ring-1 focus:ring-amber-500 cursor-pointer w-32"
+                        >
+                          <option value="buyer">Buyer</option>
+                          <option value="owner">Owner</option>
+                          <option value="agent">Agent</option>
+                          <option value="agency">Agency</option>
+                          <option value="admin">Admin</option>
+                          <option value="super_admin">Super Admin</option>
+                        </select>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
-      {activeTab === 'approvals' && (
-        <div className="space-y-4">
-          <h3 className="text-base font-bold text-white">Pending Property Listings Queue</h3>
-          {pendingProperties.length === 0 ? (
-            <p className="text-xs text-slate-500 py-6">No listings waiting for admin review.</p>
-          ) : (
-            pendingProperties.map((p) => (
-              <div key={p._id} className="glass-panel p-5 rounded-2xl border border-slate-800 flex items-center justify-between">
-                <div>
-                  <h4 className="text-sm font-bold text-white">{p.title}</h4>
-                  <p className="text-xs text-slate-400">${p.price?.toLocaleString()} • {p.address?.suburb}</p>
+      {activeTab === 'agents' && (
+        <div className="space-y-8">
+          <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
+            <h3 className="text-base font-bold text-white">Platform Agents & Licensees</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {users.filter(u => u.role === 'agent').map((agent) => (
+                <div 
+                  key={agent._id} 
+                  onClick={() => setSelectedAdminAgentId(selectedAdminAgentId === agent._id ? null : agent._id)}
+                  className={`p-4 rounded-xl border flex items-center space-x-3 cursor-pointer transition-colors ${selectedAdminAgentId === agent._id ? 'bg-slate-800 border-amber-500 ring-1 ring-amber-500' : 'bg-slate-900 border-slate-800 hover:bg-slate-800 hover:border-slate-700'}`}
+                >
+                  <img src={agent.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400'} alt={agent.name} className="w-10 h-10 rounded-full object-cover border border-slate-800" />
+                  <div>
+                    <h4 className="text-xs font-bold text-white">{agent.name}</h4>
+                    <p className="text-[10px] text-slate-400">{agent.email}</p>
+                  </div>
                 </div>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => handleListingApproval(p._id, 'Published')}
-                    className="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold text-xs"
-                  >
-                    Approve & Publish
-                  </button>
-                  <button
-                    onClick={() => handleListingApproval(p._id, 'Rejected')}
-                    className="px-3 py-1.5 rounded-lg bg-rose-500 text-white font-bold text-xs"
-                  >
-                    Reject
-                  </button>
-                </div>
+              ))}
+            </div>
+          </div>
+
+          {selectedAdminAgentId && (
+            <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="flex items-center space-x-2 border-b border-slate-800 pb-4">
+                <FileText className="w-5 h-5 text-amber-500" />
+                <h3 className="text-base font-bold text-white">
+                  Properties Managed by {users.find(u => u._id === selectedAdminAgentId)?.name}
+                </h3>
               </div>
-            ))
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {adminProperties.filter(p => (p.agentId?._id || p.agentId) === selectedAdminAgentId).length > 0 ? (
+                  adminProperties.filter(p => (p.agentId?._id || p.agentId) === selectedAdminAgentId).map((property) => (
+                    <div key={property._id} className="p-4 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition-colors flex space-x-4 cursor-pointer" onClick={() => navigate(`/properties/${property._id}`)}>
+                      <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0">
+                        <img src={property.images?.[0] || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80'} alt={property.title} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex-1 flex flex-col justify-center">
+                        <h4 className="text-sm font-bold text-white line-clamp-1">{property.title}</h4>
+                        <p className="text-xs text-amber-400 font-semibold mt-1">${property.price?.toLocaleString()}</p>
+                        <p className="text-[10px] text-slate-400 mt-1 line-clamp-1">{property.address?.suburb}, {property.address?.state}</p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-full py-8 text-center text-slate-500 text-xs">
+                    No active properties are currently assigned to this agent.
+                  </div>
+                )}
+              </div>
+            </div>
           )}
         </div>
       )}

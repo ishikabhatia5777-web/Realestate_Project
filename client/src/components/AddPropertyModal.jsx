@@ -210,8 +210,8 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5 text-xs">
               <label className="font-bold text-slate-300">Listing Purpose</label>
-              <div className="grid grid-cols-3 gap-2">
-                {['Sale', 'Rent', 'Lease'].map((type) => (
+              <div className="grid grid-cols-2 gap-2">
+                {['Sale', 'Rent'].map((type) => (
                   <button
                     key={type}
                     type="button"

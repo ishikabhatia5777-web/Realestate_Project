@@ -17,6 +17,8 @@ const {
 const { protect } = require('../middlewares/auth');
 const { authorize } = require('../middlewares/rbac');
 
+router.get('/blogs', getBlogs);
+
 router.use(protect);
 router.use(authorize('super_admin', 'admin'));
 
@@ -33,7 +35,6 @@ router.patch('/properties/:id/reject', rejectProperty);
 router.get('/transactions', getAdminTransactions);
 router.get('/logs', getActivityLogs);
 
-router.get('/blogs', getBlogs);
 router.post('/blogs', createBlog);
 
 module.exports = router;

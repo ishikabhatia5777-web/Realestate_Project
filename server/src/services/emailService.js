@@ -156,9 +156,47 @@ const sendExpertConnectionAlert = async ({ agentEmail, agentName, buyerName, buy
   });
 };
 
+// ─── New Offer Alert ────────────────────────────────────────────────────────
+const sendNewOfferEmail = async ({ toEmail, toName, buyerName, propertyTitle, offerAmount, conditions, propertyId }) => {
+  const propertyUrl = `${process.env.CLIENT_URL || 'http://localhost:3000'}/properties/${propertyId}`;
+
+  await sendEmail({
+    to: toEmail,
+    subject: `💰 New Offer Received — "${propertyTitle}"`,
+    html: `
+      <div style="font-family:sans-serif;max-width:600px;margin:auto;background:#0f172a;color:#e2e8f0;border-radius:12px;padding:32px;">
+        <h2 style="color:#10b981;margin-bottom:8px;">AuraEstates</h2>
+        <p style="color:#94a3b8;font-size:13px;">Luxury Real Estate Platform</p>
+        <hr style="border-color:#1e293b;margin:20px 0;" />
+        <p>Hi <strong>${toName}</strong>,</p>
+        <p style="background:#064e3b;border-left:4px solid #10b981;border-radius:8px;padding:16px;">
+          🎉 You have received a new offer from <strong>${buyerName}</strong> for <strong>"${propertyTitle}"</strong>!
+        </p>
+        
+        <table style="width:100%;border-collapse:collapse;margin:20px 0;">
+          <tr>
+            <td style="padding:10px 0;color:#94a3b8;border-bottom:1px solid #1e293b;">Offer Amount</td>
+            <td style="padding:10px 0;font-weight:bold;color:#f1f5f9;border-bottom:1px solid #1e293b;">$${offerAmount.toLocaleString()}</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 0;color:#94a3b8;border-bottom:1px solid #1e293b;">Conditions</td>
+            <td style="padding:10px 0;font-style:italic;color:#e2e8f0;border-bottom:1px solid #1e293b;">${conditions || 'None specified'}</td>
+          </tr>
+        </table>
+        
+        <p>Please log in to your dashboard to review and respond to this offer.</p>
+        <a href="${propertyUrl}" style="display:inline-block;margin-top:16px;background:#10b981;color:#ffffff;padding:12px 24px;border-radius:8px;font-weight:bold;text-decoration:none;">View Property Dashboard →</a>
+        <hr style="border-color:#1e293b;margin:20px 0;" />
+        <p style="font-size:12px;color:#64748b;">AuraEstates — Luxury Real Estate Platform</p>
+      </div>
+    `
+  });
+};
+
 module.exports = {
   sendPropertySubmissionEmail,
   sendPropertyApprovalEmail,
   sendPropertyRejectionEmail,
-  sendExpertConnectionAlert
+  sendExpertConnectionAlert,
+  sendNewOfferEmail
 };

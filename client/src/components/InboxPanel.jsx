@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import { MessageSquare, Send, User, Building2, CheckCheck, Clock, RefreshCw } from 'lucide-react';
 
-const InboxPanel = () => {
+const InboxPanel = ({ activeChatRequest }) => {
   const { user } = useAuth();
   const { socket } = useSocket();
   const [threads, setThreads] = useState([]);
@@ -50,6 +50,16 @@ const InboxPanel = () => {
 
     return () => clearInterval(interval);
   }, [socket]);
+
+  useEffect(() => {
+    if (activeChatRequest && threads.length > 0) {
+      const targetThreadId = `${activeChatRequest.buyerId}_${activeChatRequest.propertyId || 'general'}`;
+      const targetThread = threads.find(t => t.threadId === targetThreadId || String(t.otherUser?._id) === String(activeChatRequest.buyerId));
+      if (targetThread && activeThread?.threadId !== targetThread.threadId) {
+        handleSelectThread(targetThread);
+      }
+    }
+  }, [activeChatRequest, threads]);
 
   const handleSelectThread = async (thread) => {
     setActiveThread(thread);

@@ -36,15 +36,12 @@ const SellerDashboard = () => {
   const loadData = async () => {
     try {
       const [pRes, txRes, oRes] = await Promise.all([
-        fetchProperties(),
+        fetchProperties({ ownerId: user?._id }),
         fetchPaymentHistory(),
         fetchOffers()
       ]);
       if (pRes.data && pRes.data.success) {
-        const userProps = pRes.data.properties.filter(
-          (p) => p.ownerId === user?._id || p.ownerId?._id === user?._id
-        );
-        setProperties(userProps.length > 0 ? userProps : pRes.data.properties);
+        setProperties(pRes.data.properties);
       }
       if (txRes.data && txRes.data.success) {
         setTransactions(txRes.data.transactions);
@@ -123,13 +120,6 @@ const SellerDashboard = () => {
           <h1 className="text-3xl font-extrabold text-white">Direct Property Seller Dashboard</h1>
         </div>
         <div className="flex items-center space-x-3">
-          <button
-            onClick={() => handleOpenPayment(null, 'Featured Listing', 99)}
-            className="px-4 py-3 rounded-2xl bg-slate-900 border border-slate-800 text-amber-400 font-extrabold text-xs flex items-center space-x-2 hover:border-amber-500/50 transition-all"
-          >
-            <CreditCard className="w-4 h-4" />
-            <span>Buy Listing Boost</span>
-          </button>
           <button
             onClick={() => setIsAddModalOpen(true)}
             className="px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold text-xs flex items-center justify-center space-x-2 hover:from-amber-400 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/20"

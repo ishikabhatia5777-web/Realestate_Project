@@ -15,6 +15,7 @@ const LiveChatModal = ({ agent, property, isOpen, onClose }) => {
   const [agentJoined, setAgentJoined] = useState(false);
   const [showPendingWaitMsg, setShowPendingWaitMsg] = useState(false);
   const connectionTimeoutRef = useRef(null);
+  const agentTimeoutRef = useRef(null);
   const messagesEndRef = useRef(null);
 
   const recipient = agent || property?.agentId || property?.ownerId;
@@ -56,12 +57,16 @@ const LiveChatModal = ({ agent, property, isOpen, onClose }) => {
 
         if (isRelevant) {
           // If the agent is sending (msgSender === receiverId), mark as human-joined
-          if (String(msgSender) === String(receiverId)) {
+          // BUT ensure it's not just the AI auto-reply echoing back
+          if (String(msgSender) === String(receiverId) && !msg.isAiReply) {
             setAgentJoined(true);
             setIsTyping(false);
             setShowPendingWaitMsg(false);
             if (connectionTimeoutRef.current) {
               clearTimeout(connectionTimeoutRef.current);
+            }
+            if (agentTimeoutRef.current) {
+              clearTimeout(agentTimeoutRef.current);
             }
           }
           setMessages((prev) => {
@@ -76,6 +81,9 @@ const LiveChatModal = ({ agent, property, isOpen, onClose }) => {
         socket.off('receive_message', handleReceive);
         if (connectionTimeoutRef.current) {
           clearTimeout(connectionTimeoutRef.current);
+        }
+        if (agentTimeoutRef.current) {
+          clearTimeout(agentTimeoutRef.current);
         }
       };
     }
@@ -108,10 +116,25 @@ const LiveChatModal = ({ agent, property, isOpen, onClose }) => {
 
     if (isExpertReq) {
       if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
-      // Wait for 3-5 seconds (mocked as 0.5 seconds for demonstration, fully scalable to 3-5 minutes)
+      if (agentTimeoutRef.current) clearTimeout(agentTimeoutRef.current);
+
+      // Show "Please wait..." after 0.5s
       connectionTimeoutRef.current = setTimeout(() => {
         setShowPendingWaitMsg(true);
       }, 500);
+
+      // 2 minute timeout for agent joining
+      agentTimeoutRef.current = setTimeout(() => {
+        setShowPendingWaitMsg(false);
+        const fallbackMsg = {
+          _id: `timeout-${Date.now()}`,
+          senderId: receiverId,
+          receiverId: user._id,
+          text: "It looks like the agent is currently away or unavailable to join the chat. Don't worry though—I am still here! You can continue asking me questions, or the agent will follow up with you via email shortly.",
+          createdAt: new Date().toISOString()
+        };
+        setMessages((prev) => [...prev, fallbackMsg]);
+      }, 120000);
     }
 
     try {
@@ -131,6 +154,7 @@ const LiveChatModal = ({ agent, property, isOpen, onClose }) => {
           setIsTyping(false);
           setShowPendingWaitMsg(false);
           if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
+          if (agentTimeoutRef.current) clearTimeout(agentTimeoutRef.current);
         }
 
         setMessages((prev) => {
@@ -253,7 +277,7 @@ const LiveChatModal = ({ agent, property, isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
       <div className="glass-panel w-full max-w-lg rounded-2xl border border-slate-800 shadow-2xl overflow-hidden flex flex-col h-[560px]">
         
         {/* Header */}

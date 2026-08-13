@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { loginUser, registerUser, getProfile, toggleWishlist as toggleWishlistApi } from '../services/api';
+import { loginUser, registerUser, getProfile, toggleWishlist as toggleWishlistApi, logoutUser } from '../services/api';
 
 const AuthContext = createContext();
 
@@ -52,10 +52,26 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      if (localStorage.getItem('token')) {
+        await logoutUser();
+      }
+    } catch (e) {
+      console.log('Logout API failed, continuing with local logout', e);
+    }
     localStorage.removeItem('token');
     setUser(null);
     setSavedProperties([]);
+  };
+
+  const updateUserProfile = async (data) => {
+    const { updateProfile } = await import('../services/api');
+    const res = await updateProfile(data);
+    if (res.data.success) {
+      setUser(res.data.user);
+      return res.data;
+    }
   };
 
   // Opens auth modal with a custom message. 
@@ -116,7 +132,8 @@ export const AuthProvider = ({ children }) => {
         openAuthModal,
         closeAuthModal,
         authModalOpen,
-        authModalMessage
+        authModalMessage,
+        updateUserProfile
       }}
     >
       {children}

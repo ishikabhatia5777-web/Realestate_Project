@@ -56,14 +56,18 @@ const getAgencyById = async (req, res, next) => {
       console.log('Database offline. Serving mock single agency details.');
       agency = mockDbAgencies.find(a => a._id === req.params.id) || mockDbAgencies[0];
       agents = [
-        {
-          _id: '507f1f77bcf86cd799439200',
-          name: 'Samantha Reed',
-          avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400',
-          email: 'samantha@prestigerealty.com.au',
-          role: 'agent'
-        }
+        { _id: '507f1f77bcf86cd799439002', name: 'Ishika (Agent)', email: 'ishikabhatia51@gmail.com', role: 'agent' },
+        { _id: '507f1f77bcf86cd799439005', name: 'Upansh (Agent)', email: 'upansh769@gmail.com', role: 'agent' },
+        { _id: '507f1f77bcf86cd799439006', name: 'Reet (Agent)', email: 'reet67711@gmail.com', role: 'agent' },
+        { _id: '507f1f77bcf86cd799439007', name: 'Ruhi (Agent)', email: 'ruhibhatia0022@gmail.com', role: 'agent' },
+        { _id: '507f1f77bcf86cd799439008', name: 'Saghun (Agent)', email: 'saghun8699@gmail.com', role: 'agent' }
       ];
+      properties = require('../utils/seedData').sampleProperties.map((p, idx) => ({
+        ...p,
+        _id: `mock_prop_${idx}`,
+        agentId: agents[idx % agents.length]._id,
+        agencyId: agency._id
+      }));
     }
 
     if (!agency) {

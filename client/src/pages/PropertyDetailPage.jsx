@@ -11,7 +11,7 @@ import PaymentModal from '../components/PaymentModal';
 import { useAuth } from '../context/AuthContext';
 import {
   Bed, Bath, Car, Maximize, MapPin, Calendar, DollarSign, MessageSquare,
-  Share2, FileText, Sparkles, ShieldCheck, Check, School, Hospital, Bus, Heart, ShoppingBag
+  Share2, FileText, Sparkles, ShieldCheck, Check, School, Hospital, Bus, Heart, ShoppingBag, ArrowLeft
 } from 'lucide-react';
 
 const PropertyDetailPage = () => {
@@ -99,6 +99,14 @@ const PropertyDetailPage = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
       
+      {/* Back Button */}
+      <div>
+        <Link to="/properties" className="inline-flex items-center space-x-2 text-slate-400 hover:text-amber-400 transition-colors text-sm font-bold">
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to All Properties</span>
+        </Link>
+      </div>
+
       {/* Title & Header Bar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
         <div>
@@ -192,39 +200,6 @@ const PropertyDetailPage = () => {
         {/* Left 8 Cols: Description, Amenities, Map, EMI Calculator */}
         <div className="lg:col-span-8 space-y-10">
           
-          {/* AI Valuation Card */}
-          {aiValuation && (
-            <div className="glass-panel p-6 rounded-2xl border border-cyan-500/30 bg-cyan-950/20 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Sparkles className="w-5 h-5 text-cyan-400" />
-                  <h3 className="text-base font-bold text-white">AI Automated Valuation Model (AVM)</h3>
-                </div>
-                <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
-                  {aiValuation.confidenceScore}% Confidence Score
-                </span>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2 text-xs">
-                <div>
-                  <span className="text-slate-400 block">Est. Value Range</span>
-                  <span className="text-sm font-extrabold text-white">${(aiValuation.estimatedMin / 1000000).toFixed(2)}M - ${(aiValuation.estimatedMax / 1000000).toFixed(2)}M</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block">Price / m²</span>
-                  <span className="text-sm font-extrabold text-white">${aiValuation.pricePerSqM}</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block">Rent Est.</span>
-                  <span className="text-sm font-extrabold text-white">${aiValuation.rentalYieldEst}</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block">Suburb Growth</span>
-                  <span className="text-sm font-extrabold text-emerald-400">{aiValuation.suburbGrowthYoY}</span>
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Property Overview & Description */}
           <div className="space-y-4">
             <h2 className="text-xl font-bold text-white">Property Overview</h2>
@@ -263,12 +238,13 @@ const PropertyDetailPage = () => {
         <div className="lg:col-span-4 space-y-6">
           
           {/* Action Box */}
-          <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4 sticky top-28">
-            <h3 className="text-base font-bold text-white">Take Action</h3>
-            
-            {/* Show Buy, Offer, Inspection & Live Chat ONLY to Buyers or Guests (sellers/agents/admins don't see buyer actions) */}
-            {(!user || user.role === 'buyer') ? (
+          {((!user || user.role === 'buyer') || property.agentId) && (
+            <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4 sticky top-28">
+              {/* Show Buy, Offer, Inspection & Live Chat ONLY to Buyers or Guests */}
+            {(!user || user.role === 'buyer') && (
               <>
+                <h3 className="text-base font-bold text-white">Take Action</h3>
+                
                 <button
                   onClick={() => {
                     if (requireAuth('Sign in to purchase or reserve this property')) {
@@ -315,15 +291,11 @@ const PropertyDetailPage = () => {
                   <span>Live Agent Chat</span>
                 </button>
               </>
-            ) : (
-              <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold text-center">
-                Listing Control Mode ({user.role.toUpperCase()})
-              </div>
             )}
 
             {/* Agent / Agency Card */}
             {property.agentId && (
-              <div className="pt-4 border-t border-slate-800 flex items-center space-x-4">
+              <div className={`${(!user || user.role === 'buyer') ? 'pt-4 border-t border-slate-800' : ''} flex items-center space-x-4`}>
                 <img
                   src={property.agentId.avatar || 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400'}
                   alt={property.agentId.name}
@@ -337,6 +309,7 @@ const PropertyDetailPage = () => {
               </div>
             )}
           </div>
+          )}
 
         </div>
 

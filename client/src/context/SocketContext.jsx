@@ -15,9 +15,9 @@ export const SocketProvider = ({ children }) => {
         return envUrl.replace(/\/api\/?$/, '');
       }
       if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-        return 'http://localhost:5000';
+        return 'http://localhost:5001';
       }
-      return window.location.origin;
+      return 'https://auraestate.onrender.com';
     };
 
     const newSocket = io(getSocketTarget(), {

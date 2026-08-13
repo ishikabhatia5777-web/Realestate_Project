@@ -9,8 +9,7 @@ const BUYER_PACKAGES = [
 
 const SELLER_AGENT_PACKAGES = [
   { title: 'Featured Listing', price: 99, desc: '30 Days Spotlight' },
-  { title: 'Premium Listing', price: 249, desc: 'Top Feed + Gold Badge' },
-  { title: 'Boost Listing', price: 49, desc: 'Instant Feed Refresh' }
+  { title: 'Premium Listing', price: 249, desc: 'Top Feed + Gold Badge' }
 ];
 
 const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', defaultAmount = 99, propertyId = null, onPaymentSuccess }) => {

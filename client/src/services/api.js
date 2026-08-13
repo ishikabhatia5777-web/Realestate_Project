@@ -34,6 +34,7 @@ api.interceptors.request.use((config) => {
 // Auth API
 export const loginUser = (credentials) => api.post('/auth/login', credentials);
 export const registerUser = (userData) => api.post('/auth/register', userData);
+export const logoutUser = () => api.post('/auth/logout');
 export const getProfile = () => api.get('/auth/me');
 export const updateProfile = (data) => api.put('/auth/profile', data);
 export const toggleWishlist = (propertyId) => api.post(`/auth/wishlist/${propertyId}`);

@@ -48,7 +48,7 @@ const createBooking = async (req, res, next) => {
         timeSlot,
         type: type || 'In-Person',
         notes: notes || '',
-        status: 'Confirmed'
+        status: 'Pending'
       };
     }
 
@@ -136,7 +136,7 @@ const getBookings = async (req, res, next) => {
 const updateBookingStatus = async (req, res, next) => {
   try {
     const { status } = req.body;
-    if (!['Pending', 'Confirmed', 'Completed', 'Cancelled'].includes(status)) {
+    if (!['Pending', 'Confirmed', 'Completed', 'Cancelled', 'Rejected'].includes(status)) {
       return res.status(400).json({ success: false, message: 'Invalid booking status' });
     }
 

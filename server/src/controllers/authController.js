@@ -4,14 +4,14 @@ const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
+const ActivityLog = require('../models/ActivityLog');
 
 const mockUsers = [
-  { _id: '507f1f77bcf86cd799439000', name: 'Eleanor Vance', email: 'admin@realestate.com', role: 'super_admin', phone: '+61 400 111 222', avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400', twoFactorEnabled: false, savedProperties: [] },
-  { _id: '507f1f77bcf86cd799439001', name: 'Robert Kane', email: 'admin2@realestate.com', role: 'admin', phone: '+61 400 111 333', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=400', twoFactorEnabled: false, savedProperties: [] },
-  { _id: '507f1f77bcf86cd799439002', name: 'Julian Thorne', email: 'agency@prestigerealty.com.au', role: 'agency', phone: '+61 411 222 333', avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400', twoFactorEnabled: false, savedProperties: [] },
-  { _id: '507f1f77bcf86cd799439003', name: 'Samantha Reed', email: 'samantha@prestigerealty.com.au', role: 'agent', phone: '+61 422 333 444', avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400', twoFactorEnabled: false, savedProperties: [] },
-  { _id: '507f1f77bcf86cd799439004', name: 'Marcus Sterling', email: 'seller@gmail.com', role: 'seller', phone: '+61 433 444 555', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400', twoFactorEnabled: false, savedProperties: [] },
-  { _id: '507f1f77bcf86cd799439005', name: 'Clara Bennett', email: 'buyer@gmail.com', role: 'buyer', phone: '+61 444 555 666', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400', twoFactorEnabled: false, savedProperties: [] }
+  { _id: '507f1f77bcf86cd799439000', name: 'Ishika (Admin)', email: 'ishbhatia484@gmail.com', role: 'admin' },
+  { _id: '507f1f77bcf86cd799439001', name: 'Upvansh (Agency)', email: 'upvanshk@gmail.com', role: 'agency' },
+  { _id: '507f1f77bcf86cd799439002', name: 'Ishika (Agent)', email: 'ishikabhatia51@gmail.com', role: 'agent' },
+  { _id: '507f1f77bcf86cd799439003', name: 'Upvansh (Seller)', email: 'upvansh1234@gmail.com', role: 'seller' },
+  { _id: '507f1f77bcf86cd799439004', name: 'Ishika (Buyer)', email: 'ishikabhatia5777@gmail.com', role: 'buyer' }
 ];
 
 const dataDir = path.join(__dirname, '..', '..', 'data');
@@ -63,7 +63,7 @@ const generateToken = (id) => {
 // @route   POST /api/auth/register
 const register = async (req, res, next) => {
   try {
-    const { name, email, password, role, phone } = req.body;
+    const { name, email, password, role, phone, agencyId } = req.body;
 
     if (!name) {
       return res.status(400).json({ success: false, message: 'Please provide a name' });
@@ -85,10 +85,11 @@ const register = async (req, res, next) => {
       if (mongoose.connection.readyState !== 1) {
         throw new Error('Database is offline');
       }
+      const userExists = await User.findOne({ email: email.toLowerCase() });
       if (userExists) {
         return res.status(400).json({ success: false, message: `An account with ${email} already exists. Please sign in or use a different email address.` });
       }
-      user = await User.create({ name, email, password, role: role || 'buyer', phone: phone || '' });
+      user = await User.create({ name, email, password, role: role || 'buyer', phone: phone || '', agencyId: agencyId || null });
     } catch (dbErr) {
       console.log('Database offline. Simulating registration via local file storage.');
       const localUsers = getLocalUsers();
@@ -103,6 +104,7 @@ const register = async (req, res, next) => {
         email: email.toLowerCase(),
         role: role || 'buyer',
         phone: phone || '',
+        agencyId: agencyId || null,
         avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400',
         twoFactorEnabled: false,
         savedProperties: [],
@@ -185,6 +187,20 @@ const login = async (req, res, next) => {
 
     const token = generateToken(user._id);
 
+    try {
+      if (mongoose.connection.readyState === 1) {
+        await ActivityLog.create({
+          userId: user._id,
+          userName: user.name,
+          action: 'USER_LOGIN',
+          details: `User ${user.email} logged in.`,
+          level: 'info'
+        });
+      }
+    } catch (logErr) {
+      console.log('Failed to log login activity:', logErr.message);
+    }
+
     res.json({
       success: true,
       token,
@@ -200,6 +216,29 @@ const login = async (req, res, next) => {
         savedProperties: user.savedProperties || []
       }
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Logout user (to log activity)
+// @route   POST /api/auth/logout
+const logout = async (req, res, next) => {
+  try {
+    if (mongoose.connection.readyState === 1 && req.user) {
+      try {
+        await ActivityLog.create({
+          userId: req.user._id,
+          userName: req.user.name,
+          action: 'USER_LOGOUT',
+          details: `User ${req.user.email} logged out.`,
+          level: 'info'
+        });
+      } catch (logErr) {
+        console.log('Failed to log logout activity:', logErr.message);
+      }
+    }
+    res.json({ success: true, message: 'Logged out successfully' });
   } catch (error) {
     next(error);
   }
@@ -283,6 +322,7 @@ const updateProfile = async (req, res, next) => {
       name: req.body.name,
       phone: req.body.phone,
       bio: req.body.bio,
+      avatar: req.body.avatar,
       twoFactorEnabled: req.body.twoFactorEnabled
     };
 
@@ -361,6 +401,7 @@ const toggleWishlist = async (req, res, next) => {
 module.exports = {
   register,
   login,
+  logout,
   getMe,
   updateProfile,
   toggleWishlist

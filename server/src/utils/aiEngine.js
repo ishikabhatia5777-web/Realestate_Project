@@ -182,7 +182,8 @@ const fallbackKeywordChat = (userQuery, properties = []) => {
     const city = (p.city || '').toLowerCase();
     const street = (p.street || '').toLowerCase();
     const title = (p.title || '').toLowerCase();
-    return sub.includes(q) || q.includes(sub) || city.includes(q) || street.includes(q) || title.includes(q);
+    // Only match if the property field actually has a value to prevent "" matching everything
+    return (sub && q.includes(sub)) || (city && q.includes(city)) || (street && q.includes(street)) || (title && q.includes(title));
   });
 
   if (matchedSuburbProps.length > 0) {
@@ -211,6 +212,24 @@ ${tableRows}
 *Click **"View Property"** or any property title above to view full details!*`;
   }
 
+  // Greetings
+  if (q.includes('hello') || q.includes('hi ') || q === 'hi' || q.includes('hey') || q.includes('who are you') || q.includes('how are you')) {
+    return "Hello! I'm Aura AI, the official intelligent concierge for AuraEstates. I can help you search for properties, find agents, or guide you through the buying process. What can I do for you today?";
+  }
+
+  // Agent / Agency query intent (Moved UP to prevent being caught by 'list' in property search)
+  if (q.includes('agent') || q.includes('agency') || q.includes('realty') || q.includes('broker') || q.includes('contact')) {
+    return `Here is our list of verified platform Agents & Agencies on AuraEstates:
+
+| Agent Name | Agency | Specialty Precinct | Phone Contact | Email |
+| :--- | :--- | :--- | :--- | :--- |
+| Samantha Reed | Prestige Realty | Point Piper & Sydney Harbour | +61 444 111 222 | samantha@prestigerealty.com.au |
+| Julian Thorne | Prestige Realty | Barangaroo & Sydney CBD | +61 444 333 444 | agency@prestigerealty.com.au |
+| Marcus Sterling | FSBO Direct | Direct Owner Properties | +61 444 888 999 | seller@gmail.com |
+
+You can contact any agent directly via phone, email, or by scheduling an inspection on the property listing page!`;
+  }
+
   // Extract property types
   let pType = null;
   if (q.includes('villa')) pType = 'Villa';
@@ -223,7 +242,7 @@ ${tableRows}
   // Check intent words
   const isSearchIntent = q.includes('want') || q.includes('need') || q.includes('looking') || 
                          q.includes('show') || q.includes('find') || q.includes('list') || 
-                         q.includes('search') || q.includes('buy') || q.includes('rent');
+                         q.includes('search') || q.includes('buy') || q.includes('rent') || q.includes('property') || q.includes('properties');
 
   // Specific non-existent location requested (e.g. Antarctica, Paris, New York, Tokyo)
   const isUnmatchedLocation = q.includes('antarctica') || q.includes('paris') || q.includes('tokyo') || 
@@ -251,7 +270,7 @@ ${tableRows}
       const price = p.listing === 'Sale'
         ? `AUD $${p.price?.toLocaleString()}`
         : `AUD $${p.price?.toLocaleString()}/${p.pricePeriod || 'week'}`;
-      return `${i + 1}. [**${p.title}**](/properties/${p._id}) — ${p.suburb || 'Sydney'}, ${p.state || 'NSW'} | ${p.beds} bed, ${p.baths} bath | ${price} → [View Property](/properties/${p._id})`;
+      return `${i + 1}. [**${p.title}**](/properties/${p._id || p.id}) — ${p.suburb || 'Sydney'}, ${p.state || 'NSW'} | ${p.beds} bed, ${p.baths} bath | ${price} → [View Property](/properties/${p._id || p.id})`;
     }).join('\n\n');
 
     return `Here are top matching ${pType ? pType.toLowerCase() + ' ' : ''}listings from our live database:\n\n${list}\n\nClick any property title above to view full details!`;
@@ -262,7 +281,7 @@ ${tableRows}
     const sorted = [...properties].filter(p => p.listing === 'Sale').sort((a, b) => a.price - b.price);
     if (sorted.length > 0) {
       const p = sorted[0];
-      return `The most affordable property for sale is [**"${p.title}"**](/properties/${p._id}) in ${p.suburb || 'Sydney'} at AUD $${p.price?.toLocaleString()} — ${p.beds} bed, ${p.baths} bath. [View Property Details](/properties/${p._id})`;
+      return `The most affordable property for sale is [**"${p.title}"**](/properties/${p._id || p.id}) in ${p.suburb || 'Sydney'} at AUD $${p.price?.toLocaleString()} — ${p.beds} bed, ${p.baths} bath. [View Property Details](/properties/${p._id || p.id})`;
     }
   }
 
@@ -270,21 +289,13 @@ ${tableRows}
     const sorted = [...properties].filter(p => p.listing === 'Sale').sort((a, b) => b.price - a.price);
     if (sorted.length > 0) {
       const p = sorted[0];
-      return `Our most premium property is [**"${p.title}"**](/properties/${p._id}) in ${p.suburb || 'Sydney'} at AUD $${p.price?.toLocaleString()} — ${p.beds} bed, ${p.baths} bath. [View Property Details](/properties/${p._id})`;
+      return `Our most premium property is [**"${p.title}"**](/properties/${p._id || p.id}) in ${p.suburb || 'Sydney'} at AUD $${p.price?.toLocaleString()} — ${p.beds} bed, ${p.baths} bath. [View Property Details](/properties/${p._id || p.id})`;
     }
   }
 
-  // Agent / Agency query intent
-  if (q.includes('agent') || q.includes('agency') || q.includes('realty') || q.includes('broker') || q.includes('contact')) {
-    return `Here is our list of verified platform Agents & Agencies on AuraEstates:
-
-| Agent Name | Agency | Specialty Precinct | Phone Contact | Email |
-| :--- | :--- | :--- | :--- | :--- |
-| Samantha Reed | Prestige Realty | Point Piper & Sydney Harbour | +61 444 111 222 | samantha@prestigerealty.com.au |
-| Julian Thorne | Prestige Realty | Barangaroo & Sydney CBD | +61 444 333 444 | agency@prestigerealty.com.au |
-| Marcus Sterling | FSBO Direct | Direct Owner Properties | +61 444 888 999 | seller@gmail.com |
-
-You can contact any agent directly via phone, email, or by scheduling an inspection on the property listing page!`;
+  // Count
+  if (q.includes('how many') || q.includes('total') || q.includes('available')) {
+    return `AuraEstates currently has **${properties.length}** published properties — including ${properties.filter(p => p.listing === 'Sale').length} for sale and ${properties.filter(p => p.listing === 'Rent').length} for rent. Use the filters on the Properties page to explore them!`;
   }
 
 
@@ -396,7 +407,9 @@ const analyzeListingFraud = ({ price, propertyType, description, images = [] }) 
 
 // ─── 24/7 Supporting Agent Chat Auto-Responder powered by Aura AI Pipeline ────
 const generateSupportAgentReply = async ({ buyerMessage, buyerName = 'Buyer', agent = {}, property = {}, allProperties = [] }) => {
-  const agentName = agent?.name || 'Samantha Reed';
+  let agentName = agent?.name || 'Samantha Reed';
+  if (agentName === 'User') agentName = 'your AI Agent';
+
   const agentRole = agent?.role === 'seller' || agent?.role === 'owner' ? 'Property Owner' : 'Senior Real Estate Specialist';
   const agentPhone = agent?.phone || '+61 444 111 222';
   const agentEmail = agent?.email || 'samantha@prestigerealty.com.au';
@@ -543,7 +556,11 @@ CRITICAL FORMATTING & STRUCTURE RULES:
   }
 
   if (q === 'hi' || q === 'hii' || q === 'hello' || q === 'hey' || q.includes('kaise') || q.includes('greetings')) {
-    return `Hello ${buyerName}! 👋 I'm **${agentName}**.\n\nHow can I assist you with **${propTitle}** in ${propSuburb} today?`;
+    const titleLower = propTitle.toLowerCase();
+    const subLower = propSuburb.toLowerCase();
+    const locationStr = titleLower.includes(subLower) ? '' : ` in ${propSuburb}`;
+    const agentStr = agentName === 'your AI Agent' ? agentName : `**${agentName}**`;
+    return `Hello ${buyerName}! 👋 I'm ${agentStr}.\n\nHow can I assist you with **${propTitle}**${locationStr} today?`;
   }
 
   if (q.includes('price') || q.includes('cost') || q.includes('rate') || q.includes('kitna') || q.includes('amount') || q.includes('budget') || q.includes('worth')) {

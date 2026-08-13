@@ -24,7 +24,7 @@ const PropertyCard = ({ property }) => {
       className="group glass-panel rounded-2xl overflow-hidden border border-slate-800/80 hover:border-amber-500/40 transition-all duration-300 shadow-xl"
     >
       {/* Image Container */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-slate-900">
+      <Link to={`/properties/${property._id}`} className="block relative aspect-[4/3] overflow-hidden bg-slate-900">
         <img
           src={property.images?.[0] || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=1200'}
           alt={property.title}
@@ -57,6 +57,7 @@ const PropertyCard = ({ property }) => {
         <button
           onClick={(e) => {
             e.preventDefault();
+            e.stopPropagation();
             if (requireAuth('Sign in to save properties to your wishlist')) {
               toggleSavedProperty(property._id);
             }
@@ -84,7 +85,7 @@ const PropertyCard = ({ property }) => {
             <img src={property.agencyId.logo} alt="Agency" className="w-full h-full object-contain" />
           </div>
         )}
-      </div>
+      </Link>
 
       {/* Details Body */}
       <div className="p-5 space-y-3">

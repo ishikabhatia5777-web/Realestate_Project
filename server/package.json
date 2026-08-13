@@ -8,7 +8,8 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "build": "echo 'Server build complete'",
-    "seed": "node src/utils/seeder.js"
+    "seed": "node src/utils/seeder.js",
+    "seed:large": "node src/utils/seedLargeProperties.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

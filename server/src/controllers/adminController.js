@@ -84,11 +84,15 @@ const getUsers = async (req, res, next) => {
     } catch (dbErr) {
       console.log('Database offline. Serving mock users roster.');
       users = [
-        { _id: '507f1f77bcf86cd799439000', name: 'Eleanor Vance', email: 'admin@realestate.com', role: 'super_admin' },
-        { _id: '507f1f77bcf86cd799439001', name: 'Julian Thorne', email: 'agency@prestigerealty.com.au', role: 'agency' },
-        { _id: '507f1f77bcf86cd799439002', name: 'Samantha Reed', email: 'samantha@prestigerealty.com.au', role: 'agent' },
-        { _id: '507f1f77bcf86cd799439003', name: 'Marcus Sterling', email: 'seller@gmail.com', role: 'seller' },
-        { _id: '507f1f77bcf86cd799439004', name: 'Clara Bennett', email: 'buyer@gmail.com', role: 'buyer' }
+        { _id: '507f1f77bcf86cd799439000', name: 'Ishika (Admin)', email: 'ishbhatia484@gmail.com', role: 'admin' },
+        { _id: '507f1f77bcf86cd799439001', name: 'Upvansh (Agency)', email: 'upvanshk@gmail.com', role: 'agency' },
+        { _id: '507f1f77bcf86cd799439002', name: 'Ishika (Agent)', email: 'ishikabhatia51@gmail.com', role: 'agent' },
+        { _id: '507f1f77bcf86cd799439003', name: 'Upvansh (Seller)', email: 'upvansh1234@gmail.com', role: 'seller' },
+        { _id: '507f1f77bcf86cd799439004', name: 'Ishika (Buyer)', email: 'ishikabhatia5777@gmail.com', role: 'buyer' },
+        { _id: '507f1f77bcf86cd799439005', name: 'Upansh (Agent)', email: 'upansh769@gmail.com', role: 'agent' },
+        { _id: '507f1f77bcf86cd799439006', name: 'Reet (Agent)', email: 'reet67711@gmail.com', role: 'agent' },
+        { _id: '507f1f77bcf86cd799439007', name: 'Ruhi (Agent)', email: 'ruhibhatia0022@gmail.com', role: 'agent' },
+        { _id: '507f1f77bcf86cd799439008', name: 'Saghun (Agent)', email: 'saghun8699@gmail.com', role: 'agent' }
       ];
     }
     res.json({ success: true, count: users.length, users });

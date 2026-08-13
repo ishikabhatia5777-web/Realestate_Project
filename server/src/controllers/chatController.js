@@ -390,10 +390,12 @@ const sendMessage = async (req, res, next) => {
             const aiMsg = await Message.create({
               senderId: receiverId, receiverId: senderId, propertyId, text: supportResponseText
             });
-            supportReplyObj = await Message.findById(aiMsg._id)
+            let dbSupportReply = await Message.findById(aiMsg._id)
               .populate('senderId', 'name avatar role email')
               .populate('receiverId', 'name avatar role email')
               .populate('propertyId', 'title address images');
+            supportReplyObj = dbSupportReply ? dbSupportReply.toObject() : null;
+            if (supportReplyObj) supportReplyObj.isAiReply = true;
           } catch (e) {}
         }
 
@@ -412,7 +414,8 @@ const sendMessage = async (req, res, next) => {
             ...newSupportMsg,
             senderId: populateUser(receiverId),
             receiverId: populateUser(senderId),
-            propertyId: propertyId ? populateProperty(propertyId) : null
+            propertyId: propertyId ? await populateProperty(propertyId) : null,
+            isAiReply: true
           };
         }
       }

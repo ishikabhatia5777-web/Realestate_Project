@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Offer = require('../models/Offer');
 const Property = require('../models/Property');
+const { sendNewOfferEmail } = require('../services/emailService');
 
 // @desc    Submit buying/renting offer
 // @route   POST /api/offers
@@ -17,7 +18,9 @@ const createOffer = async (req, res, next) => {
       if (mongoose.connection.readyState !== 1) {
         throw new Error('Database offline');
       }
-      const property = await Property.findById(propertyId);
+      const property = await Property.findById(propertyId)
+        .populate('agentId', 'name email')
+        .populate('ownerId', 'name email');
       if (!property) {
         return res.status(404).json({ success: false, message: 'Property not found' });
       }
@@ -40,6 +43,30 @@ const createOffer = async (req, res, next) => {
         conditions: conditions || 'Subject to building inspection',
         status: 'Pending'
       };
+    }
+
+    // Try to send email to agent/owner
+    try {
+      const propertyForEmail = await Property.findById(propertyId)
+        .populate('agentId', 'name email')
+        .populate('ownerId', 'name email');
+        
+      if (propertyForEmail) {
+        const recipient = propertyForEmail.agentId || propertyForEmail.ownerId;
+        if (recipient && recipient.email) {
+          await sendNewOfferEmail({
+            toEmail: recipient.email,
+            toName: recipient.name || 'Agent',
+            buyerName: req.user.name || 'A Buyer',
+            propertyTitle: propertyForEmail.title,
+            offerAmount,
+            conditions: conditions || 'Subject to building inspection',
+            propertyId
+          });
+        }
+      }
+    } catch (emailErr) {
+      console.error('Failed to send offer email:', emailErr.message);
     }
 
     res.status(201).json({ success: true, offer });
