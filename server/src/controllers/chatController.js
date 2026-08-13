@@ -446,20 +446,15 @@ const getInbox = async (req, res, next) => {
     if (mongoose.connection.readyState === 1) {
       try {
         let query = {};
-        if (currentUserRole === 'buyer') {
+        if (currentUserRole === 'admin' || currentUserRole === 'super_admin') {
+          // Admins can oversee all chats
+          query = {};
+        } else {
+          // Buyers, Sellers, Agents, Agencies — only see their own direct messages
           query = {
             $or: [
               { senderId: req.user._id },
               { receiverId: req.user._id }
-            ]
-          };
-        } else {
-          // Seller, Agent, Agency, Admin — retrieve all buyer inquiries and direct messages
-          query = {
-            $or: [
-              { senderId: req.user._id },
-              { receiverId: req.user._id },
-              { receiverId: { $ne: null } }
             ]
           };
         }
@@ -478,11 +473,10 @@ const getInbox = async (req, res, next) => {
         const mSender = String(m.senderId._id || m.senderId);
         const mReceiver = String(m.receiverId._id || m.receiverId);
 
-        if (currentUserRole === 'buyer') {
-          return mSender === currentUserId || mReceiver === currentUserId;
-        } else {
-          // Sellers and Agents see all buyer direct inquiries and active threads
+        if (currentUserRole === 'admin' || currentUserRole === 'super_admin') {
           return true;
+        } else {
+          return mSender === currentUserId || mReceiver === currentUserId;
         }
       }).map(m => ({
         ...m,
