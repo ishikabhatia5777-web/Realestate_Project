@@ -1,7 +1,12 @@
+const dotenv = require('dotenv');
+// Load environment variables BEFORE any other imports so that
+// GMAIL_USER, GMAIL_PASS, MONGO_URI, etc. are available when
+// modules (emailService, db config, etc.) are first required.
+dotenv.config();
+
 const express = require('express');
 const http = require('http');
 const cors = require('cors');
-const dotenv = require('dotenv');
 const { Server } = require('socket.io');
 
 const connectDB = require('./config/db');
@@ -17,8 +22,6 @@ const chatRoutes = require('./routes/chatRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const adminRoutes = require('./routes/adminRoutes');
-
-dotenv.config();
 
 const app = express();
 const server = http.createServer(app);

@@ -285,12 +285,16 @@ const approveProperty = async (req, res, next) => {
         if (localUser) { recipientEmail = localUser.email; recipientName = localUser.name; }
       }
 
-      await sendPropertyApprovalEmail({
-        toEmail: recipientEmail,
-        toName: recipientName,
-        propertyTitle: property.title,
-        propertyId: property._id
-      });
+      try {
+        await sendPropertyApprovalEmail({
+          toEmail: recipientEmail,
+          toName: recipientName,
+          propertyTitle: property.title,
+          propertyId: property._id
+        });
+      } catch (emailErr) {
+        console.error('Failed to send property approval email:', emailErr.message);
+      }
     }
 
     try {
@@ -327,12 +331,16 @@ const rejectProperty = async (req, res, next) => {
     // Determine recipient
     const recipient = property.agentId || property.ownerId;
     if (recipient && recipient.email) {
-      await sendPropertyRejectionEmail({
-        toEmail: recipient.email,
-        toName: recipient.name || 'Property Owner',
-        propertyTitle: property.title,
-        reason: reason || 'Does not meet platform guidelines.'
-      });
+      try {
+        await sendPropertyRejectionEmail({
+          toEmail: recipient.email,
+          toName: recipient.name || 'Property Owner',
+          propertyTitle: property.title,
+          reason: reason || 'Does not meet platform guidelines.'
+        });
+      } catch (emailErr) {
+        console.error('Failed to send property rejection email:', emailErr.message);
+      }
     }
 
     try {

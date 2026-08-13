@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Booking = require('../models/Booking');
 const Property = require('../models/Property');
-const { sendInspectionRequestAlert } = require('../services/emailService');
+const { sendInspectionRequestAlert, sendInspectionStatusUpdate } = require('../services/emailService');
 
 // @desc    Book property inspection
 // @route   POST /api/bookings
@@ -205,6 +205,30 @@ const updateBookingStatus = async (req, res, next) => {
     } catch (dbErr) {
       booking = { _id: req.params.id, status };
     }
+
+    // Send inspection status update email to the buyer
+    try {
+      if (mongoose.connection.readyState === 1) {
+        const populatedBooking = await Booking.findById(req.params.id)
+          .populate('propertyId', 'title')
+          .populate('userId', 'name email');
+
+        if (populatedBooking && populatedBooking.userId && populatedBooking.userId.email) {
+          sendInspectionStatusUpdate({
+            toEmail: populatedBooking.userId.email,
+            toName: populatedBooking.userId.name,
+            propertyTitle: populatedBooking.propertyId?.title || 'Property',
+            date: populatedBooking.date,
+            timeSlot: populatedBooking.timeSlot,
+            status,
+            updatedBy: req.user.name || 'Agent/Seller'
+          }).catch(err => console.error('Failed to send inspection status email:', err.message));
+        }
+      }
+    } catch (emailErr) {
+      console.error('Error looking up booking for status email:', emailErr.message);
+    }
+
     res.json({ success: true, booking });
   } catch (error) {
     next(error);
