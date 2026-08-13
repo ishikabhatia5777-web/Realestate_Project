@@ -5,12 +5,15 @@ let cachedTransporter = null;
 
 const createTransporter = () => {
   if (cachedTransporter) return cachedTransporter;
-  if (process.env.GMAIL_USER && process.env.GMAIL_PASS) {
+  const user = process.env.EMAIL_USER || process.env.GMAIL_USER;
+  const pass = process.env.EMAIL_PASS || process.env.GMAIL_PASS;
+
+  if (user && pass) {
     cachedTransporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS
+        user: user,
+        pass: pass
       },
       pool: true,
       maxConnections: 5,
@@ -23,8 +26,8 @@ const createTransporter = () => {
 
 // ─── Helper: send or log ────────────────────────────────────────────────────
 const sendEmail = async ({ to, subject, html, replyTo }) => {
-  const user = process.env.GMAIL_USER || 'ishbhatia484@gmail.com';
-  const pass = process.env.GMAIL_PASS || 'oxpraalpoqkgojkj';
+  const user = process.env.EMAIL_USER || process.env.GMAIL_USER || 'ishbhatia484@gmail.com';
+  const pass = process.env.EMAIL_PASS || process.env.GMAIL_PASS || 'oxpraalpoqkgojkj';
 
   const mailOptions = {
     from: `"AuraEstates Platform" <${user}>`,
