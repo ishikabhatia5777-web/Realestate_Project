@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { loginUser, registerUser, getProfile, toggleWishlist as toggleWishlistApi, logoutUser } from '../services/api';
+import { loginUser, registerUser, getProfile, toggleWishlist as toggleWishlistApi, logoutUser, verifyOtp } from '../services/api';
 
 const AuthContext = createContext();
 
@@ -34,6 +34,16 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     const res = await loginUser(credentials);
+    if (res.data.success) {
+      localStorage.setItem('token', res.data.token);
+      setUser(res.data.user);
+      setSavedProperties(res.data.user.savedProperties || []);
+      return res.data;
+    }
+  };
+
+  const verifyOtpLogin = async (data) => {
+    const res = await verifyOtp(data);
     if (res.data.success) {
       localStorage.setItem('token', res.data.token);
       setUser(res.data.user);
@@ -133,7 +143,8 @@ export const AuthProvider = ({ children }) => {
         closeAuthModal,
         authModalOpen,
         authModalMessage,
-        updateUserProfile
+        updateUserProfile,
+        verifyOtpLogin
       }}
     >
       {children}
