@@ -34,6 +34,7 @@ api.interceptors.request.use((config) => {
 // Auth API
 export const loginUser = (credentials) => api.post('/auth/login', credentials);
 export const registerUser = (userData) => api.post('/auth/register', userData);
+export const verifyOtp = (data) => api.post('/auth/verify-otp', data);
 export const logoutUser = () => api.post('/auth/logout');
 export const getProfile = () => api.get('/auth/me');
 export const updateProfile = (data) => api.put('/auth/profile', data);

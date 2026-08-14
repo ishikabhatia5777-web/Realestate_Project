@@ -4,7 +4,9 @@ const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 const ActivityLog = require('../models/ActivityLog');
+const sendEmail = require('../utils/sendEmail');
 
 const mockUsers = [
   { _id: '507f1f77bcf86cd799439000', name: 'Ishika (Admin)', email: 'ishbhatia484@gmail.com', role: 'admin' },
@@ -398,11 +400,119 @@ const toggleWishlist = async (req, res, next) => {
   }
 };
 
+// @desc    Forgot password
+// @route   POST /api/auth/forgotpassword
+const forgotPassword = async (req, res, next) => {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'There is no user with that email' });
+    }
+
+    // Get reset token (now an OTP)
+    const otp = user.getResetPasswordToken();
+
+    await user.save({ validateBeforeSave: false });
+
+    const message = `You requested to log in via OTP. Your 6-digit code is: ${otp}\n\nThis code will expire in 10 minutes.`;
+
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: 'Your Login OTP',
+        message
+      });
+
+      res.status(200).json({ success: true, data: 'OTP sent to email' });
+    } catch (err) {
+      console.log(err);
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpire = undefined;
+
+      await user.save({ validateBeforeSave: false });
+
+      return res.status(500).json({ success: false, message: 'Email could not be sent' });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Verify OTP and Login
+// @route   POST /api/auth/verify-otp
+const verifyOtpAndLogin = async (req, res, next) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return res.status(400).json({ success: false, message: 'Please provide email and OTP' });
+    }
+
+    // Get hashed OTP
+    const resetPasswordToken = crypto
+      .createHash('sha256')
+      .update(otp)
+      .digest('hex');
+
+    const user = await User.findOne({
+      email: email.toLowerCase(),
+      resetPasswordToken,
+      resetPasswordExpire: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: 'Invalid or expired OTP' });
+    }
+
+    // Clear OTP fields
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    const token = generateToken(user._id);
+
+    try {
+      if (mongoose.connection.readyState === 1) {
+        await ActivityLog.create({
+          userId: user._id,
+          userName: user.name,
+          action: 'USER_LOGIN_OTP',
+          details: `User ${user.email} logged in via OTP.`,
+          level: 'info'
+        });
+      }
+    } catch (logErr) {
+      console.log('Failed to log login activity:', logErr.message);
+    }
+
+    res.status(200).json({
+      success: true,
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar,
+        phone: user.phone,
+        agencyId: user.agencyId,
+        twoFactorEnabled: user.twoFactorEnabled,
+        savedProperties: user.savedProperties || []
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   register,
   login,
   logout,
   getMe,
   updateProfile,
-  toggleWishlist
+  toggleWishlist,
+  forgotPassword,
+  verifyOtpAndLogin
 };

@@ -16,6 +16,7 @@ import AgencyDetailPage from './pages/AgencyDetailPage';
 import BlogsPage from './pages/BlogsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 
 import WishlistPage from './pages/WishlistPage';
 
@@ -31,8 +32,12 @@ const AppLayout = ({ isAIChatOpen, setIsAIChatOpen }) => {
   const { authModalOpen, closeAuthModal, authModalMessage } = useAuth();
   const location = useLocation();
 
-  // Hide Navbar & Footer on login and register pages until user signs in and navigates away
-  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+  // Hide Navbar & Footer on login, register, and password reset pages until user signs in and navigates away
+  const isAuthPage = 
+    location.pathname === '/login' || 
+    location.pathname === '/register' ||
+    location.pathname === '/forgot-password' ||
+    location.pathname.startsWith('/reset-password');
 
   return (
     <div className="min-h-screen flex flex-col justify-between bg-slate-950 text-slate-100">
@@ -49,6 +54,7 @@ const AppLayout = ({ isAIChatOpen, setIsAIChatOpen }) => {
           <Route path="/wishlist" element={<WishlistPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
           {/* Dashboards */}
           <Route path="/dashboard/admin" element={<AdminDashboard />} />
