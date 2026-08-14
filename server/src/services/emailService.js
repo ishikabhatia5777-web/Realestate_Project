@@ -1,31 +1,40 @@
 const nodemailer = require('nodemailer');
 
-// ─── Create Transporter with Connection Pooling ─────────────────────────────
-let cachedTransporter = null;
+// ─── Production URL (used as fallback for email links) ───────────────────────
+const PRODUCTION_CLIENT_URL = 'https://realestate-project-lake.vercel.app';
 
-const createTransporter = () => {
-  if (cachedTransporter) return cachedTransporter;
-  if (process.env.GMAIL_USER && process.env.GMAIL_PASS) {
-    cachedTransporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS
-      },
-      pool: true,
-      maxConnections: 5,
-      maxMessages: 100
-    });
-    return cachedTransporter;
+// ─── Get Client URL (always prefers env, falls back to production URL) ───────
+const getClientUrl = () => {
+  const url = process.env.CLIENT_URL || PRODUCTION_CLIENT_URL;
+  // Never use localhost in production
+  if (url.includes('localhost') && process.env.NODE_ENV === 'production') {
+    return PRODUCTION_CLIENT_URL;
   }
-  return null;
+  return url;
 };
 
-// ─── Helper: send or log ────────────────────────────────────────────────────
-const sendEmail = async ({ to, subject, html, replyTo }) => {
+// ─── Create a fresh Gmail transporter ───────────────────────────────────────
+const createTransporter = () => {
   const user = process.env.GMAIL_USER || 'ishbhatia484@gmail.com';
   const pass = process.env.GMAIL_PASS || 'oxpraalpoqkgojkj';
 
+  if (!user || !pass) {
+    console.error('❌ Email credentials missing: GMAIL_USER or GMAIL_PASS not set');
+    return null;
+  }
+
+  return nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
+    auth: { user, pass },
+    tls: { rejectUnauthorized: false }
+  });
+};
+
+// ─── Helper: send email ──────────────────────────────────────────────────────
+const sendEmail = async ({ to, subject, html, replyTo }) => {
+  const user = process.env.GMAIL_USER || 'ishbhatia484@gmail.com';
   const mailOptions = {
     from: `"AuraEstates Platform" <${user}>`,
     to,
@@ -34,6 +43,7 @@ const sendEmail = async ({ to, subject, html, replyTo }) => {
     html
   };
 
+  // Attempt 1: fresh transporter via port 587 (TLS)
   try {
     const transporter = createTransporter();
     if (transporter) {
@@ -42,19 +52,25 @@ const sendEmail = async ({ to, subject, html, replyTo }) => {
       return;
     }
   } catch (err) {
-    console.error(`⚠️ Pooled transport notice:`, err.message);
+    console.error(`⚠️ Primary transport failed (${err.code || err.message}), trying SSL fallback...`);
   }
 
-  // Direct fallback transport
+  // Attempt 2: SSL on port 465
   try {
-    const directTransporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: { user, pass }
+    const sslUser = process.env.GMAIL_USER || 'ishbhatia484@gmail.com';
+    const sslPass = process.env.GMAIL_PASS || 'oxpraalpoqkgojkj';
+    const sslTransporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: { user: sslUser, pass: sslPass },
+      tls: { rejectUnauthorized: false }
     });
-    await directTransporter.sendMail(mailOptions);
-    console.log(`✅ Email sent via direct transport to ${to}: ${subject}`);
+    await sslTransporter.sendMail(mailOptions);
+    console.log(`✅ Email sent via SSL to ${to}: ${subject}`);
   } catch (err) {
-    console.error(`❌ Email failed to ${to}:`, err.message);
+    console.error(`❌ Email failed completely to ${to} — ${err.message}`);
+    console.error(`   GMAIL_USER set: ${!!process.env.GMAIL_USER}, NODE_ENV: ${process.env.NODE_ENV}`);
   }
 };
 
@@ -108,7 +124,7 @@ const sendPropertySubmissionEmail = async ({ toEmail, toName, propertyTitle }) =
 
 // ─── Property Approved ───────────────────────────────────────────────────────
 const sendPropertyApprovalEmail = async ({ toEmail, toName, propertyTitle, propertyId }) => {
-  const propertyUrl = `${process.env.CLIENT_URL || 'http://localhost:3000'}/properties/${propertyId}`;
+  const propertyUrl = `${getClientUrl()}/properties/${propertyId}`;
   await sendEmail({
     to: toEmail,
     subject: `✅ Property Approved — "${propertyTitle}" is now Live!`,
@@ -146,7 +162,7 @@ const sendPropertyRejectionEmail = async ({ toEmail, toName, propertyTitle, reas
 
 // ─── Expert Connection Alert ──────────────────────────────────────────────────
 const sendExpertConnectionAlert = async ({ agentEmail, agentName, buyerName, buyerEmail, propertyTitle, propertyId, buyerMessage }) => {
-  const propertyUrl = `${process.env.CLIENT_URL || 'http://localhost:3000'}/properties/${propertyId}`;
+  const propertyUrl = `${getClientUrl()}/properties/${propertyId}`;
   const now = new Date().toLocaleString('en-AU', { timeZone: 'Australia/Sydney', dateStyle: 'medium', timeStyle: 'short' });
 
   await sendEmail({
@@ -203,7 +219,7 @@ const sendInspectionRequestAlert = async ({ toEmail, toName, buyerName, buyerEma
     console.log(`⚠️ Suppressed duplicate inspection alert email for ${buyerEmail}`);
     return;
   }
-  const propertyUrl = `${process.env.CLIENT_URL || 'http://localhost:3000'}/properties/${propertyId || ''}`;
+  const propertyUrl = `${getClientUrl()}/properties/${propertyId || ''}`;
   const formattedDate = date ? new Date(date).toLocaleDateString('en-AU', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : date;
 
   await sendEmail({
@@ -314,7 +330,7 @@ const sendOfferRequestAlert = async ({ toEmail, toName, buyerName, buyerEmail, b
     console.log(`⚠️ Suppressed duplicate offer alert email for ${buyerEmail}`);
     return;
   }
-  const propertyUrl = `${process.env.CLIENT_URL || 'http://localhost:3000'}/properties/${propertyId || ''}`;
+  const propertyUrl = `${getClientUrl()}/properties/${propertyId || ''}`;
   const formattedOffer = new Intl.NumberFormat('en-AU', { style: 'currency', currency: 'AUD', maximumFractionDigits: 0 }).format(offerAmount || 0);
   const formattedDeposit = new Intl.NumberFormat('en-AU', { style: 'currency', currency: 'AUD', maximumFractionDigits: 0 }).format(depositAmount || 0);
   const now = new Date().toLocaleString('en-AU', { timeZone: 'Australia/Sydney', dateStyle: 'medium', timeStyle: 'short' });
@@ -429,7 +445,7 @@ const sendReservationAlert = async ({ toEmail, toName, buyerName, buyerEmail, bu
     console.log(`⚠️ Suppressed duplicate reservation alert email for ${buyerEmail}`);
     return;
   }
-  const propertyUrl = `${process.env.CLIENT_URL || 'http://localhost:3000'}/properties/${propertyId || ''}`;
+  const propertyUrl = `${getClientUrl()}/properties/${propertyId || ''}`;
   const formattedAmount = new Intl.NumberFormat('en-AU', { style: 'currency', currency: 'AUD', maximumFractionDigits: 0 }).format(amount || 0);
   const now = new Date().toLocaleString('en-AU', { timeZone: 'Australia/Sydney', dateStyle: 'medium', timeStyle: 'short' });
 
@@ -493,7 +509,7 @@ const sendReservationAlert = async ({ toEmail, toName, buyerName, buyerEmail, bu
 // ─── RESERVATION CONFIRMATION: Platform → Buyer ───────────────────────────────
 const sendReservationConfirmation = async ({ toEmail, toName, propertyTitle, propertyId, amount, packageType, paymentMethod, transactionId }) => {
   if (!toEmail) return;
-  const propertyUrl = `${process.env.CLIENT_URL || 'http://localhost:3000'}/properties/${propertyId || ''}`;
+  const propertyUrl = `${getClientUrl()}/properties/${propertyId || ''}`;
   const formattedAmount = new Intl.NumberFormat('en-AU', { style: 'currency', currency: 'AUD', maximumFractionDigits: 0 }).format(amount || 0);
   const now = new Date().toLocaleString('en-AU', { timeZone: 'Australia/Sydney', dateStyle: 'medium', timeStyle: 'short' });
 
