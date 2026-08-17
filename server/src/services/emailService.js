@@ -265,8 +265,13 @@ const isDuplicateAlert = (key) => {
 
 // ─── INSPECTION REQUEST: Buyer → Seller/Agent ─────────────────────────────────
 const sendInspectionRequestAlert = async ({ toEmail, toName, buyerName, buyerEmail, buyerPhone, propertyTitle, propertyId, date, timeSlot, type, notes }) => {
-  if (!toEmail) return;
-  const dedupKey = `inspection_${buyerEmail}_${propertyId}_${date}_${timeSlot}_${toEmail}`;
+  if (!toEmail) {
+    console.warn('[EMAIL] sendInspectionRequestAlert called with no toEmail — skipping.');
+    return;
+  }
+  // NOTE: dedup key intentionally does NOT include toEmail so the same booking
+  // can still be sent to both the agent AND the admin without one blocking the other.
+  const dedupKey = `inspection_${buyerEmail}_${propertyId}_${date}_${timeSlot}`;
   if (isDuplicateAlert(dedupKey)) {
     console.log(`⚠️ Suppressed duplicate inspection alert email for ${buyerEmail}`);
     return;
@@ -376,8 +381,12 @@ const sendInspectionStatusUpdate = async ({ toEmail, toName, propertyTitle, date
 
 // ─── OFFER REQUEST: Buyer → Seller/Agent ──────────────────────────────────────
 const sendOfferRequestAlert = async ({ toEmail, toName, buyerName, buyerEmail, buyerPhone, propertyTitle, propertyId, offerAmount, depositAmount, conditions }) => {
-  if (!toEmail) return;
-  const dedupKey = `offer_${buyerEmail}_${propertyId}_${offerAmount}_${toEmail}`;
+  if (!toEmail) {
+    console.warn('[EMAIL] sendOfferRequestAlert called with no toEmail — skipping.');
+    return;
+  }
+  // NOTE: dedup key does NOT include toEmail — see sendInspectionRequestAlert note above.
+  const dedupKey = `offer_${buyerEmail}_${propertyId}_${offerAmount}`;
   if (isDuplicateAlert(dedupKey)) {
     console.log(`⚠️ Suppressed duplicate offer alert email for ${buyerEmail}`);
     return;
@@ -491,8 +500,12 @@ const sendOfferStatusUpdate = async ({ toEmail, toName, propertyTitle, offerAmou
 
 // ─── RESERVATION / BUY PROPERTY: Buyer → Seller/Agent ────────────────────────
 const sendReservationAlert = async ({ toEmail, toName, buyerName, buyerEmail, buyerPhone, propertyTitle, propertyId, amount, packageType, paymentMethod }) => {
-  if (!toEmail) return;
-  const dedupKey = `reservation_${buyerEmail}_${propertyId}_${amount}_${toEmail}`;
+  if (!toEmail) {
+    console.warn('[EMAIL] sendReservationAlert called with no toEmail — skipping.');
+    return;
+  }
+  // NOTE: dedup key does NOT include toEmail — see sendInspectionRequestAlert note above.
+  const dedupKey = `reservation_${buyerEmail}_${propertyId}_${amount}`;
   if (isDuplicateAlert(dedupKey)) {
     console.log(`⚠️ Suppressed duplicate reservation alert email for ${buyerEmail}`);
     return;

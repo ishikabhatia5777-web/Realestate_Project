@@ -55,16 +55,18 @@ const createBooking = async (req, res, next) => {
     // ─── GUARANTEED ADMIN EMAIL NOTIFICATION ───
     // Always fire emails to the configured admin address regardless of DB status
     const adminEmail = process.env.GMAIL_USER;
+    // FIX: Declare propertyTitle with let BEFORE any try/catch block that references it
+    let propertyTitle = `Property (ID: ${propertyId})`;
 
     try {
       if (mongoose.connection.readyState === 1 && booking && booking.propertyId) {
         const prop = await Property.findById(booking.propertyId).populate('agentId ownerId');
         if (prop) {
-          propertyTitle = prop.title;
+          propertyTitle = prop.title; // Now correctly assigned to the outer-scoped variable
           const recipient = prop.agentId || prop.ownerId;
-          
-          // 1. Send to Agent/Owner
-          if (recipient && recipient.email) {
+
+          // 1. Send to Agent/Owner (fire-and-forget, non-blocking)
+          if (recipient && recipient.email && recipient.email !== adminEmail) {
             sendInspectionRequestAlert({
               toEmail: recipient.email,
               toName: recipient.name,
@@ -80,7 +82,7 @@ const createBooking = async (req, res, next) => {
             }).catch(err => console.error('Failed to send inspection alert to agent:', err.message));
           }
 
-          // 2. Send to dynamic DB admins
+          // 2. Send to DB admins that are NOT the same as the GMAIL_USER (fire-and-forget)
           const admins = await mongoose.model('User').find({ role: { $in: ['admin', 'super_admin'] } });
           for (const admin of admins) {
             if (admin.email && admin.email !== recipient?.email && admin.email !== adminEmail) {
@@ -107,10 +109,10 @@ const createBooking = async (req, res, next) => {
 
     let emailError = null;
 
-    // 3. Guaranteed Admin Email (Always fires)
+    // 3. Guaranteed Admin Email (always awaited so errors surface to the response)
     if (adminEmail) {
       try {
-        console.log(`📧 [BOOKING] Sending guaranteed booking email to admin: ${adminEmail}`);
+        console.log(`📧 [BOOKING] Sending guaranteed booking email to admin: ${adminEmail} for property: "${propertyTitle}"`);
         await sendInspectionRequestAlert({
           toEmail: adminEmail,
           toName: 'Admin',
@@ -124,19 +126,21 @@ const createBooking = async (req, res, next) => {
           type: type || 'In-Person',
           notes: notes || ''
         });
+        console.log(`✅ [BOOKING] Admin email sent successfully to ${adminEmail}`);
       } catch (err) {
-        console.error('Failed to send guaranteed admin inspection alert:', err.message);
+        console.error('❌ [BOOKING] Failed to send admin inspection alert:', err.message);
         emailError = err.message;
       }
     } else {
-      console.warn('⚠️ GMAIL_USER is not defined. Skipping guaranteed admin booking alert.');
-      emailError = "Email System Error: GMAIL_USER is not defined in environment variables.";
+      const msg = 'Email System Error: GMAIL_USER is not defined in Render environment variables.';
+      console.warn('⚠️', msg);
+      emailError = msg;
     }
 
     const responsePayload = { success: true, booking };
     if (emailError) {
       responsePayload.emailError = emailError;
-      responsePayload.message = "Booking was created successfully, but the email notification to the admin failed to send.";
+      responsePayload.message = 'Booking saved, but admin email notification failed.';
     }
 
     res.status(201).json(responsePayload);

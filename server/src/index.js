@@ -92,7 +92,10 @@ app.get('/api/health/email', async (req, res) => {
 app.post('/api/health/email/test', async (req, res) => {
   try {
     const { sendEmail } = require('./services/emailService');
-    const to = req.body.to || process.env.GMAIL_USER || 'ishbhatia484@gmail.com';
+    const to = req.body.to || process.env.GMAIL_USER;
+    if (!to) {
+      return res.status(500).json({ success: false, error: 'No recipient: set GMAIL_USER in Render env vars or pass { "to": "email@example.com" } in the request body' });
+    }
     const result = await sendEmail({
       to,
       subject: '✅ AuraEstates Email Test — System Working',
@@ -101,11 +104,91 @@ app.post('/api/health/email/test', async (req, res) => {
         <p>This is a test email sent from the production server to confirm the email system is working correctly.</p>
         <p><strong>Server Time:</strong> ${new Date().toISOString()}</p>
         <p><strong>NODE_ENV:</strong> ${process.env.NODE_ENV}</p>
-        <p><strong>GMAIL_USER:</strong> ${process.env.GMAIL_USER || 'using fallback'}</p>
+        <p><strong>GMAIL_USER:</strong> ${process.env.GMAIL_USER ? '✅ SET' : '❌ NOT SET'}</p>
+        <p><strong>GMAIL_PASS:</strong> ${process.env.GMAIL_PASS ? '✅ SET' : '❌ NOT SET'}</p>
         <p style="color:#34d399;">✅ If you received this email, the email system is working correctly!</p>
       </div>`
     });
     res.json({ success: true, message: `Test email sent to ${to}`, result });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Booking-specific email test (POST — simulates a real Book Inspection form submission)
+app.post('/api/health/email/test-booking', async (req, res) => {
+  try {
+    const { sendInspectionRequestAlert } = require('./services/emailService');
+    const adminEmail = process.env.GMAIL_USER;
+    if (!adminEmail) {
+      return res.status(500).json({ success: false, error: 'GMAIL_USER is not set in Render environment variables.' });
+    }
+    await sendInspectionRequestAlert({
+      toEmail: adminEmail,
+      toName: 'Admin',
+      buyerName: req.body.buyerName || 'Test Buyer',
+      buyerEmail: req.body.buyerEmail || adminEmail,
+      buyerPhone: req.body.buyerPhone || '+61 400 000 000',
+      propertyTitle: req.body.propertyTitle || 'Test Property — Render Email Diagnostic',
+      propertyId: '000000000000000000000000',
+      date: req.body.date || new Date(Date.now() + 86400000).toISOString().split('T')[0],
+      timeSlot: req.body.timeSlot || '10:00 AM',
+      type: 'In-Person',
+      notes: 'This is a test booking email sent from the Render health check endpoint.'
+    });
+    res.json({ success: true, message: `Booking test email sent to ${adminEmail}` });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Offer-specific email test
+app.post('/api/health/email/test-offer', async (req, res) => {
+  try {
+    const { sendOfferRequestAlert } = require('./services/emailService');
+    const adminEmail = process.env.GMAIL_USER;
+    if (!adminEmail) {
+      return res.status(500).json({ success: false, error: 'GMAIL_USER is not set in Render environment variables.' });
+    }
+    await sendOfferRequestAlert({
+      toEmail: adminEmail,
+      toName: 'Admin',
+      buyerName: req.body.buyerName || 'Test Buyer',
+      buyerEmail: req.body.buyerEmail || adminEmail,
+      buyerPhone: req.body.buyerPhone || '+61 400 000 000',
+      propertyTitle: req.body.propertyTitle || 'Test Property — Render Email Diagnostic',
+      propertyId: '000000000000000000000000',
+      offerAmount: req.body.offerAmount || 1200000,
+      depositAmount: req.body.depositAmount || 50000,
+      conditions: 'Test offer — subject to building inspection'
+    });
+    res.json({ success: true, message: `Offer test email sent to ${adminEmail}` });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Reservation-specific email test
+app.post('/api/health/email/test-reservation', async (req, res) => {
+  try {
+    const { sendReservationAlert } = require('./services/emailService');
+    const adminEmail = process.env.GMAIL_USER;
+    if (!adminEmail) {
+      return res.status(500).json({ success: false, error: 'GMAIL_USER is not set in Render environment variables.' });
+    }
+    await sendReservationAlert({
+      toEmail: adminEmail,
+      toName: 'Admin',
+      buyerName: req.body.buyerName || 'Test Buyer',
+      buyerEmail: req.body.buyerEmail || adminEmail,
+      buyerPhone: req.body.buyerPhone || '+61 400 000 000',
+      propertyTitle: req.body.propertyTitle || 'Test Property — Render Email Diagnostic',
+      propertyId: '000000000000000000000000',
+      amount: req.body.amount || 5000,
+      packageType: 'Holding Deposit',
+      paymentMethod: 'Test'
+    });
+    res.json({ success: true, message: `Reservation test email sent to ${adminEmail}` });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
