@@ -62,8 +62,53 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'online',
     timestamp: new Date(),
-    service: 'Real Estate Marketplace API Server'
+    service: 'Real Estate Marketplace API Server',
+    email: {
+      configured: !!(process.env.GMAIL_USER && process.env.GMAIL_PASS),
+      user: process.env.GMAIL_USER ? process.env.GMAIL_USER.replace(/(.{3}).*(@.*)/, '$1***$2') : 'not set'
+    }
   });
+});
+
+// Email connectivity test endpoint (GET — safe, no email sent)
+app.get('/api/health/email', async (req, res) => {
+  try {
+    const { verifyEmailConnection } = require('./services/emailService');
+    const result = await verifyEmailConnection();
+    res.json({
+      status: result.ok ? 'connected' : 'failed',
+      method: result.method || null,
+      error: result.error || null,
+      gmailUserSet: !!process.env.GMAIL_USER,
+      gmailPassSet: !!process.env.GMAIL_PASS,
+      nodeEnv: process.env.NODE_ENV
+    });
+  } catch (err) {
+    res.status(500).json({ status: 'error', error: err.message });
+  }
+});
+
+// Email send test endpoint (POST — sends a real test email)
+app.post('/api/health/email/test', async (req, res) => {
+  try {
+    const { sendEmail } = require('./services/emailService');
+    const to = req.body.to || process.env.GMAIL_USER || 'ishbhatia484@gmail.com';
+    const result = await sendEmail({
+      to,
+      subject: '✅ AuraEstates Email Test — System Working',
+      html: `<div style="font-family:Arial;padding:20px;background:#0f172a;color:#e2e8f0;border-radius:10px;">
+        <h2 style="color:#f59e0b;">🏡 AuraEstates — Email System Test</h2>
+        <p>This is a test email sent from the production server to confirm the email system is working correctly.</p>
+        <p><strong>Server Time:</strong> ${new Date().toISOString()}</p>
+        <p><strong>NODE_ENV:</strong> ${process.env.NODE_ENV}</p>
+        <p><strong>GMAIL_USER:</strong> ${process.env.GMAIL_USER || 'using fallback'}</p>
+        <p style="color:#34d399;">✅ If you received this email, the email system is working correctly!</p>
+      </div>`
+    });
+    res.json({ success: true, message: `Test email sent to ${to}`, result });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 // API Routes
@@ -113,4 +158,8 @@ const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
   console.log(`🚀 Real Estate API Server running on port ${PORT}`);
+  console.log(`📧 Email config — GMAIL_USER: ${process.env.GMAIL_USER ? '✅ set (' + process.env.GMAIL_USER + ')' : '❌ NOT SET (using fallback)'}`);
+  console.log(`📧 Email config — GMAIL_PASS: ${process.env.GMAIL_PASS ? '✅ set (hidden)' : '❌ NOT SET (using fallback)'}`);
+  console.log(`🌍 NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
+  console.log(`🔗 CLIENT_URL: ${process.env.CLIENT_URL || 'not set (using production fallback)'}`);
 });

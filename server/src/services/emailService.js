@@ -13,28 +13,48 @@ const getClientUrl = () => {
   return url;
 };
 
-// ─── Create a fresh Gmail transporter ───────────────────────────────────────
-const createTransporter = () => {
+// ─── Get Gmail credentials ───────────────────────────────────────────────────
+const getGmailCreds = () => {
   const user = process.env.GMAIL_USER || 'ishbhatia484@gmail.com';
   const pass = process.env.GMAIL_PASS || 'oxpraalpoqkgojkj';
+  return { user, pass };
+};
 
-  if (!user || !pass) {
-    console.error('❌ Email credentials missing: GMAIL_USER or GMAIL_PASS not set');
-    return null;
-  }
-
+// ─── Create a fresh Gmail transporter (TLS port 587) ────────────────────────
+const createTransporterTLS = () => {
+  const { user, pass } = getGmailCreds();
   return nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
-    secure: false,
+    secure: false, // STARTTLS
     auth: { user, pass },
-    tls: { rejectUnauthorized: false }
+    tls: { rejectUnauthorized: false },
+    connectionTimeout: 10000,
+    socketTimeout: 15000,
+    greetingTimeout: 10000,
+    pool: false
   });
 };
 
-// ─── Helper: send email ──────────────────────────────────────────────────────
+// ─── Create a fresh Gmail transporter (SSL port 465) ────────────────────────
+const createTransporterSSL = () => {
+  const { user, pass } = getGmailCreds();
+  return nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, // SSL
+    auth: { user, pass },
+    tls: { rejectUnauthorized: false },
+    connectionTimeout: 10000,
+    socketTimeout: 15000,
+    greetingTimeout: 10000,
+    pool: false
+  });
+};
+
+// ─── Helper: send email with multiple fallback strategies ────────────────────
 const sendEmail = async ({ to, subject, html, replyTo }) => {
-  const user = process.env.GMAIL_USER || 'ishbhatia484@gmail.com';
+  const { user } = getGmailCreds();
   const mailOptions = {
     from: `"AuraEstates Platform" <${user}>`,
     to,
@@ -43,34 +63,61 @@ const sendEmail = async ({ to, subject, html, replyTo }) => {
     html
   };
 
-  // Attempt 1: fresh transporter via port 587 (TLS)
+  console.log(`📧 [EMAIL] Attempting to send "${subject}" to ${to}`);
+  console.log(`   GMAIL_USER configured: ${!!process.env.GMAIL_USER}, NODE_ENV: ${process.env.NODE_ENV}`);
+
+  // Attempt 1: TLS on port 587
   try {
-    const transporter = createTransporter();
-    if (transporter) {
-      await transporter.sendMail(mailOptions);
-      console.log(`✅ Email sent to ${to}: ${subject}`);
-      return;
-    }
+    const transporter = createTransporterTLS();
+    await transporter.sendMail(mailOptions);
+    console.log(`✅ [EMAIL] Sent successfully via TLS (587) to ${to}: "${subject}"`);
+    return { success: true, method: 'TLS-587' };
   } catch (err) {
-    console.error(`⚠️ Primary transport failed (${err.code || err.message}), trying SSL fallback...`);
+    console.error(`⚠️ [EMAIL] TLS-587 failed: ${err.code || err.message}`);
   }
 
   // Attempt 2: SSL on port 465
   try {
-    const sslUser = process.env.GMAIL_USER || 'ishbhatia484@gmail.com';
-    const sslPass = process.env.GMAIL_PASS || 'oxpraalpoqkgojkj';
-    const sslTransporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
-      auth: { user: sslUser, pass: sslPass },
+    const transporter = createTransporterSSL();
+    await transporter.sendMail(mailOptions);
+    console.log(`✅ [EMAIL] Sent successfully via SSL (465) to ${to}: "${subject}"`);
+    return { success: true, method: 'SSL-465' };
+  } catch (err) {
+    console.error(`⚠️ [EMAIL] SSL-465 failed: ${err.code || err.message}`);
+  }
+
+  // Attempt 3: Gmail service shorthand
+  try {
+    const { pass } = getGmailCreds();
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: { user, pass },
       tls: { rejectUnauthorized: false }
     });
-    await sslTransporter.sendMail(mailOptions);
-    console.log(`✅ Email sent via SSL to ${to}: ${subject}`);
+    await transporter.sendMail(mailOptions);
+    console.log(`✅ [EMAIL] Sent successfully via Gmail service to ${to}: "${subject}"`);
+    return { success: true, method: 'Gmail-Service' };
   } catch (err) {
-    console.error(`❌ Email failed completely to ${to} — ${err.message}`);
-    console.error(`   GMAIL_USER set: ${!!process.env.GMAIL_USER}, NODE_ENV: ${process.env.NODE_ENV}`);
+    console.error(`❌ [EMAIL] All transport attempts failed for ${to} — ${err.message}`);
+    console.error(`   GMAIL_USER: ${user}, NODE_ENV: ${process.env.NODE_ENV}`);
+    return { success: false, error: err.message };
+  }
+};
+
+// ─── Email verification helper (for health check endpoint) ──────────────────
+const verifyEmailConnection = async () => {
+  try {
+    const transporter = createTransporterTLS();
+    await transporter.verify();
+    return { ok: true, method: 'TLS-587' };
+  } catch (e1) {
+    try {
+      const transporter = createTransporterSSL();
+      await transporter.verify();
+      return { ok: true, method: 'SSL-465' };
+    } catch (e2) {
+      return { ok: false, error: e2.message };
+    }
   }
 };
 
@@ -557,5 +604,7 @@ module.exports = {
   sendOfferRequestAlert,
   sendOfferStatusUpdate,
   sendReservationAlert,
-  sendReservationConfirmation
+  sendReservationConfirmation,
+  verifyEmailConnection,
+  sendEmail
 };
