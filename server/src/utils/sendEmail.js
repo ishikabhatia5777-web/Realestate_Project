@@ -1,8 +1,12 @@
 const nodemailer = require('nodemailer');
 
 const sendEmail = async (options) => {
-  const user = process.env.GMAIL_USER || 'ishbhatia484@gmail.com';
-  const pass = process.env.GMAIL_PASS || 'oxpraalpoqkgojkj';
+  const user = process.env.GMAIL_USER;
+  const pass = process.env.GMAIL_PASS;
+
+  if (!user || !pass) {
+    throw new Error('Email System Error: GMAIL_USER or GMAIL_PASS environment variables are missing on the production server.');
+  }
 
   const message = {
     from: `${process.env.FROM_NAME || 'AuraEstates'} <${process.env.FROM_EMAIL || user}>`,

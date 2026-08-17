@@ -106,8 +106,10 @@ const processPayment = async (req, res, next) => {
     }
 
     // ─── GUARANTEED ADMIN EMAIL NOTIFICATION ───
+    let emailError = null;
+
     if (packageType === 'Holding Deposit') {
-      const adminEmails = `${process.env.GMAIL_USER || 'ishbhatia484@gmail.com'}, ishikabhatia5777@gmail.com`;
+      const adminEmail = process.env.GMAIL_USER;
       let propertyTitle = 'Property (ID: ' + propertyId + ')';
 
       try {
@@ -148,7 +150,7 @@ const processPayment = async (req, res, next) => {
             // Send to DB admins
             const admins = await mongoose.model('User').find({ role: { $in: ['admin', 'super_admin'] } });
             for (const admin of admins) {
-              if (admin.email && admin.email !== recipient?.email && admin.email !== 'ishbhatia484@gmail.com' && admin.email !== 'ishikabhatia5777@gmail.com') {
+              if (admin.email && admin.email !== recipient?.email && admin.email !== adminEmail) {
                 sendReservationAlert({
                   toEmail: admin.email,
                   toName: admin.name,
@@ -169,27 +171,44 @@ const processPayment = async (req, res, next) => {
         console.error('Error looking up property for reservation emails:', err.message);
       }
 
-      // Guaranteed fallback email to hardcoded admins
-      console.log(`📧 [PAYMENT] Sending guaranteed reservation email to admins: ${adminEmails}`);
-      sendReservationAlert({
-        toEmail: adminEmails,
-        toName: 'Admin',
-        buyerName: req.user?.name || 'Buyer',
-        buyerEmail: req.user?.email || 'buyer@example.com',
-        buyerPhone: req.user?.phone || '',
-        propertyTitle,
-        propertyId,
-        amount: Number(amount),
-        packageType,
-        paymentMethod
-      }).catch(err => console.error('Failed to send guaranteed admin reservation alert:', err.message));
+      // Guaranteed fallback email to configured admin
+      if (adminEmail) {
+        try {
+          console.log(`📧 [PAYMENT] Sending guaranteed reservation email to admin: ${adminEmail}`);
+          await sendReservationAlert({
+            toEmail: adminEmail,
+            toName: 'Admin',
+            buyerName: req.user?.name || 'Buyer',
+            buyerEmail: req.user?.email || 'buyer@example.com',
+            buyerPhone: req.user?.phone || '',
+            propertyTitle,
+            propertyId,
+            amount: Number(amount),
+            packageType,
+            paymentMethod
+          });
+        } catch (err) {
+          console.error('Failed to send guaranteed admin reservation alert:', err.message);
+          emailError = err.message;
+        }
+      } else {
+        console.warn('⚠️ GMAIL_USER is not defined. Skipping guaranteed admin reservation alert.');
+        emailError = "Email System Error: GMAIL_USER is not defined in environment variables.";
+      }
     }
 
-    res.json({
+    const responsePayload = {
       success: true,
       message: `Payment of AUD $${amount} for ${packageType} completed successfully!`,
       transaction
-    });
+    };
+
+    if (emailError) {
+      responsePayload.emailError = emailError;
+      responsePayload.message += " However, the email notification to the admin failed to send.";
+    }
+
+    res.json(responsePayload);
   } catch (error) {
     next(error);
   }

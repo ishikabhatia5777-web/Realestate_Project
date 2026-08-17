@@ -15,8 +15,13 @@ const getClientUrl = () => {
 
 // ─── Get Gmail credentials ───────────────────────────────────────────────────
 const getGmailCreds = () => {
-  const user = process.env.GMAIL_USER || 'ishbhatia484@gmail.com';
-  const pass = process.env.GMAIL_PASS || 'oxpraalpoqkgojkj';
+  const user = process.env.GMAIL_USER;
+  const pass = process.env.GMAIL_PASS;
+  
+  if (!user || !pass) {
+    throw new Error('Email System Error: GMAIL_USER or GMAIL_PASS environment variables are missing on the production server.');
+  }
+  
   return { user, pass };
 };
 
@@ -99,8 +104,8 @@ const sendEmail = async ({ to, subject, html, replyTo }) => {
     return { success: true, method: 'Gmail-Service' };
   } catch (err) {
     console.error(`❌ [EMAIL] All transport attempts failed for ${to} — ${err.message}`);
-    console.error(`   GMAIL_USER: ${user}, NODE_ENV: ${process.env.NODE_ENV}`);
-    return { success: false, error: err.message };
+    console.error(`   GMAIL_USER configured: ${!!process.env.GMAIL_USER}, NODE_ENV: ${process.env.NODE_ENV}`);
+    throw new Error(`Email delivery failed: ${err.message}`);
   }
 };
 

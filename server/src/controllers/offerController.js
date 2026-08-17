@@ -45,23 +45,42 @@ const createOffer = async (req, res, next) => {
       };
     }
 
-    // Send Email notification directly to Admin (ishbhatia484@gmail.com & ishikabhatia5777@gmail.com)
-    const adminEmail = `${process.env.GMAIL_USER || 'ishbhatia484@gmail.com'}, ishikabhatia5777@gmail.com`;
-    console.log(`📧 [OFFER] Sending offer email to ${adminEmail} for property: ${propertyTitle}`);
-    sendOfferRequestAlert({
-      toEmail: adminEmail,
-      toName: 'Admin',
-      buyerName: req.user.name || 'Buyer',
-      buyerEmail: req.user.email || 'buyer@example.com',
-      buyerPhone: req.user.phone || '',
-      propertyTitle,
-      propertyId,
-      offerAmount,
-      depositAmount: depositAmount || 10000,
-      conditions: conditions || 'Subject to building inspection'
-    }).then(() => console.log('✅ Offer email sent!')).catch(err => console.error('❌ Offer email error:', err.message));
+    // Send Email notification directly to Admin
+    const adminEmail = process.env.GMAIL_USER;
+    let emailError = null;
 
-    res.status(201).json({ success: true, offer });
+    if (adminEmail) {
+      try {
+        console.log(`📧 [OFFER] Sending offer email to ${adminEmail} for property: ${propertyTitle}`);
+        await sendOfferRequestAlert({
+          toEmail: adminEmail,
+          toName: 'Admin',
+          buyerName: req.user.name || 'Buyer',
+          buyerEmail: req.user.email || 'buyer@example.com',
+          buyerPhone: req.user.phone || '',
+          propertyTitle,
+          propertyId,
+          offerAmount,
+          depositAmount: depositAmount || 10000,
+          conditions: conditions || 'Subject to building inspection'
+        });
+        console.log('✅ Offer email sent!');
+      } catch (err) {
+        console.error('❌ Offer email error:', err.message);
+        emailError = err.message;
+      }
+    } else {
+      console.warn('⚠️ GMAIL_USER is not defined. Skipping guaranteed admin offer alert.');
+      emailError = "Email System Error: GMAIL_USER is not defined in environment variables.";
+    }
+
+    const responsePayload = { success: true, offer };
+    if (emailError) {
+      responsePayload.emailError = emailError;
+      responsePayload.message = "Offer was submitted successfully, but the email notification to the admin failed to send.";
+    }
+
+    res.status(201).json(responsePayload);
   } catch (error) {
     next(error);
   }
