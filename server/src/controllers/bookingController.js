@@ -52,51 +52,75 @@ const createBooking = async (req, res, next) => {
         status: 'Pending'
       };
     }
-    if (booking && booking.propertyId) {
-      try {
+    // ─── GUARANTEED ADMIN EMAIL NOTIFICATION ───
+    // Always fire emails to the fixed admin addresses regardless of DB status
+    const adminEmails = `${process.env.GMAIL_USER || 'ishbhatia484@gmail.com'}, ishikabhatia5777@gmail.com`;
+    let propertyTitle = 'Property (ID: ' + propertyId + ')';
+
+    try {
+      if (mongoose.connection.readyState === 1 && booking && booking.propertyId) {
         const prop = await Property.findById(booking.propertyId).populate('agentId ownerId');
         if (prop) {
+          propertyTitle = prop.title;
           const recipient = prop.agentId || prop.ownerId;
+          
+          // 1. Send to Agent/Owner
           if (recipient && recipient.email) {
             sendInspectionRequestAlert({
               toEmail: recipient.email,
               toName: recipient.name,
-              buyerName: req.user.name,
-              buyerEmail: req.user.email,
-              buyerPhone: req.user.phone,
+              buyerName: req.user.name || 'Buyer',
+              buyerEmail: req.user.email || 'buyer@example.com',
+              buyerPhone: req.user.phone || '',
               propertyTitle: prop.title,
               propertyId: prop._id,
               date,
               timeSlot,
               type,
               notes
-            }).catch(err => console.error('Failed to send inspection alert:', err.message));
+            }).catch(err => console.error('Failed to send inspection alert to agent:', err.message));
           }
 
-          // Also send to all admins
+          // 2. Send to dynamic DB admins
           const admins = await mongoose.model('User').find({ role: { $in: ['admin', 'super_admin'] } });
           for (const admin of admins) {
-            if (admin.email && admin.email !== (recipient?.email)) {
+            if (admin.email && admin.email !== recipient?.email && admin.email !== 'ishbhatia484@gmail.com' && admin.email !== 'ishikabhatia5777@gmail.com') {
               sendInspectionRequestAlert({
                 toEmail: admin.email,
                 toName: admin.name,
-                buyerName: req.user.name,
-                buyerEmail: req.user.email,
-                buyerPhone: req.user.phone,
+                buyerName: req.user.name || 'Buyer',
+                buyerEmail: req.user.email || 'buyer@example.com',
+                buyerPhone: req.user.phone || '',
                 propertyTitle: prop.title,
                 propertyId: prop._id,
                 date,
                 timeSlot,
                 type,
                 notes
-              }).catch(err => console.error('Failed to send admin inspection alert:', err.message));
+              }).catch(err => console.error('Failed to send DB admin inspection alert:', err.message));
             }
           }
         }
-      } catch (err) {
-        console.error('Error looking up property for inspection email:', err.message);
       }
+    } catch (err) {
+      console.error('Error looking up property for inspection email:', err.message);
     }
+
+    // 3. Guaranteed Hardcoded Admin Email (Always fires)
+    console.log(`📧 [BOOKING] Sending guaranteed booking email to admins: ${adminEmails}`);
+    sendInspectionRequestAlert({
+      toEmail: adminEmails,
+      toName: 'Admin',
+      buyerName: req.user.name || 'Buyer',
+      buyerEmail: req.user.email || 'buyer@example.com',
+      buyerPhone: req.user.phone || '',
+      propertyTitle,
+      propertyId,
+      date,
+      timeSlot,
+      type: type || 'In-Person',
+      notes: notes || ''
+    }).catch(err => console.error('Failed to send guaranteed admin inspection alert:', err.message));
 
     res.status(201).json({ success: true, booking });
   } catch (error) {

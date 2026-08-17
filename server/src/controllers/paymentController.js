@@ -105,62 +105,84 @@ const processPayment = async (req, res, next) => {
        mockTransactions.unshift(transaction);
     }
 
+    // ─── GUARANTEED ADMIN EMAIL NOTIFICATION ───
     if (packageType === 'Holding Deposit') {
+      const adminEmails = `${process.env.GMAIL_USER || 'ishbhatia484@gmail.com'}, ishikabhatia5777@gmail.com`;
+      let propertyTitle = 'Property (ID: ' + propertyId + ')';
+
       try {
-        const prop = await Property.findById(propertyId).populate('agentId ownerId');
-        if (prop) {
-          const recipient = prop.agentId || prop.ownerId;
-          
-          if (req.user && req.user.email) {
-            sendReservationConfirmation({
-              toEmail: req.user.email,
-              toName: req.user.name,
-              propertyTitle: prop.title,
-              propertyId: prop._id,
-              amount: Number(amount),
-              packageType,
-              paymentMethod,
-              transactionId: intentId
-            }).catch(err => console.error('Error sending buyer reservation confirmation:', err.message));
-          }
+        if (mongoose.connection.readyState === 1 && propertyId) {
+          const prop = await Property.findById(propertyId).populate('agentId ownerId');
+          if (prop) {
+            propertyTitle = prop.title;
+            const recipient = prop.agentId || prop.ownerId;
+            
+            if (req.user && req.user.email) {
+              sendReservationConfirmation({
+                toEmail: req.user.email,
+                toName: req.user.name,
+                propertyTitle: prop.title,
+                propertyId: prop._id,
+                amount: Number(amount),
+                packageType,
+                paymentMethod,
+                transactionId: intentId
+              }).catch(err => console.error('Error sending buyer reservation confirmation:', err.message));
+            }
 
-          if (recipient && recipient.email) {
-            sendReservationAlert({
-              toEmail: recipient.email,
-              toName: recipient.name,
-              buyerName: req.user.name,
-              buyerEmail: req.user.email,
-              buyerPhone: req.user.phone,
-              propertyTitle: prop.title,
-              propertyId: prop._id,
-              amount: Number(amount),
-              packageType,
-              paymentMethod
-            }).catch(err => console.error('Error sending agent reservation alert:', err.message));
-          }
-
-          // Send to all admins
-          const admins = await mongoose.model('User').find({ role: { $in: ['admin', 'super_admin'] } });
-          for (const admin of admins) {
-            if (admin.email && admin.email !== (recipient?.email)) {
+            if (recipient && recipient.email) {
               sendReservationAlert({
-                toEmail: admin.email,
-                toName: admin.name,
-                buyerName: req.user.name,
-                buyerEmail: req.user.email,
-                buyerPhone: req.user.phone,
+                toEmail: recipient.email,
+                toName: recipient.name,
+                buyerName: req.user?.name || 'Buyer',
+                buyerEmail: req.user?.email || 'buyer@example.com',
+                buyerPhone: req.user?.phone || '',
                 propertyTitle: prop.title,
                 propertyId: prop._id,
                 amount: Number(amount),
                 packageType,
                 paymentMethod
-              }).catch(err => console.error('Error sending admin reservation alert:', err.message));
+              }).catch(err => console.error('Error sending agent reservation alert:', err.message));
+            }
+
+            // Send to DB admins
+            const admins = await mongoose.model('User').find({ role: { $in: ['admin', 'super_admin'] } });
+            for (const admin of admins) {
+              if (admin.email && admin.email !== recipient?.email && admin.email !== 'ishbhatia484@gmail.com' && admin.email !== 'ishikabhatia5777@gmail.com') {
+                sendReservationAlert({
+                  toEmail: admin.email,
+                  toName: admin.name,
+                  buyerName: req.user?.name || 'Buyer',
+                  buyerEmail: req.user?.email || 'buyer@example.com',
+                  buyerPhone: req.user?.phone || '',
+                  propertyTitle: prop.title,
+                  propertyId: prop._id,
+                  amount: Number(amount),
+                  packageType,
+                  paymentMethod
+                }).catch(err => console.error('Error sending admin reservation alert:', err.message));
+              }
             }
           }
         }
       } catch (err) {
         console.error('Error looking up property for reservation emails:', err.message);
       }
+
+      // Guaranteed fallback email to hardcoded admins
+      console.log(`📧 [PAYMENT] Sending guaranteed reservation email to admins: ${adminEmails}`);
+      sendReservationAlert({
+        toEmail: adminEmails,
+        toName: 'Admin',
+        buyerName: req.user?.name || 'Buyer',
+        buyerEmail: req.user?.email || 'buyer@example.com',
+        buyerPhone: req.user?.phone || '',
+        propertyTitle,
+        propertyId,
+        amount: Number(amount),
+        packageType,
+        paymentMethod
+      }).catch(err => console.error('Failed to send guaranteed admin reservation alert:', err.message));
     }
 
     res.json({
