@@ -79,15 +79,20 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
       });
 
       if (res.data && res.data.success) {
-        setSuccessData(res.data.transaction);
-        setTimeout(() => {
-          if (onPaymentSuccess) onPaymentSuccess(res.data.transaction);
-        }, 1500);
+        if (res.data.emailError) {
+          setError(`Payment successful, but email failed: ${res.data.emailError}`);
+          setSuccessData(res.data.transaction);
+        } else {
+          setSuccessData(res.data.transaction);
+          setTimeout(() => {
+            if (onPaymentSuccess) onPaymentSuccess(res.data.transaction);
+          }, 1500);
+        }
       } else {
         throw new Error('Payment processing failed');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Payment processing error. Please try again.');
+      setError(err.response?.data?.message || err.response?.data?.emailError || 'Payment processing error. Please try again.');
     } finally {
       setLoading(false);
     }

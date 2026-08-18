@@ -30,16 +30,22 @@ const InspectionBookingModal = ({ property, isOpen, onClose }) => {
       });
 
       if (res.data && res.data.success) {
-        setSuccess(true);
-        // Automatically close modal after 2.5 seconds
-        setTimeout(() => {
-          setSuccess(false);
-          onClose();
-        }, 2500);
+        if (res.data.emailError) {
+          // If the booking succeeded but the email failed, show the error
+          setError(`Booking successful, but email failed: ${res.data.emailError}`);
+          setSuccess(false); // Don't show the green checkmark
+        } else {
+          setSuccess(true);
+          // Automatically close modal after 2.5 seconds
+          setTimeout(() => {
+            setSuccess(false);
+            onClose();
+          }, 2500);
+        }
       }
     } catch (err) {
       console.error('Booking failed:', err);
-      setError(err.response?.data?.message || 'Failed to confirm booking. Please try again.');
+      setError(err.response?.data?.message || err.response?.data?.emailError || 'Failed to confirm booking. Please try again.');
     } finally {
       setLoading(false);
     }

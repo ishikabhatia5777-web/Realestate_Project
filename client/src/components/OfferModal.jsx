@@ -25,11 +25,21 @@ const OfferModal = ({ property, isOpen, onClose }) => {
         conditions
       });
 
-      if (res.data.success) {
-        setSuccess(true);
+      if (res.data && res.data.success) {
+        if (res.data.emailError) {
+          setError(`Offer submitted, but email failed: ${res.data.emailError}`);
+          setSuccess(false);
+        } else {
+          setSuccess(true);
+          setTimeout(() => {
+            setSuccess(false);
+            onClose();
+          }, 2500);
+        }
       }
     } catch (err) {
-      console.error(err);
+      console.error('Offer failed:', err);
+      setError(err.response?.data?.message || err.response?.data?.emailError || 'Failed to submit offer. Please try again.');
     } finally {
       setLoading(false);
     }

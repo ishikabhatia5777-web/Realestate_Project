@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Booking = require('../models/Booking');
 const Property = require('../models/Property');
-const { sendInspectionRequestAlert } = require('../services/emailService');
+const { sendInspectionRequestAlert, sendInspectionStatusUpdate } = require('../services/emailService');
 
 // @desc    Book property inspection
 // @route   POST /api/bookings
@@ -52,53 +52,98 @@ const createBooking = async (req, res, next) => {
         status: 'Pending'
       };
     }
-    if (booking && booking.propertyId) {
-      try {
+    // ─── GUARANTEED ADMIN EMAIL NOTIFICATION ───
+    // Always fire emails to the configured admin address regardless of DB status
+    const adminEmail = process.env.GMAIL_USER;
+    // FIX: Declare propertyTitle with let BEFORE any try/catch block that references it
+    let propertyTitle = `Property (ID: ${propertyId})`;
+
+    try {
+      if (mongoose.connection.readyState === 1 && booking && booking.propertyId) {
         const prop = await Property.findById(booking.propertyId).populate('agentId ownerId');
         if (prop) {
+          propertyTitle = prop.title; // Now correctly assigned to the outer-scoped variable
           const recipient = prop.agentId || prop.ownerId;
-          if (recipient && recipient.email) {
+
+          // 1. Send to Agent/Owner (fire-and-forget, non-blocking)
+          if (recipient && recipient.email && recipient.email !== adminEmail) {
             sendInspectionRequestAlert({
               toEmail: recipient.email,
               toName: recipient.name,
-              buyerName: req.user.name,
-              buyerEmail: req.user.email,
-              buyerPhone: req.user.phone,
+              buyerName: req.user.name || 'Buyer',
+              buyerEmail: req.user.email || 'buyer@example.com',
+              buyerPhone: req.user.phone || '',
               propertyTitle: prop.title,
               propertyId: prop._id,
               date,
               timeSlot,
               type,
               notes
-            }).catch(err => console.error('Failed to send inspection alert:', err.message));
+            }).catch(err => console.error('Failed to send inspection alert to agent:', err.message));
           }
 
-          // Also send to all admins
+          // 2. Send to DB admins that are NOT the same as the GMAIL_USER (fire-and-forget)
           const admins = await mongoose.model('User').find({ role: { $in: ['admin', 'super_admin'] } });
           for (const admin of admins) {
-            if (admin.email && admin.email !== (recipient?.email)) {
+            if (admin.email && admin.email !== recipient?.email && admin.email !== adminEmail) {
               sendInspectionRequestAlert({
                 toEmail: admin.email,
                 toName: admin.name,
-                buyerName: req.user.name,
-                buyerEmail: req.user.email,
-                buyerPhone: req.user.phone,
+                buyerName: req.user.name || 'Buyer',
+                buyerEmail: req.user.email || 'buyer@example.com',
+                buyerPhone: req.user.phone || '',
                 propertyTitle: prop.title,
                 propertyId: prop._id,
                 date,
                 timeSlot,
                 type,
                 notes
-              }).catch(err => console.error('Failed to send admin inspection alert:', err.message));
+              }).catch(err => console.error('Failed to send DB admin inspection alert:', err.message));
             }
           }
         }
-      } catch (err) {
-        console.error('Error looking up property for inspection email:', err.message);
       }
+    } catch (err) {
+      console.error('Error looking up property for inspection email:', err.message);
     }
 
-    res.status(201).json({ success: true, booking });
+    let emailError = null;
+
+    // 3. Guaranteed Admin Email (always awaited so errors surface to the response)
+    if (adminEmail) {
+      try {
+        console.log(`📧 [BOOKING] Sending guaranteed booking email to admin: ${adminEmail} for property: "${propertyTitle}"`);
+        await sendInspectionRequestAlert({
+          toEmail: adminEmail,
+          toName: 'Admin',
+          buyerName: req.user.name || 'Buyer',
+          buyerEmail: req.user.email || 'buyer@example.com',
+          buyerPhone: req.user.phone || '',
+          propertyTitle,
+          propertyId,
+          date,
+          timeSlot,
+          type: type || 'In-Person',
+          notes: notes || ''
+        });
+        console.log(`✅ [BOOKING] Admin email sent successfully to ${adminEmail}`);
+      } catch (err) {
+        console.error('❌ [BOOKING] Failed to send admin inspection alert:', err.message);
+        emailError = err.message;
+      }
+    } else {
+      const msg = 'Email System Error: GMAIL_USER is not defined in Render environment variables.';
+      console.warn('⚠️', msg);
+      emailError = msg;
+    }
+
+    const responsePayload = { success: true, booking };
+    if (emailError) {
+      responsePayload.emailError = emailError;
+      responsePayload.message = 'Booking saved, but admin email notification failed.';
+    }
+
+    res.status(201).json(responsePayload);
   } catch (error) {
     next(error);
   }
@@ -205,6 +250,30 @@ const updateBookingStatus = async (req, res, next) => {
     } catch (dbErr) {
       booking = { _id: req.params.id, status };
     }
+
+    // Send inspection status update email to the buyer
+    try {
+      if (mongoose.connection.readyState === 1) {
+        const populatedBooking = await Booking.findById(req.params.id)
+          .populate('propertyId', 'title')
+          .populate('userId', 'name email');
+
+        if (populatedBooking && populatedBooking.userId && populatedBooking.userId.email) {
+          sendInspectionStatusUpdate({
+            toEmail: populatedBooking.userId.email,
+            toName: populatedBooking.userId.name,
+            propertyTitle: populatedBooking.propertyId?.title || 'Property',
+            date: populatedBooking.date,
+            timeSlot: populatedBooking.timeSlot,
+            status,
+            updatedBy: req.user.name || 'Agent/Seller'
+          }).catch(err => console.error('Failed to send inspection status email:', err.message));
+        }
+      }
+    } catch (emailErr) {
+      console.error('Error looking up booking for status email:', emailErr.message);
+    }
+
     res.json({ success: true, booking });
   } catch (error) {
     next(error);
