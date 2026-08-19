@@ -236,125 +236,118 @@ const PropertyDetailPage = () => {
         </div>
 
         {/* Right 4 Cols: Agent Card & Primary Actions */}
-        <div className="lg:col-span-4 space-y-6">
+        <div className="lg:col-span-4 space-y-6 sticky top-28">
           
           {/* Action Box */}
-          {((!user || user.role === 'buyer') || property.agentId) && (
-            <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4 sticky top-28">
-              {/* Show Buy, Offer, Inspection & Live Chat ONLY to Buyers or Guests */}
-            {(!user || user.role === 'buyer') && (
-              <>
-                <h3 className="text-base font-bold text-white">Take Action</h3>
-                
-                <button
-                  onClick={() => {
-                    if (requireAuth('Sign in to purchase or reserve this property')) {
-                      setIsPaymentOpen(true);
-                    }
-                  }}
-                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-slate-950 font-black text-sm hover:from-emerald-400 hover:to-emerald-500 transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center space-x-2"
-                >
-                  <ShoppingBag className="w-4.5 h-4.5" />
-                  <span>{property.listingType === 'Rent' ? 'Rent Property Now' : 'Buy Property (Reserve Now)'}</span>
-                </button>
+          {(!user || user.role === 'buyer') && (
+            <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
+              <h3 className="text-base font-bold text-white">Take Action</h3>
+              
+              <button
+                onClick={() => {
+                  if (requireAuth('Sign in to purchase or reserve this property')) {
+                    setIsPaymentOpen(true);
+                  }
+                }}
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-slate-950 font-black text-sm hover:from-emerald-400 hover:to-emerald-500 transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center space-x-2"
+              >
+                <ShoppingBag className="w-4.5 h-4.5" />
+                <span>{property.listingType === 'Rent' ? 'Rent Property Now' : 'Buy Property (Reserve Now)'}</span>
+              </button>
 
-                <button
-                  onClick={() => {
-                    if (requireAuth('Sign in to submit an offer on this property')) {
-                      setIsOfferOpen(true);
-                    }
-                  }}
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold text-sm hover:from-amber-400 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/20"
-                >
-                  Make an Offer
-                </button>
+              <button
+                onClick={() => {
+                  if (requireAuth('Sign in to submit an offer on this property')) {
+                    setIsOfferOpen(true);
+                  }
+                }}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold text-sm hover:from-amber-400 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/20"
+              >
+                Make an Offer
+              </button>
 
-                <button
-                  onClick={() => {
-                    if (requireAuth('Sign in to book a private inspection')) {
-                      setIsBookingOpen(true);
-                    }
-                  }}
-                  className="w-full py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-sm hover:border-amber-500 transition-colors"
-                >
-                  Book Inspection
-                </button>
+              <button
+                onClick={() => {
+                  if (requireAuth('Sign in to book a private inspection')) {
+                    setIsBookingOpen(true);
+                  }
+                }}
+                className="w-full py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-sm hover:border-amber-500 transition-colors"
+              >
+                Book Inspection
+              </button>
 
-                <button
-                  onClick={() => {
-                    if (requireAuth('Sign in to start a live chat with this agent')) {
-                      setIsChatOpen(true);
-                    }
-                  }}
-                  className="w-full py-3 rounded-xl bg-cyan-950/60 border border-cyan-500/30 text-cyan-300 font-bold text-sm hover:bg-cyan-900/60 transition-colors flex items-center justify-center space-x-2"
-                >
-                  <MessageSquare className="w-4 h-4" />
-                  <span>Live Agent Chat</span>
-                </button>
-              </>
-            )}
+              <button
+                onClick={() => {
+                  if (requireAuth('Sign in to start a live chat with this agent')) {
+                    setIsChatOpen(true);
+                  }
+                }}
+                className="w-full py-3 rounded-xl bg-cyan-950/60 border border-cyan-500/30 text-cyan-300 font-bold text-sm hover:bg-cyan-900/60 transition-colors flex items-center justify-center space-x-2"
+              >
+                <MessageSquare className="w-4 h-4" />
+                <span>Live Agent Chat</span>
+              </button>
+            </div>
+          )}
 
-            {/* Agent / Agency Card */}
-            {property.agentId && (
-              <div className={`${(!user || user.role === 'buyer') ? 'pt-6 border-t border-slate-800' : ''}`}>
-                <div className="bg-slate-50 rounded-lg overflow-hidden border border-slate-200 shadow-md">
-                  {/* Header / Logo */}
-                  <div className="bg-[#fffdf8] p-4 flex justify-center border-b border-slate-200">
-                    <div className="flex items-center space-x-2">
-                      {property.agencyId?.logo ? (
-                        <img src={property.agencyId.logo} alt={property.agencyId.name} className="h-8 object-contain" />
-                      ) : (
-                        <span className="font-black text-slate-900 text-lg tracking-tight uppercase">{property.agencyId?.name || 'Listing Agency'}</span>
-                      )}
-                    </div>
-                  </div>
-                  
-                  {/* Next Inspection Banner */}
-                  <div className="bg-slate-100 px-4 py-3 flex items-center justify-between text-[13px] border-b border-slate-200">
-                    <span className="text-slate-700">
-                      <strong className="text-slate-900 font-bold">Next Inspection:</strong> Thu 20 Aug, 12:00 PM
-                    </span>
-                    <Calendar className="w-5 h-5 text-slate-800" />
-                  </div>
-
-                  <div className="p-6 text-center space-y-5">
-                    {/* Agent Avatar with Chevrons (Aesthetic) */}
-                    <div className="flex items-center justify-between">
-                      <button className="p-1 text-slate-800 hover:text-slate-600 transition-colors">
-                        <ChevronLeft className="w-6 h-6" />
-                      </button>
-                      <img
-                        src={property.agentId.avatar || 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400'}
-                        alt={property.agentId.name}
-                        className="w-36 h-36 rounded-full object-cover shadow-sm mx-auto"
-                      />
-                      <button className="p-1 text-slate-800 hover:text-slate-600 transition-colors">
-                        <ChevronRight className="w-6 h-6" />
-                      </button>
-                    </div>
-
-                    {/* Agent Name & Agency */}
-                    <div>
-                      <h4 className="text-xl font-bold text-[#14234b]">{property.agentId.name}</h4>
-                      <p className="text-[13px] text-slate-600 mt-1">{property.agencyId?.name || 'Listing Agent'}</p>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="space-y-3 pt-2">
-                      <a href={`tel:${property.agentId.phone || '+61400000000'}`} className="w-full flex items-center justify-center space-x-2 py-3 rounded-md border border-[#14234b] text-[#14234b] font-bold hover:bg-slate-100 transition-colors">
-                        <Phone className="w-5 h-5" />
-                        <span>Call</span>
-                      </a>
-                      <a href={`mailto:${property.agentId.email || 'agent@example.com'}`} className="w-full flex items-center justify-center space-x-2 py-3 rounded-md bg-[#e31837] text-white font-bold hover:bg-[#c41530] transition-colors">
-                        <Mail className="w-5 h-5" />
-                        <span>Email</span>
-                      </a>
-                    </div>
-                  </div>
+          {/* Agent / Agency Card */}
+          {property.agentId && (
+            <div className="bg-slate-50 rounded-lg overflow-hidden border border-slate-200 shadow-md">
+              {/* Header / Logo */}
+              <div className="bg-[#fffdf8] p-4 flex justify-center border-b border-slate-200">
+                <div className="flex items-center space-x-2">
+                  {property.agencyId?.logo ? (
+                    <img src={property.agencyId.logo} alt={property.agencyId.name} className="h-8 object-contain" />
+                  ) : (
+                    <span className="font-black text-slate-900 text-lg tracking-tight uppercase">{property.agencyId?.name || 'Listing Agency'}</span>
+                  )}
                 </div>
               </div>
-            )}
-          </div>
+              
+              {/* Next Inspection Banner */}
+              <div className="bg-slate-100 px-4 py-3 flex items-center justify-between text-[13px] border-b border-slate-200">
+                <span className="text-slate-700">
+                  <strong className="text-slate-900 font-bold">Next Inspection:</strong> Thu 20 Aug, 12:00 PM
+                </span>
+                <Calendar className="w-5 h-5 text-slate-800" />
+              </div>
+
+              <div className="p-6 text-center space-y-5">
+                {/* Agent Avatar with Chevrons (Aesthetic) */}
+                <div className="flex items-center justify-between">
+                  <button className="p-1 text-slate-800 hover:text-slate-600 transition-colors">
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
+                  <img
+                    src={property.agentId.avatar || 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400'}
+                    alt={property.agentId.name}
+                    className="w-36 h-36 rounded-full object-cover shadow-sm mx-auto"
+                  />
+                  <button className="p-1 text-slate-800 hover:text-slate-600 transition-colors">
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
+                </div>
+
+                {/* Agent Name & Agency */}
+                <div>
+                  <h4 className="text-xl font-bold text-[#14234b]">{property.agentId.name}</h4>
+                  <p className="text-[13px] text-slate-600 mt-1">{property.agencyId?.name || 'Listing Agent'}</p>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="space-y-3 pt-2">
+                  <a href={`tel:${property.agentId.phone || '+61400000000'}`} className="w-full flex items-center justify-center space-x-2 py-3 rounded-md border border-[#14234b] text-[#14234b] font-bold hover:bg-slate-100 transition-colors">
+                    <Phone className="w-5 h-5" />
+                    <span>Call</span>
+                  </a>
+                  <a href={`mailto:${property.agentId.email || 'agent@example.com'}`} className="w-full flex items-center justify-center space-x-2 py-3 rounded-md bg-[#e31837] text-white font-bold hover:bg-[#c41530] transition-colors">
+                    <Mail className="w-5 h-5" />
+                    <span>Email</span>
+                  </a>
+                </div>
+              </div>
+            </div>
           )}
 
         </div>
