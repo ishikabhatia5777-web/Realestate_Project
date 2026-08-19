@@ -123,14 +123,14 @@ const PropertiesPage = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-extrabold text-white flex items-center gap-2">
-              {filters.listingType ? (filters.listingType === 'Sale' ? 'Real Estate & Properties for Sale' : 'Real Estate & Properties for Rent') : 'All Properties'}
+              {filters.listingType ? (filters.listingType === 'Sale' ? 'Real Estate & Properties to Buy' : 'Real Estate & Properties for Rent') : 'All Properties'}
               {filters.suburb && <span className="text-amber-400">in {filters.suburb}</span>}
             </h1>
             <p className="text-sm text-slate-400 mt-1 flex items-center gap-2">
               {loading ? (
                 <><Loader2 className="w-4 h-4 animate-spin" /> Searching...</>
               ) : (
-                <><span className="font-bold text-white">{total}</span> properties {filters.listingType === 'Rent' ? 'for rent' : 'for sale'}</>
+                <><span className="font-bold text-white">{total}</span> properties {filters.listingType === 'Rent' ? 'for rent' : 'to buy'}</>
               )}
             </p>
           </div>

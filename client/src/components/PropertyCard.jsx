@@ -38,7 +38,7 @@ const PropertyCard = ({ property }) => {
         {/* Top Badges */}
         <div className="absolute top-3 left-3 flex flex-wrap gap-2 z-10">
           <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-slate-900/90 backdrop-blur-md text-amber-400 border border-amber-500/30 uppercase tracking-wider">
-            {property.listingType}
+            {property.listingType === 'Sale' ? 'Buy' : property.listingType}
           </span>
           {property.tier === 'Premium' && (
             <span className="px-2.5 py-1 rounded-md text-[11px] font-bold gold-gradient-bg text-slate-950 flex items-center space-x-1 shadow-md">

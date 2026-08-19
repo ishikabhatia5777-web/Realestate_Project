@@ -178,7 +178,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
             </div>
             <div>
               <h2 className="text-xl font-extrabold text-white">Add Real Estate Property</h2>
-              <p className="text-xs text-slate-400">List a property for sale or rent with instant database publishing</p>
+              <p className="text-xs text-slate-400">List a property to buy or rent with instant database publishing</p>
             </div>
           </div>
           <button
@@ -222,7 +222,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
                         : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
                     }`}
                   >
-                    For {type}
+                    {type === 'Sale' ? 'Buy' : 'Rent'}
                   </button>
                 ))}
               </div>

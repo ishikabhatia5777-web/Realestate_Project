@@ -45,7 +45,7 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              {type}
+              {type === 'Sale' ? 'Buy' : type}
             </button>
           ))}
         </div>

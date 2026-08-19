@@ -143,7 +143,7 @@ const PropertyDetailPage = () => {
         <div>
           <div className="flex items-center space-x-3 mb-2">
             <span className="px-3 py-1 rounded-md text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30 uppercase tracking-wider">
-              {property.listingType} • {property.propertyType}
+              {property.listingType === 'Sale' ? 'Buy' : property.listingType} • {property.propertyType}
             </span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white">{property.title}</h1>
@@ -284,7 +284,7 @@ const PropertyDetailPage = () => {
               </div>
               <div className="flex justify-between py-2 border-b border-slate-800">
                 <span className="text-sm text-slate-400">Listing Type</span>
-                <span className="text-sm font-bold text-white">{property.listingType}</span>
+                <span className="text-sm font-bold text-white">{property.listingType === 'Sale' ? 'Buy' : property.listingType}</span>
               </div>
               <div className="flex justify-between py-2 border-b border-slate-800">
                 <span className="text-sm text-slate-400">Land Size</span>
