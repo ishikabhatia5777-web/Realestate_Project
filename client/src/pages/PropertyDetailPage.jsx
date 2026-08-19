@@ -266,19 +266,13 @@ const PropertyDetailPage = () => {
                 </div>
 
                 <div className="p-6 text-center space-y-5">
-                  {/* Agent Avatar with Chevrons (Aesthetic) */}
-                  <div className="flex items-center justify-between">
-                    <button className="p-1 text-slate-500 hover:text-amber-400 transition-colors">
-                      <ChevronLeft className="w-6 h-6" />
-                    </button>
+                  {/* Agent Avatar */}
+                  <div className="flex items-center justify-center">
                     <img
                       src={lister.avatar || 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400'}
                       alt={lister.name}
                       className="w-36 h-36 rounded-full object-cover shadow-lg border border-slate-700 mx-auto"
                     />
-                    <button className="p-1 text-slate-500 hover:text-amber-400 transition-colors">
-                      <ChevronRight className="w-6 h-6" />
-                    </button>
                   </div>
 
                   {/* Agent Name & Agency */}
