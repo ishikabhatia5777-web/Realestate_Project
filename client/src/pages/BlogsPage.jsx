@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchAdminBlogs } from '../services/api';
 import { 
-  BookOpen, Sparkles, TrendingUp, Search, Calendar, User, 
+  BookOpen, Sparkles, TrendingUp, Calendar, User, 
   Clock, ArrowRight, X, BarChart3, ShieldCheck
 } from 'lucide-react';
 
@@ -172,23 +172,9 @@ const BlogsPage = () => {
         </p>
       </div>
 
-      {/* Category Tabs & Search Bar */}
+      {/* Category Tabs */}
       <div className="space-y-6">
-        <div className="glass-panel p-2 rounded-2xl border border-slate-800 flex items-center max-w-lg mx-auto">
-          <Search className="w-5 h-5 text-slate-500 ml-3" />
-          <input
-            type="text"
-            placeholder="Search insights, suburbs, or topics..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-transparent border-none px-4 py-2 text-white focus:outline-none placeholder-slate-500 text-sm"
-          />
-          {searchQuery && (
-            <button onClick={() => setSearchQuery('')} className="p-2 text-slate-400 hover:text-white">
-              <X className="w-4 h-4" />
-            </button>
-          )}
-        </div>
+        {/* Category Tabs */}
 
         {/* Category Tabs */}
         <div className="flex space-x-2 overflow-x-auto pb-2 scrollbar-hide justify-start md:justify-center">
