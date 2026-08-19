@@ -13,6 +13,7 @@ import PropertiesPage from './pages/PropertiesPage';
 import PropertyDetailPage from './pages/PropertyDetailPage';
 import AgenciesPage from './pages/AgenciesPage';
 import AgencyDetailPage from './pages/AgencyDetailPage';
+import FindAgentsPage from './pages/FindAgentsPage';
 import BlogsPage from './pages/BlogsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -52,6 +53,7 @@ const AppLayout = ({ isAIChatOpen, setIsAIChatOpen }) => {
           <Route path="/properties/:id" element={<PropertyDetailPage />} />
           <Route path="/agencies" element={<AgenciesPage />} />
           <Route path="/agencies/:id" element={<AgencyDetailPage />} />
+          <Route path="/agents" element={<FindAgentsPage />} />
           <Route path="/blogs" element={<BlogsPage />} />
           <Route path="/wishlist" element={<WishlistPage />} />
           <Route path="/sold" element={<SoldPage />} />

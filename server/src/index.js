@@ -198,6 +198,7 @@ app.post('/api/health/email/test-reservation', async (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/properties', propertyRoutes);
 app.use('/api/agencies', agencyRoutes);
+app.get('/api/agents', require('./controllers/agencyController').getAgents);
 app.use('/api/offers', offerRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/chat', chatRoutes);

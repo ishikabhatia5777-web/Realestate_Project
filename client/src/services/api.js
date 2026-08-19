@@ -54,6 +54,9 @@ export const fetchAgencies = () => api.get('/agencies');
 export const fetchAgencyById = (id) => api.get(`/agencies/${id}`);
 export const createAgency = (data) => api.post('/agencies', data);
 
+// Agents API
+export const fetchAgents = () => api.get('/agents');
+
 // Offers & Bookings API
 export const createOffer = (data) => api.post('/offers', data);
 export const fetchOffers = () => api.get('/offers');

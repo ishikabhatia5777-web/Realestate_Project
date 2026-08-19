@@ -1,0 +1,330 @@
+import React, { useEffect, useState } from 'react';
+import { fetchAgents } from '../services/api';
+import {
+  Star, MapPin, Phone, Mail, ShieldCheck, Search,
+  Briefcase, Award, Users, ChevronRight, Building2
+} from 'lucide-react';
+
+const SPECIALTY_COLORS = {
+  'Luxury Homes': 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+  'Waterfront': 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
+  'Investments': 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+  'First Home Buyers': 'bg-violet-500/20 text-violet-400 border-violet-500/30',
+  'Apartments': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+  'Suburbs': 'bg-pink-500/20 text-pink-400 border-pink-500/30',
+  'Off-the-Plan': 'bg-orange-500/20 text-orange-400 border-orange-500/30',
+  'Inner-City': 'bg-rose-500/20 text-rose-400 border-rose-500/30',
+  'Coastal': 'bg-sky-500/20 text-sky-400 border-sky-500/30',
+  'Holiday Homes': 'bg-teal-500/20 text-teal-400 border-teal-500/30',
+  'Land': 'bg-lime-500/20 text-lime-400 border-lime-500/30',
+  'Family Homes': 'bg-fuchsia-500/20 text-fuchsia-400 border-fuchsia-500/30',
+  'Western Suburbs': 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30',
+  'Luxury': 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+  'Acreage': 'bg-green-500/20 text-green-400 border-green-500/30',
+  'Rural': 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
+  'Wine Country': 'bg-red-500/20 text-red-400 border-red-500/30',
+};
+
+const defaultColor = 'bg-slate-700/50 text-slate-300 border-slate-600/40';
+
+const StarRating = ({ rating }) => {
+  const full = Math.floor(rating);
+  const decimal = rating - full;
+  return (
+    <div className="flex items-center space-x-0.5">
+      {[...Array(5)].map((_, i) => (
+        <Star
+          key={i}
+          className={`w-3.5 h-3.5 ${
+            i < full
+              ? 'text-amber-400 fill-amber-400'
+              : i === full && decimal >= 0.5
+              ? 'text-amber-400 fill-amber-400/50'
+              : 'text-slate-600'
+          }`}
+        />
+      ))}
+      <span className="ml-1.5 text-xs font-bold text-amber-400">{rating.toFixed(1)}</span>
+    </div>
+  );
+};
+
+const AgentCard = ({ agent }) => {
+  const specialties = agent.specialties || [];
+  const agencyLabel = agent.agencyId?.name || agent.agencyName || null;
+
+  return (
+    <div className="glass-panel rounded-3xl border border-slate-800 hover:border-amber-500/50 transition-all duration-300 group flex flex-col bg-gradient-to-b from-slate-900/80 to-slate-950/80 hover:shadow-xl hover:shadow-amber-500/10 overflow-hidden">
+
+      {/* Top accent bar */}
+      <div className="h-1 w-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+      <div className="p-6 flex flex-col flex-1">
+        {/* Header: Avatar + Name + Rating */}
+        <div className="flex items-start space-x-4 mb-4">
+          <div className="relative flex-shrink-0">
+            <img
+              src={agent.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400'}
+              alt={agent.name}
+              className="w-18 h-18 w-[72px] h-[72px] rounded-2xl object-cover border-2 border-slate-700 group-hover:border-amber-500/60 transition-all shadow-lg"
+            />
+            {/* Online badge */}
+            <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-slate-900 rounded-full shadow" title="Active" />
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center space-x-1.5 mb-0.5">
+              <h3 className="text-base font-extrabold text-white group-hover:text-amber-400 transition-colors truncate">{agent.name}</h3>
+              <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0" title="Verified Agent" />
+            </div>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-amber-500 mb-1.5">Licensed Real Estate Agent</p>
+            <StarRating rating={agent.rating || 4.8} />
+          </div>
+        </div>
+
+        {/* Bio */}
+        <p className="text-xs text-slate-400 leading-relaxed line-clamp-3 mb-4 flex-1">
+          {agent.bio || `${agent.name} is a dedicated real estate professional providing exceptional service and deep market insights to help clients buy, sell, and invest with confidence.`}
+        </p>
+
+        {/* Specialties */}
+        {specialties.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mb-4">
+            {specialties.map((s) => (
+              <span key={s} className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${SPECIALTY_COLORS[s] || defaultColor}`}>
+                {s}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Stats row */}
+        <div className="flex items-center justify-between py-3 border-y border-slate-800/80 mb-4 text-center">
+          <div>
+            <p className="text-sm font-extrabold text-white">{agent.dealsCount || '—'}</p>
+            <p className="text-[10px] text-slate-500 font-medium">Deals Closed</p>
+          </div>
+          <div className="w-px h-8 bg-slate-800" />
+          <div>
+            <p className="text-sm font-extrabold text-white">{agent.rating ? agent.rating.toFixed(1) : '—'}</p>
+            <p className="text-[10px] text-slate-500 font-medium">Rating</p>
+          </div>
+          <div className="w-px h-8 bg-slate-800" />
+          <div>
+            <p className="text-sm font-extrabold text-white truncate max-w-[80px]">{agent.licenseNumber || '—'}</p>
+            <p className="text-[10px] text-slate-500 font-medium">License</p>
+          </div>
+        </div>
+
+        {/* Contact info */}
+        <div className="space-y-2 mb-5">
+          {agent.location || agent.address?.city ? (
+            <div className="flex items-center space-x-2.5 text-xs text-slate-400">
+              <div className="p-1.5 rounded-lg bg-slate-800">
+                <MapPin className="w-3.5 h-3.5 text-amber-500" />
+              </div>
+              <span>{agent.location || `${agent.address?.city}, ${agent.address?.state}`}</span>
+            </div>
+          ) : null}
+          {agencyLabel && (
+            <div className="flex items-center space-x-2.5 text-xs text-slate-400">
+              <div className="p-1.5 rounded-lg bg-slate-800">
+                <Building2 className="w-3.5 h-3.5 text-amber-500" />
+              </div>
+              <span className="truncate">{agencyLabel}</span>
+            </div>
+          )}
+          {agent.phone && (
+            <div className="flex items-center space-x-2.5 text-xs text-slate-400">
+              <div className="p-1.5 rounded-lg bg-slate-800">
+                <Phone className="w-3.5 h-3.5 text-amber-500" />
+              </div>
+              <span>{agent.phone}</span>
+            </div>
+          )}
+          {agent.email && (
+            <div className="flex items-center space-x-2.5 text-xs text-slate-400 group/email">
+              <div className="p-1.5 rounded-lg bg-slate-800">
+                <Mail className="w-3.5 h-3.5 text-amber-500" />
+              </div>
+              <span className="truncate">{agent.email}</span>
+            </div>
+          )}
+        </div>
+
+        {/* CTA */}
+        <a
+          href={`mailto:${agent.email}`}
+          className="block w-full text-center py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold hover:bg-amber-500 hover:text-slate-950 hover:border-amber-500 transition-all duration-200 flex items-center justify-center space-x-2 group/btn"
+        >
+          <Mail className="w-3.5 h-3.5" />
+          <span>Contact Agent</span>
+          <ChevronRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
+        </a>
+      </div>
+    </div>
+  );
+};
+
+const FindAgentsPage = () => {
+  const [agents, setAgents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [locationFilter, setLocationFilter] = useState('All');
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetchAgents();
+        if (res.data.success) setAgents(res.data.agents);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
+  // Collect unique locations for filter chips
+  const locations = ['All', ...new Set(agents.map(a => {
+    if (a.location) return a.location.split(',').pop().trim();
+    if (a.address?.state) return a.address.state;
+    return null;
+  }).filter(Boolean))];
+
+  const filtered = agents.filter(agent => {
+    const q = search.toLowerCase();
+    const matchSearch =
+      !q ||
+      agent.name?.toLowerCase().includes(q) ||
+      agent.bio?.toLowerCase().includes(q) ||
+      agent.specialties?.some(s => s.toLowerCase().includes(q)) ||
+      agent.location?.toLowerCase().includes(q) ||
+      (agent.agencyId?.name || agent.agencyName || '').toLowerCase().includes(q);
+
+    const matchLocation =
+      locationFilter === 'All' ||
+      agent.location?.includes(locationFilter) ||
+      agent.address?.state === locationFilter;
+
+    return matchSearch && matchLocation;
+  });
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+      {/* Header */}
+      <div className="space-y-3">
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 rounded-lg gold-gradient-bg flex items-center justify-center">
+            <Users className="w-4 h-4 text-slate-950" />
+          </div>
+          <span className="text-xs font-bold uppercase tracking-widest text-amber-400">Verified Professionals</span>
+        </div>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-white">Find Your Perfect Agent</h1>
+        <p className="text-slate-400 text-sm max-w-xl">
+          Browse Australia's top-rated real estate agents. Each agent is fully verified, licensed, and ready to help you buy, sell, or invest.
+        </p>
+      </div>
+
+      {/* Stats bar */}
+      <div className="grid grid-cols-3 gap-4">
+        {[
+          { icon: Users, label: 'Verified Agents', value: agents.length || '200+' },
+          { icon: Award, label: 'Avg. Rating', value: agents.length ? (agents.reduce((s, a) => s + (a.rating || 4.8), 0) / agents.length).toFixed(1) : '4.9' },
+          { icon: Briefcase, label: 'Total Deals', value: agents.length ? `${agents.reduce((s, a) => s + (a.dealsCount || 0), 0)}+` : '1,000+' },
+        ].map(({ icon: Icon, label, value }) => (
+          <div key={label} className="glass-panel rounded-2xl border border-slate-800 p-4 flex items-center space-x-3">
+            <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20">
+              <Icon className="w-5 h-5 text-amber-400" />
+            </div>
+            <div>
+              <p className="text-lg font-extrabold text-white">{value}</p>
+              <p className="text-[11px] text-slate-500">{label}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Search + Filter */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+          <input
+            type="text"
+            placeholder="Search by name, specialty, location or agency..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-amber-500/50 transition-colors"
+          />
+        </div>
+        <div className="flex flex-wrap gap-2 items-center">
+          {locations.map(loc => (
+            <button
+              key={loc}
+              onClick={() => setLocationFilter(loc)}
+              className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all ${
+                locationFilter === loc
+                  ? 'bg-amber-500 text-slate-950 border-amber-500'
+                  : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-amber-500/50 hover:text-amber-400'
+              }`}
+            >
+              {loc}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Results count */}
+      {!loading && (
+        <p className="text-xs text-slate-500">
+          Showing <span className="text-amber-400 font-bold">{filtered.length}</span> agent{filtered.length !== 1 ? 's' : ''}
+          {search && <> matching "<span className="text-white">{search}</span>"</>}
+        </p>
+      )}
+
+      {/* Agent Cards Grid */}
+      {loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="glass-panel rounded-3xl border border-slate-800 p-6 space-y-4 animate-pulse">
+              <div className="flex items-start space-x-4">
+                <div className="w-[72px] h-[72px] rounded-2xl bg-slate-800" />
+                <div className="flex-1 space-y-2 pt-1">
+                  <div className="h-4 bg-slate-800 rounded w-3/4" />
+                  <div className="h-3 bg-slate-800 rounded w-1/2" />
+                  <div className="h-3 bg-slate-800 rounded w-1/3" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="h-3 bg-slate-800 rounded" />
+                <div className="h-3 bg-slate-800 rounded w-5/6" />
+                <div className="h-3 bg-slate-800 rounded w-4/6" />
+              </div>
+              <div className="h-10 bg-slate-800 rounded-xl" />
+            </div>
+          ))}
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="text-center py-20 space-y-3">
+          <div className="w-16 h-16 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center mx-auto">
+            <Users className="w-7 h-7 text-slate-600" />
+          </div>
+          <p className="text-white font-bold">No agents found</p>
+          <p className="text-slate-500 text-sm">Try adjusting your search or filter criteria</p>
+          <button onClick={() => { setSearch(''); setLocationFilter('All'); }} className="px-4 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold hover:bg-amber-500/20 transition-colors">
+            Clear Filters
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filtered.map(agent => (
+            <AgentCard key={agent._id} agent={agent} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default FindAgentsPage;

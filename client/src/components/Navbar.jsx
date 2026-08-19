@@ -93,7 +93,7 @@ const Navbar = ({ onOpenAIChat }) => {
                 <Link to="/sold" className={linkClass('/sold')}>
                   Sold
                 </Link>
-                <Link to="/agencies" className={linkClass('/agencies')}>
+                <Link to="/agents" className={linkClass('/agents')}>
                   Find Agents
                 </Link>
               </>
@@ -292,11 +292,11 @@ const Navbar = ({ onOpenAIChat }) => {
                 Sold Properties
               </Link>
               <Link
-                to="/agencies"
+                to="/agents"
                 onClick={() => setMobileMenuOpen(false)}
-                className={mobileLinkClass('/agencies')}
+                className={mobileLinkClass('/agents')}
               >
-                Real Estate Agencies
+                Find Agents
               </Link>
             </>
           )}
