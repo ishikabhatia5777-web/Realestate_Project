@@ -257,13 +257,6 @@ const PropertyDetailPage = () => {
                   </div>
                 </div>
                 
-                {/* Next Inspection Banner */}
-                <div className="bg-amber-500/10 px-4 py-3 flex items-center justify-between text-[13px] border-b border-amber-500/20">
-                  <span className="text-amber-500/90">
-                    <strong className="text-amber-400 font-bold">Next Inspection:</strong> Thu 20 Aug, 12:00 PM
-                  </span>
-                  <Calendar className="w-5 h-5 text-amber-400" />
-                </div>
 
                 <div className="p-6 text-center space-y-5">
                   {/* Agent Avatar */}
