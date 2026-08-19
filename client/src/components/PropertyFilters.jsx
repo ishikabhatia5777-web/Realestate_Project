@@ -14,10 +14,9 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
   };
 
   return (
-    <div className="glass-panel p-5 rounded-2xl border border-slate-800 space-y-5">
-
+    <>
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+      <div className="col-span-full flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
         <div className="flex items-center space-x-2 text-white font-bold">
           <SlidersHorizontal className="w-5 h-5 text-amber-400" />
           <span>Search & Filter</span>
@@ -253,7 +252,7 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
 
       {/* Active filter summary */}
       {(filters.listingType || filters.propertyType || filters.bedrooms || filters.bathrooms || filters.parking || filters.search || filters.suburb || filters.minPrice || filters.maxPrice || filters.openForInspection || filters.minLandArea || filters.maxLandArea) && (
-        <div className="flex items-center justify-between pt-2 border-t border-slate-800">
+        <div className="col-span-full flex items-center justify-between pt-4 mt-2 border-t border-slate-800">
           <span className="text-[11px] text-amber-400 font-semibold">Filters active</span>
           <button
             onClick={onReset}
@@ -264,7 +263,7 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
         </div>
       )}
 
-    </div>
+    </>
   );
 };
 
