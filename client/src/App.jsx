@@ -19,6 +19,8 @@ import RegisterPage from './pages/RegisterPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 
 import WishlistPage from './pages/WishlistPage';
+import SoldPage from './pages/SoldPage';
+import SuburbProfilePage from './pages/SuburbProfilePage';
 
 import AdminDashboard from './pages/Dashboards/AdminDashboard';
 import AgencyDashboard from './pages/Dashboards/AgencyDashboard';
@@ -52,6 +54,8 @@ const AppLayout = ({ isAIChatOpen, setIsAIChatOpen }) => {
           <Route path="/agencies/:id" element={<AgencyDetailPage />} />
           <Route path="/blogs" element={<BlogsPage />} />
           <Route path="/wishlist" element={<WishlistPage />} />
+          <Route path="/sold" element={<SoldPage />} />
+          <Route path="/suburbs/:suburbName" element={<SuburbProfilePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />

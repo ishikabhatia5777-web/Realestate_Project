@@ -99,234 +99,112 @@ const isRealEstateRelevant = (item) => {
 };
 
 const BlogsPage = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [blogs, setBlogs] = useState(CURATED_REAL_ESTATE_ARTICLES);
+  const [filteredBlogs, setFilteredBlogs] = useState(CURATED_REAL_ESTATE_ARTICLES);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
   const [activeBlogModal, setActiveBlogModal] = useState(null);
 
   useEffect(() => {
-    const load = async () => {
+    const loadBlogs = async () => {
       try {
-        setLoading(true);
-        let liveArticles = [];
-        const apiKey = import.meta.env.VITE_NEWSDATA_API_KEY || 'pub_b5f2690c23094572bbd5965869d92eeb';
+        const res = await fetchAdminBlogs();
+        if (res.data?.success && res.data.blogs?.length > 0) {
+          const dbBlogs = res.data.blogs
+            .filter(isRealEstateRelevant)
+            .map(b => ({
+              ...b,
+              category: b.category || 'Market Insights'
+            }));
 
-        // Fetch Live Property & Real Estate News from NewsData.io API with specific real estate query
-        try {
-          const newsRes = await fetch(`https://newsdata.io/api/1/news?apikey=${apiKey}&q=%22real%20estate%22%20OR%20%22housing%20market%22%20OR%20%22property%20market%22&language=en`);
-          const newsData = await newsRes.json();
+          const allBlogsMap = new Map();
+          [...dbBlogs, ...CURATED_REAL_ESTATE_ARTICLES].forEach(b => {
+            allBlogsMap.set(b.title, b);
+          });
+          
+          const merged = Array.from(allBlogsMap.values())
+            .sort((a, b) => new Date(b.createdAt || Date.now()) - new Date(a.createdAt || Date.now()));
 
-          if (newsData && newsData.status === 'success' && newsData.results && newsData.results.length > 0) {
-            liveArticles = newsData.results
-              .filter(item => isRealEstateRelevant(item))
-              .map((item, idx) => ({
-                _id: `news-${idx}-${item.article_id || Math.random().toString(36).substring(2, 8)}`,
-                title: item.title,
-                excerpt: item.description || item.snippet || item.title,
-                content: item.content || item.description || 'Full live report published by global media agency.',
-                category: 'Market Insights',
-                author: item.source_id ? item.source_id.toUpperCase() + ' Press' : 'Live Property News',
-                image: item.image_url || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1200',
-                readTime: '4 min read',
-                createdAt: item.pubDate || new Date().toISOString(),
-                link: item.link
-              }));
-          }
-        } catch (newsErr) {
-          console.warn('NewsData.io live API notice:', newsErr.message);
+          setBlogs(merged);
         }
-
-        // Combine with active CMS blogs if available
-        let cmsBlogs = [];
-        try {
-          const res = await fetchAdminBlogs();
-          if (res.data && res.data.success && res.data.blogs && res.data.blogs.length > 0) {
-            cmsBlogs = res.data.blogs.filter(b => isRealEstateRelevant(b));
-          }
-        } catch (cmsErr) {
-          console.warn('CMS blogs notice:', cmsErr.message);
-        }
-
-        // Combine CMS + Live API + Curated Real Estate Articles
-        const combined = [...cmsBlogs, ...liveArticles, ...CURATED_REAL_ESTATE_ARTICLES];
-        
-        // Remove duplicate titles and keep strictly real estate relevant articles
-        const uniqueList = [];
-        const seenTitles = new Set();
-
-        for (const item of combined) {
-          if (isRealEstateRelevant(item)) {
-            const cleanTitle = item.title?.trim().toLowerCase();
-            if (!seenTitles.has(cleanTitle)) {
-              seenTitles.add(cleanTitle);
-              uniqueList.push(item);
-            }
-          }
-        }
-
-        setBlogs(uniqueList);
       } catch (err) {
-        console.error('Error loading live market insights:', err);
-        setBlogs(CURATED_REAL_ESTATE_ARTICLES);
-      } finally {
-        setLoading(false);
+        console.warn('Failed to fetch admin blogs, using curated list.', err);
       }
     };
-    load();
+    loadBlogs();
   }, []);
 
-  const filteredBlogs = blogs.filter(blog => {
-    const matchesCategory = selectedCategory === 'All' || blog.category === selectedCategory;
-    const matchesSearch = 
-      blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      blog.excerpt?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      blog.category?.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  useEffect(() => {
+    let result = blogs;
 
-  const featuredBlog = blogs.find(b => b.featured) || blogs[0];
+    if (selectedCategory !== 'All') {
+      result = result.filter(b => 
+        (b.category || '').toLowerCase() === selectedCategory.toLowerCase()
+      );
+    }
 
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(b => 
+        (b.title || '').toLowerCase().includes(q) || 
+        (b.excerpt || '').toLowerCase().includes(q) ||
+        (b.content || '').toLowerCase().includes(q)
+      );
+    }
 
+    setFilteredBlogs(result);
+  }, [searchQuery, selectedCategory, blogs]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
-      {/* Header Banner */}
-      <div className="relative rounded-3xl overflow-hidden glass-panel p-8 md:p-12 border border-slate-800 bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 max-w-3xl space-y-4">
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Aura Intelligence Reports</span>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
-            Market Insights & <span className="gold-gradient-text">Property News</span>
-          </h1>
-          <p className="text-slate-300 text-base md:text-lg leading-relaxed">
-            Real-time analytics, expert economic forecasts, suburb price performance, and exclusive guidance for prestige real estate investors and sellers across Australia.
-          </p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
+      
+      {/* Header */}
+      <div className="text-center max-w-3xl mx-auto space-y-4">
+        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[10px] font-bold uppercase tracking-widest">
+          <Sparkles className="w-3 h-3" />
+          <span>Real Estate Intelligence</span>
         </div>
+        <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight">
+          Property Market <span className="gold-gradient-text">Insights</span>
+        </h1>
+        <p className="text-sm text-slate-400 leading-relaxed">
+          Stay ahead of the market with expert analysis on suburb trends, investment strategies, architectural innovations, and high-end residential data.
+        </p>
       </div>
 
-      {/* Market Indicators Stats Bar */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="glass-panel p-5 rounded-2xl border border-slate-800 space-y-1">
-          <div className="flex items-center justify-between text-xs text-slate-400 font-semibold">
-            <span>Capital Growth YoY</span>
-            <TrendingUp className="w-4 h-4 text-emerald-400" />
-          </div>
-          <p className="text-2xl font-extrabold text-white">+4.8%</p>
-          <span className="text-[11px] text-emerald-400 font-medium">National Capital Index</span>
-        </div>
-
-        <div className="glass-panel p-5 rounded-2xl border border-slate-800 space-y-1">
-          <div className="flex items-center justify-between text-xs text-slate-400 font-semibold">
-            <span>Auction Clearance</span>
-            <BarChart3 className="w-4 h-4 text-amber-400" />
-          </div>
-          <p className="text-2xl font-extrabold text-white">74.8%</p>
-          <span className="text-[11px] text-slate-400 font-medium">Metro Capital Average</span>
-        </div>
-
-        <div className="glass-panel p-5 rounded-2xl border border-slate-800 space-y-1">
-          <div className="flex items-center justify-between text-xs text-slate-400 font-semibold">
-            <span>Top Growth Suburb</span>
-            <Sparkles className="w-4 h-4 text-cyan-400" />
-          </div>
-          <p className="text-xl font-extrabold text-white truncate">Point Piper, NSW</p>
-          <span className="text-[11px] text-cyan-400 font-medium">+12.4% Annualized</span>
-        </div>
-
-        <div className="glass-panel p-5 rounded-2xl border border-slate-800 space-y-1">
-          <div className="flex items-center justify-between text-xs text-slate-400 font-semibold">
-            <span>Luxury Rental Yield</span>
-            <ShieldCheck className="w-4 h-4 text-purple-400" />
-          </div>
-          <p className="text-2xl font-extrabold text-white">5.2%</p>
-          <span className="text-[11px] text-purple-400 font-medium">Prime Residential Portfolio</span>
-        </div>
-      </div>
-
-      {/* Featured Headline Article Banner */}
-      {featuredBlog && (
-        <div 
-          onClick={() => setActiveBlogModal(featuredBlog)}
-          className="group cursor-pointer glass-panel rounded-3xl overflow-hidden border border-amber-500/20 hover:border-amber-500/50 transition-all duration-300 grid grid-cols-1 lg:grid-cols-12 shadow-xl shadow-amber-500/5"
-        >
-          <div className="lg:col-span-7 relative overflow-hidden h-72 lg:h-auto min-h-[300px]">
-            <img 
-              src={featuredBlog.image} 
-              alt={featuredBlog.title} 
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-            />
-            <div className="absolute top-4 left-4 bg-amber-500 text-slate-950 px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider shadow-md">
-              Featured Story
-            </div>
-          </div>
-          <div className="lg:col-span-5 p-8 lg:p-10 flex flex-col justify-between space-y-6">
-            <div className="space-y-4">
-              <div className="flex items-center space-x-3 text-xs font-bold text-amber-400 uppercase tracking-widest">
-                <span>{featuredBlog.category}</span>
-                <span>•</span>
-                <span className="flex items-center text-slate-400"><Clock className="w-3.5 h-3.5 mr-1" /> {featuredBlog.readTime}</span>
-              </div>
-              <h2 className="text-2xl lg:text-3xl font-extrabold text-white group-hover:text-amber-400 transition-colors leading-tight">
-                {featuredBlog.title}
-              </h2>
-              <p className="text-sm text-slate-300 leading-relaxed line-clamp-3">
-                {featuredBlog.excerpt || featuredBlog.content}
-              </p>
-            </div>
-            
-            <div className="flex items-center justify-between pt-4 border-t border-slate-800/80">
-              <div className="flex items-center space-x-2.5">
-                <div className="w-8 h-8 rounded-full gold-gradient-bg flex items-center justify-center font-bold text-slate-950 text-xs">
-                  {featuredBlog.author ? featuredBlog.author.charAt(0) : 'A'}
-                </div>
-                <span className="text-xs font-semibold text-slate-300">{featuredBlog.author || 'Aura Editorial'}</span>
-              </div>
-              <span className="inline-flex items-center text-xs font-bold text-amber-400 group-hover:translate-x-1 transition-transform">
-                Read Article <ArrowRight className="w-4 h-4 ml-1.5" />
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Filter and Search Toolbar */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-800">
-        {/* Category Pills */}
-        <div className="flex items-center space-x-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 no-scrollbar">
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-                selectedCategory === cat
-                  ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20'
-                  : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-
-        {/* Search Input */}
-        <div className="relative w-full md:w-72">
-          <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
+      {/* Category Tabs & Search Bar */}
+      <div className="space-y-6">
+        <div className="glass-panel p-2 rounded-2xl border border-slate-800 flex items-center max-w-lg mx-auto">
+          <Search className="w-5 h-5 text-slate-500 ml-3" />
           <input
             type="text"
-            placeholder="Search news or topics..."
+            placeholder="Search insights, suburbs, or topics..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50"
+            className="w-full bg-transparent border-none px-4 py-2 text-white focus:outline-none placeholder-slate-500 text-sm"
           />
           {searchQuery && (
-            <button onClick={() => setSearchQuery('')} className="absolute right-3 top-2.5 text-slate-500 hover:text-slate-300">
+            <button onClick={() => setSearchQuery('')} className="p-2 text-slate-400 hover:text-white">
               <X className="w-4 h-4" />
             </button>
           )}
+        </div>
+
+        {/* Category Tabs */}
+        <div className="flex space-x-2 overflow-x-auto pb-2 scrollbar-hide justify-start md:justify-center">
+          {CATEGORIES.map(category => (
+            <button
+              key={category}
+              onClick={() => setSelectedCategory(category)}
+              className={`px-5 py-2.5 rounded-full whitespace-nowrap text-xs font-bold transition-all flex-shrink-0 ${
+                selectedCategory === category
+                  ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20'
+                  : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-600'
+              }`}
+            >
+              {category}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -393,8 +271,6 @@ const BlogsPage = () => {
           ))}
         </div>
       )}
-
-
 
       {/* Article Detail Modal */}
       {activeBlogModal && (

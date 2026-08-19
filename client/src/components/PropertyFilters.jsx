@@ -1,22 +1,20 @@
 import React from 'react';
-import { RotateCcw, Search, SlidersHorizontal } from 'lucide-react';
+import { RotateCcw, Search, SlidersHorizontal, CalendarCheck } from 'lucide-react';
 
 const PropertyFilters = ({ filters, setFilters, onReset }) => {
   const propertyTypes = ['All', 'Residential', 'Villa', 'Apartment', 'Townhouse', 'Farm', 'Land', 'Office'];
 
-  // Generic text/number input change — updates filter state (useEffect in parent auto-fetches)
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFilters(prev => ({ ...prev, [name]: value }));
   };
 
-  // Button selection — instantly set filter (triggers useEffect auto-fetch in parent)
   const setFilter = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
   return (
-    <div className="glass-panel p-5 rounded-2xl border border-slate-800 space-y-6">
+    <div className="glass-panel p-5 rounded-2xl border border-slate-800 space-y-5">
 
       {/* Header */}
       <div className="flex items-center justify-between border-b border-slate-800 pb-4">
@@ -33,7 +31,7 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
         </button>
       </div>
 
-      {/* Listing Type — instant on click */}
+      {/* Listing Type */}
       <div className="space-y-2">
         <label className="text-xs font-bold uppercase tracking-wider text-slate-400 block">Listing Type</label>
         <div className="grid grid-cols-3 gap-2 p-1 rounded-xl bg-slate-900 border border-slate-800">
@@ -54,7 +52,7 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
         </div>
       </div>
 
-      {/* Keyword Search — debounced via useEffect in parent */}
+      {/* Keyword Search */}
       <div className="space-y-2">
         <label className="text-xs font-bold uppercase tracking-wider text-slate-400 block">Keyword Search</label>
         <div className="relative">
@@ -70,7 +68,7 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
         </div>
       </div>
 
-      {/* Suburb / City — debounced via useEffect in parent */}
+      {/* Suburb / City */}
       <div className="space-y-2">
         <label className="text-xs font-bold uppercase tracking-wider text-slate-400 block">Suburb / City</label>
         <div className="relative">
@@ -80,13 +78,13 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
             name="suburb"
             value={filters.suburb || ''}
             onChange={handleChange}
-            placeholder="e.g. Point Piper, Barangaroo, Mosman..."
+            placeholder="e.g. Point Piper, Barangaroo..."
             className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white focus:outline-none focus:border-amber-500 transition-colors placeholder-slate-600"
           />
         </div>
       </div>
 
-      {/* Property Type — instant on click */}
+      {/* Property Type */}
       <div className="space-y-2">
         <label className="text-xs font-bold uppercase tracking-wider text-slate-400 block">Property Type</label>
         <div className="flex flex-wrap gap-2">
@@ -110,7 +108,7 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
         </div>
       </div>
 
-      {/* Price Range — debounced via useEffect in parent */}
+      {/* Price Range */}
       <div className="space-y-2">
         <label className="text-xs font-bold uppercase tracking-wider text-slate-400 block">Price Range (AUD)</label>
         <div className="grid grid-cols-2 gap-3">
@@ -133,7 +131,7 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
         </div>
       </div>
 
-      {/* Bedrooms — instant on click */}
+      {/* Bedrooms */}
       <div className="space-y-2">
         <label className="text-xs font-bold uppercase tracking-wider text-slate-400 block">Bedrooms</label>
         <div className="flex space-x-2">
@@ -154,7 +152,90 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
         </div>
       </div>
 
-      {/* Sort By — instant on change */}
+      {/* Bathrooms */}
+      <div className="space-y-2">
+        <label className="text-xs font-bold uppercase tracking-wider text-slate-400 block">Bathrooms</label>
+        <div className="flex space-x-2">
+          {['', '1', '2', '3', '4'].map((num) => (
+            <button
+              key={num}
+              type="button"
+              onClick={() => setFilter('bathrooms', num)}
+              className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-all ${
+                filters.bathrooms === num
+                  ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-md'
+                  : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white hover:border-slate-600'
+              }`}
+            >
+              {num === '' ? 'Any' : num === '4' ? '4+' : num}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Parking */}
+      <div className="space-y-2">
+        <label className="text-xs font-bold uppercase tracking-wider text-slate-400 block">Parking Spaces</label>
+        <div className="flex space-x-2">
+          {['', '1', '2', '3', '4'].map((num) => (
+            <button
+              key={num}
+              type="button"
+              onClick={() => setFilter('parking', num)}
+              className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-all ${
+                filters.parking === num
+                  ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-md'
+                  : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white hover:border-slate-600'
+              }`}
+            >
+              {num === '' ? 'Any' : num === '4' ? '4+' : num}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Land Area */}
+      <div className="space-y-2">
+        <label className="text-xs font-bold uppercase tracking-wider text-slate-400 block">Land Area (m²)</label>
+        <div className="grid grid-cols-2 gap-3">
+          <input
+            type="number"
+            name="minLandArea"
+            value={filters.minLandArea || ''}
+            onChange={handleChange}
+            placeholder="Min m²"
+            className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white focus:outline-none focus:border-amber-500 transition-colors placeholder-slate-600"
+          />
+          <input
+            type="number"
+            name="maxLandArea"
+            value={filters.maxLandArea || ''}
+            onChange={handleChange}
+            placeholder="Max m²"
+            className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white focus:outline-none focus:border-amber-500 transition-colors placeholder-slate-600"
+          />
+        </div>
+      </div>
+
+      {/* Open for Inspection */}
+      <div className="space-y-2">
+        <label className="text-xs font-bold uppercase tracking-wider text-slate-400 block">Inspection</label>
+        <button
+          type="button"
+          onClick={() => setFilter('openForInspection', !filters.openForInspection)}
+          className={`w-full flex items-center justify-center space-x-2 py-2.5 rounded-xl border text-xs font-bold transition-all ${
+            filters.openForInspection
+              ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/60'
+              : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-600 hover:text-white'
+          }`}
+        >
+          <CalendarCheck className="w-4 h-4" />
+          <span>Open for Inspection</span>
+          {filters.openForInspection && <span className="w-2 h-2 rounded-full bg-emerald-400" />}
+        </button>
+      </div>
+
+      {/* Sort By */}
       <div className="space-y-2">
         <label className="text-xs font-bold uppercase tracking-wider text-slate-400 block">Sort By</label>
         <select
@@ -171,7 +252,7 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
       </div>
 
       {/* Active filter summary */}
-      {(filters.listingType || filters.propertyType || filters.bedrooms || filters.search || filters.suburb || filters.minPrice || filters.maxPrice) && (
+      {(filters.listingType || filters.propertyType || filters.bedrooms || filters.bathrooms || filters.parking || filters.search || filters.suburb || filters.minPrice || filters.maxPrice || filters.openForInspection || filters.minLandArea || filters.maxLandArea) && (
         <div className="flex items-center justify-between pt-2 border-t border-slate-800">
           <span className="text-[11px] text-amber-400 font-semibold">Filters active</span>
           <button

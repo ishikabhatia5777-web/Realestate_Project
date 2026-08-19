@@ -74,11 +74,14 @@ const Navbar = ({ onOpenAIChat }) => {
                 <Link to="/properties?listingType=Sale" className="text-slate-300 hover:text-amber-400 font-medium transition-colors">
                   Buy
                 </Link>
-                <Link to="/properties" className="text-slate-300 hover:text-amber-400 font-medium transition-colors">
-                  Explore All
+                <Link to="/properties?listingType=Rent" className="text-slate-300 hover:text-amber-400 font-medium transition-colors">
+                  Rent
+                </Link>
+                <Link to="/sold" className="text-slate-300 hover:text-amber-400 font-medium transition-colors">
+                  Sold
                 </Link>
                 <Link to="/agencies" className="text-slate-300 hover:text-amber-400 font-medium transition-colors">
-                  Agencies
+                  Find Agents
                 </Link>
               </>
             )}

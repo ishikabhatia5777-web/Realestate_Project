@@ -5,7 +5,8 @@ import HeroSection from '../components/HeroSection';
 import PropertyCard from '../components/PropertyCard';
 import PropertyMap from '../components/PropertyMap';
 import { fetchProperties, fetchAgencies, fetchAdminBlogs } from '../services/api';
-import { Building2, Sparkles, Award, ArrowRight, ShieldCheck, TrendingUp } from 'lucide-react';
+import { Building2, Sparkles, Award, ArrowRight, ShieldCheck, TrendingUp, MapPin, DollarSign, Home, Search } from 'lucide-react';
+
 
 const HomePage = () => {
   const [featuredProperties, setFeaturedProperties] = useState([]);
@@ -167,6 +168,103 @@ const HomePage = () => {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Suburb Explorer Strip */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <span className="text-xs font-bold text-amber-400 uppercase tracking-widest block">DISCOVER</span>
+            <h2 className="text-3xl font-extrabold text-white">Explore Top Suburbs</h2>
+          </div>
+          <Link to="/properties" className="text-sm font-bold text-amber-400 hover:text-amber-300">View All →</Link>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          {[
+            { name: 'Point Piper', state: 'NSW', median: '$18.5M', img: 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&q=80&w=400' },
+            { name: 'Toorak', state: 'VIC', median: '$5.9M', img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=400' },
+            { name: 'Bondi Beach', state: 'NSW', median: '$4.8M', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=400' },
+            { name: 'Mosman', state: 'NSW', median: '$5.2M', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=400' },
+            { name: 'Noosa Heads', state: 'QLD', median: '$3.2M', img: 'https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&q=80&w=400' },
+            { name: 'South Yarra', state: 'VIC', median: '$3.4M', img: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&q=80&w=400' },
+          ].map((suburb) => (
+            <Link
+              key={suburb.name}
+              to={`/suburbs/${encodeURIComponent(suburb.name)}`}
+              className="group relative overflow-hidden rounded-2xl border border-slate-800 hover:border-amber-500/50 transition-all hover:-translate-y-1 shadow-lg hover:shadow-amber-500/10"
+            >
+              <div className="aspect-square relative">
+                <img src={suburb.img} alt={suburb.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent" />
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 p-3">
+                <p className="text-sm font-extrabold text-white leading-tight">{suburb.name}</p>
+                <p className="text-[10px] text-amber-400 font-bold">{suburb.median} median</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Recently Sold Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <span className="text-xs font-bold text-amber-400 uppercase tracking-widest block">RECENT RESULTS</span>
+            <h2 className="text-3xl font-extrabold text-white">Recently Sold Properties</h2>
+          </div>
+          <Link to="/sold" className="text-sm font-bold text-amber-400 hover:text-amber-300">View All Sold →</Link>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[
+            { title: 'Grand Harbourfront Villa', suburb: 'Point Piper NSW', price: '$22,400,000', date: '12 Jul 2026', beds: 6, baths: 7, img: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=600' },
+            { title: 'Toorak European Villa', suburb: 'Toorak VIC', price: '$16,500,000', date: '30 Jun 2026', beds: 5, baths: 6, img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=600' },
+            { title: 'Vaucluse Cliffside Mansion', suburb: 'Vaucluse NSW', price: '$19,800,000', date: '15 Jun 2026', beds: 5, baths: 6, img: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&q=80&w=600' },
+          ].map((sale, i) => (
+            <Link to="/sold" key={i} className="group glass-panel rounded-2xl border border-slate-800 overflow-hidden hover:border-amber-500/40 transition-all hover:-translate-y-1 shadow-lg hover:shadow-amber-500/10">
+              <div className="relative h-48 overflow-hidden">
+                <img src={sale.img} alt={sale.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute top-3 left-3">
+                  <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-slate-900/90 text-slate-300 border border-slate-700 uppercase tracking-wider">SOLD</span>
+                </div>
+              </div>
+              <div className="p-4 space-y-2">
+                <h3 className="text-sm font-bold text-white group-hover:text-amber-400 transition-colors">{sale.title}</h3>
+                <p className="text-xs text-slate-400 flex items-center gap-1"><MapPin className="w-3 h-3 text-amber-400" />{sale.suburb}</p>
+                <div className="flex items-center justify-between pt-2 border-t border-slate-800">
+                  <span className="text-base font-extrabold text-white">{sale.price}</span>
+                  <span className="text-[11px] text-slate-400">{sale.date}</span>
+                </div>
+                <p className="text-[11px] text-slate-500">{sale.beds} bed • {sale.baths} bath</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Find an Agent CTA */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative overflow-hidden glass-panel rounded-3xl border border-amber-500/20 p-10 md:p-16 text-center space-y-6">
+          <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1600)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
+          <div className="relative z-10 space-y-6">
+            <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full border border-amber-500/30 bg-amber-500/10">
+              <Search className="w-4 h-4 text-amber-400" />
+              <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">CONNECT WITH EXPERTS</span>
+            </div>
+            <h2 className="text-3xl md:text-5xl font-extrabold text-white">Find Your Perfect <span className="gold-gradient-text">Real Estate Agent</span></h2>
+            <p className="text-slate-300 max-w-xl mx-auto text-sm sm:text-base leading-relaxed">
+              Our network of 1,250+ certified agents across Australia specialise in luxury residential, commercial, and development properties. Get matched with the right expert for your goals.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link to="/agencies" className="px-8 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold text-sm hover:from-amber-400 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/30">
+                Find an Agent
+              </Link>
+              <Link to="/properties" className="px-8 py-3.5 rounded-xl border border-slate-600 text-white font-extrabold text-sm hover:border-amber-500 hover:text-amber-400 transition-colors">
+                Browse Properties
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
