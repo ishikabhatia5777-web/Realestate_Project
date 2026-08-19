@@ -11,7 +11,8 @@ import PaymentModal from '../components/PaymentModal';
 import { useAuth } from '../context/AuthContext';
 import {
   Bed, Bath, Car, Maximize, MapPin, Calendar, DollarSign, MessageSquare,
-  Share2, FileText, Sparkles, ShieldCheck, Check, School, Hospital, Bus, Heart, ShoppingBag, ArrowLeft
+  Share2, FileText, Sparkles, ShieldCheck, Check, School, Hospital, Bus, Heart, ShoppingBag, ArrowLeft,
+  ChevronLeft, ChevronRight, Phone, Mail
 } from 'lucide-react';
 
 const PropertyDetailPage = () => {
@@ -295,16 +296,61 @@ const PropertyDetailPage = () => {
 
             {/* Agent / Agency Card */}
             {property.agentId && (
-              <div className={`${(!user || user.role === 'buyer') ? 'pt-4 border-t border-slate-800' : ''} flex items-center space-x-4`}>
-                <img
-                  src={property.agentId.avatar || 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400'}
-                  alt={property.agentId.name}
-                  className="w-12 h-12 rounded-xl object-cover border border-amber-500/40"
-                />
-                <div>
-                  <h4 className="text-sm font-bold text-white">{property.agentId.name}</h4>
-                  <p className="text-xs text-amber-400 font-semibold">{property.agencyId?.name || 'Listing Agent'}</p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">{property.agentId.phone || '+61 400 000 000'}</p>
+              <div className={`${(!user || user.role === 'buyer') ? 'pt-6 border-t border-slate-800' : ''}`}>
+                <div className="bg-slate-50 rounded-lg overflow-hidden border border-slate-200 shadow-md">
+                  {/* Header / Logo */}
+                  <div className="bg-[#fffdf8] p-4 flex justify-center border-b border-slate-200">
+                    <div className="flex items-center space-x-2">
+                      {property.agencyId?.logo ? (
+                        <img src={property.agencyId.logo} alt={property.agencyId.name} className="h-8 object-contain" />
+                      ) : (
+                        <span className="font-black text-slate-900 text-lg tracking-tight uppercase">{property.agencyId?.name || 'Listing Agency'}</span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Next Inspection Banner */}
+                  <div className="bg-slate-100 px-4 py-3 flex items-center justify-between text-[13px] border-b border-slate-200">
+                    <span className="text-slate-700">
+                      <strong className="text-slate-900 font-bold">Next Inspection:</strong> Thu 20 Aug, 12:00 PM
+                    </span>
+                    <Calendar className="w-5 h-5 text-slate-800" />
+                  </div>
+
+                  <div className="p-6 text-center space-y-5">
+                    {/* Agent Avatar with Chevrons (Aesthetic) */}
+                    <div className="flex items-center justify-between">
+                      <button className="p-1 text-slate-800 hover:text-slate-600 transition-colors">
+                        <ChevronLeft className="w-6 h-6" />
+                      </button>
+                      <img
+                        src={property.agentId.avatar || 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400'}
+                        alt={property.agentId.name}
+                        className="w-36 h-36 rounded-full object-cover shadow-sm mx-auto"
+                      />
+                      <button className="p-1 text-slate-800 hover:text-slate-600 transition-colors">
+                        <ChevronRight className="w-6 h-6" />
+                      </button>
+                    </div>
+
+                    {/* Agent Name & Agency */}
+                    <div>
+                      <h4 className="text-xl font-bold text-[#14234b]">{property.agentId.name}</h4>
+                      <p className="text-[13px] text-slate-600 mt-1">{property.agencyId?.name || 'Listing Agent'}</p>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="space-y-3 pt-2">
+                      <a href={`tel:${property.agentId.phone || '+61400000000'}`} className="w-full flex items-center justify-center space-x-2 py-3 rounded-md border border-[#14234b] text-[#14234b] font-bold hover:bg-slate-100 transition-colors">
+                        <Phone className="w-5 h-5" />
+                        <span>Call</span>
+                      </a>
+                      <a href={`mailto:${property.agentId.email || 'agent@example.com'}`} className="w-full flex items-center justify-center space-x-2 py-3 rounded-md bg-[#e31837] text-white font-bold hover:bg-[#c41530] transition-colors">
+                        <Mail className="w-5 h-5" />
+                        <span>Email</span>
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
