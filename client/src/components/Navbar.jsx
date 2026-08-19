@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { 
@@ -24,6 +24,19 @@ const Navbar = ({ onOpenAIChat }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isActive = (path) => {
+    if (path === '/') return location.pathname === '/';
+    if (path.includes('?')) return location.pathname + location.search === path;
+    return location.pathname.startsWith(path);
+  };
+
+  const linkClass = (path) => 
+    `transition-colors ${isActive(path) ? 'text-amber-400 font-extrabold shadow-amber-500/50 drop-shadow-md' : 'text-slate-300 hover:text-amber-400 font-medium'}`;
+    
+  const mobileLinkClass = (path) =>
+    `block py-2 ${isActive(path) ? 'text-amber-400 font-extrabold bg-slate-800/40 px-3 -ml-3 rounded-lg' : 'text-slate-300 font-medium hover:text-amber-400'}`;
 
   const getDashboardRoute = () => {
     if (!user) return '/login';
@@ -64,23 +77,23 @@ const Navbar = ({ onOpenAIChat }) => {
 
           {/* Desktop Navigation Links */}
           <nav className="hidden md:flex items-center space-x-7">
-            <Link to="/" className="text-slate-300 hover:text-amber-400 font-bold transition-colors">
+            <Link to="/" className={linkClass('/')}>
               Home
             </Link>
 
-            {/* Show Buy, Explore All, Agencies ONLY to Buyer or Guest users */}
+            {/* Show Buy, Rent, Sold, Agencies ONLY to Buyer or Guest users */}
             {(!user || user.role === 'buyer') && (
               <>
-                <Link to="/properties?listingType=Sale" className="text-slate-300 hover:text-amber-400 font-medium transition-colors">
+                <Link to="/properties?listingType=Sale" className={linkClass('/properties?listingType=Sale')}>
                   Buy
                 </Link>
-                <Link to="/properties?listingType=Rent" className="text-slate-300 hover:text-amber-400 font-medium transition-colors">
+                <Link to="/properties?listingType=Rent" className={linkClass('/properties?listingType=Rent')}>
                   Rent
                 </Link>
-                <Link to="/sold" className="text-slate-300 hover:text-amber-400 font-medium transition-colors">
+                <Link to="/sold" className={linkClass('/sold')}>
                   Sold
                 </Link>
-                <Link to="/agencies" className="text-slate-300 hover:text-amber-400 font-medium transition-colors">
+                <Link to="/agencies" className={linkClass('/agencies')}>
                   Find Agents
                 </Link>
               </>
@@ -88,7 +101,7 @@ const Navbar = ({ onOpenAIChat }) => {
 
             {/* Market Insights visible to Buyer, Seller, Agent, Guest (hidden for Admin) */}
             {(!user || user.role !== 'admin') && (
-              <Link to="/blogs" className="text-slate-300 hover:text-amber-400 font-medium transition-colors">
+              <Link to="/blogs" className={linkClass('/blogs')}>
                 Market Insights
               </Link>
             )}
@@ -97,7 +110,11 @@ const Navbar = ({ onOpenAIChat }) => {
             {user && (
               <Link 
                 to={getDashboardRoute()} 
-                className="px-3.5 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold text-xs flex items-center space-x-1.5 hover:bg-amber-500/20 transition-all shadow-sm"
+                className={`px-3.5 py-1.5 rounded-xl border font-bold text-xs flex items-center space-x-1.5 transition-all shadow-sm ${
+                  location.pathname.startsWith('/dashboard') 
+                    ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-amber-500/30' 
+                    : 'bg-amber-500/10 border-amber-500/30 text-amber-400 hover:bg-amber-500/20'
+                }`}
               >
                 <LayoutDashboard className="w-4 h-4" />
                 <span>Dashboard</span>
@@ -126,7 +143,11 @@ const Navbar = ({ onOpenAIChat }) => {
                     navigate('/wishlist');
                   }
                 }}
-                className="relative p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-rose-400 transition-colors"
+                className={`relative p-2 rounded-lg border transition-colors ${
+                  location.pathname === '/wishlist'
+                    ? 'bg-rose-500/20 border-rose-500/50 text-rose-400'
+                    : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-rose-400'
+                }`}
                 title="Saved Wishlist"
               >
                 <Heart className="w-5 h-5" />
@@ -242,7 +263,7 @@ const Navbar = ({ onOpenAIChat }) => {
           <Link
             to="/"
             onClick={() => setMobileMenuOpen(false)}
-            className="block text-amber-400 font-bold py-2"
+            className={mobileLinkClass('/')}
           >
             Home Page
           </Link>
@@ -252,14 +273,28 @@ const Navbar = ({ onOpenAIChat }) => {
               <Link
                 to="/properties?listingType=Sale"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block text-slate-300 font-medium py-2 hover:text-amber-400"
+                className={mobileLinkClass('/properties?listingType=Sale')}
               >
                 Buy Properties
               </Link>
               <Link
+                to="/properties?listingType=Rent"
+                onClick={() => setMobileMenuOpen(false)}
+                className={mobileLinkClass('/properties?listingType=Rent')}
+              >
+                Rent Properties
+              </Link>
+              <Link
+                to="/sold"
+                onClick={() => setMobileMenuOpen(false)}
+                className={mobileLinkClass('/sold')}
+              >
+                Sold Properties
+              </Link>
+              <Link
                 to="/agencies"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block text-slate-300 font-medium py-2 hover:text-amber-400"
+                className={mobileLinkClass('/agencies')}
               >
                 Real Estate Agencies
               </Link>
@@ -270,7 +305,7 @@ const Navbar = ({ onOpenAIChat }) => {
             <Link
               to="/blogs"
               onClick={() => setMobileMenuOpen(false)}
-              className="block text-slate-300 font-medium py-2 hover:text-amber-400"
+              className={mobileLinkClass('/blogs')}
             >
               Market Insights & News
             </Link>
@@ -281,7 +316,11 @@ const Navbar = ({ onOpenAIChat }) => {
               <Link
                 to={getDashboardRoute()}
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-center space-x-2 py-2.5 rounded-lg bg-amber-500 text-slate-950 font-bold text-sm"
+                className={`w-full flex items-center justify-center space-x-2 py-2.5 rounded-lg font-bold text-sm ${
+                  location.pathname.startsWith('/dashboard')
+                    ? 'bg-amber-600 text-white'
+                    : 'bg-amber-500 text-slate-950'
+                }`}
               >
                 <LayoutDashboard className="w-4 h-4" />
                 <span>Go to Dashboard ({user.role})</span>
