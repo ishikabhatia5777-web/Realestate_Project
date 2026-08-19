@@ -243,14 +243,14 @@ const PropertyDetailPage = () => {
             const lister = property.agentId || property.ownerId;
             const isAgent = !!property.agentId;
             return (
-              <div className="bg-slate-50 rounded-lg overflow-hidden border border-slate-200 shadow-md">
+              <div className="glass-panel rounded-2xl overflow-hidden border border-slate-800 shadow-md">
                 {/* Header / Logo */}
-                <div className="bg-[#fffdf8] p-4 flex justify-center border-b border-slate-200">
+                <div className="bg-slate-900/50 p-4 flex justify-center border-b border-slate-800">
                   <div className="flex items-center space-x-2">
                     {property.agencyId?.logo ? (
-                      <img src={property.agencyId.logo} alt={property.agencyId.name} className="h-8 object-contain" />
+                      <img src={property.agencyId.logo} alt={property.agencyId.name} className="h-8 object-contain drop-shadow-md brightness-0 invert opacity-80" />
                     ) : (
-                      <span className="font-black text-slate-900 text-lg tracking-tight uppercase">
+                      <span className="font-black text-white text-lg tracking-tight uppercase">
                         {isAgent ? (property.agencyId?.name || 'Listing Agency') : 'Property Owner'}
                       </span>
                     )}
@@ -258,44 +258,44 @@ const PropertyDetailPage = () => {
                 </div>
                 
                 {/* Next Inspection Banner */}
-                <div className="bg-slate-100 px-4 py-3 flex items-center justify-between text-[13px] border-b border-slate-200">
-                  <span className="text-slate-700">
-                    <strong className="text-slate-900 font-bold">Next Inspection:</strong> Thu 20 Aug, 12:00 PM
+                <div className="bg-amber-500/10 px-4 py-3 flex items-center justify-between text-[13px] border-b border-amber-500/20">
+                  <span className="text-amber-500/90">
+                    <strong className="text-amber-400 font-bold">Next Inspection:</strong> Thu 20 Aug, 12:00 PM
                   </span>
-                  <Calendar className="w-5 h-5 text-slate-800" />
+                  <Calendar className="w-5 h-5 text-amber-400" />
                 </div>
 
                 <div className="p-6 text-center space-y-5">
                   {/* Agent Avatar with Chevrons (Aesthetic) */}
                   <div className="flex items-center justify-between">
-                    <button className="p-1 text-slate-800 hover:text-slate-600 transition-colors">
+                    <button className="p-1 text-slate-500 hover:text-amber-400 transition-colors">
                       <ChevronLeft className="w-6 h-6" />
                     </button>
                     <img
                       src={lister.avatar || 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400'}
                       alt={lister.name}
-                      className="w-36 h-36 rounded-full object-cover shadow-sm mx-auto"
+                      className="w-36 h-36 rounded-full object-cover shadow-lg border border-slate-700 mx-auto"
                     />
-                    <button className="p-1 text-slate-800 hover:text-slate-600 transition-colors">
+                    <button className="p-1 text-slate-500 hover:text-amber-400 transition-colors">
                       <ChevronRight className="w-6 h-6" />
                     </button>
                   </div>
 
                   {/* Agent Name & Agency */}
                   <div>
-                    <h4 className="text-xl font-bold text-[#14234b]">{lister.name}</h4>
-                    <p className="text-[13px] text-slate-600 mt-1">
+                    <h4 className="text-xl font-bold text-white">{lister.name}</h4>
+                    <p className="text-[13px] text-slate-400 mt-1">
                       {isAgent ? (property.agencyId?.name || 'Listing Agent') : 'Property Owner'}
                     </p>
                   </div>
 
                   {/* Action Buttons */}
                   <div className="space-y-3 pt-2">
-                    <a href={`tel:${lister.phone || '+61400000000'}`} className="w-full flex items-center justify-center space-x-2 py-3 rounded-md border border-[#14234b] text-[#14234b] font-bold hover:bg-slate-100 transition-colors">
+                    <a href={`tel:${lister.phone || '+61400000000'}`} className="w-full flex items-center justify-center space-x-2 py-3 rounded-xl border border-slate-700 text-white font-bold hover:border-amber-500 transition-colors">
                       <Phone className="w-5 h-5" />
                       <span>Call</span>
                     </a>
-                    <a href={`mailto:${lister.email || 'contact@example.com'}`} className="w-full flex items-center justify-center space-x-2 py-3 rounded-md bg-[#e31837] text-white font-bold hover:bg-[#c41530] transition-colors">
+                    <a href={`mailto:${lister.email || 'contact@example.com'}`} className="w-full flex items-center justify-center space-x-2 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold hover:from-amber-400 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/20">
                       <Mail className="w-5 h-5" />
                       <span>Email</span>
                     </a>
