@@ -233,10 +233,10 @@ const PropertyDetailPage = () => {
         <div className="lg:col-span-4 space-y-6">
           
           {/* Action Box */}
-          {((!user || user.role === 'buyer') || property.agentId) && (
+          {((user && user.role === 'buyer') || property.agentId) && (
             <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4 sticky top-28">
-              {/* Show Buy, Offer, Inspection & Live Chat ONLY to Buyers or Guests */}
-            {(!user || user.role === 'buyer') && (
+              {/* Show Buy, Offer, Inspection & Live Chat ONLY to Buyers */}
+            {(user && user.role === 'buyer') && (
               <>
                 <h3 className="text-base font-bold text-white">Take Action</h3>
                 
@@ -282,7 +282,7 @@ const PropertyDetailPage = () => {
 
             {/* Agent / Agency Card */}
             {property.agentId && (
-              <div className={`${(!user || user.role === 'buyer') ? 'pt-4 border-t border-slate-800' : ''} flex items-center space-x-4`}>
+              <div className={`${(user && user.role === 'buyer') ? 'pt-4 border-t border-slate-800' : ''} flex items-center space-x-4`}>
                 <img
                   src={property.agentId.avatar || 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400'}
                   alt={property.agentId.name}

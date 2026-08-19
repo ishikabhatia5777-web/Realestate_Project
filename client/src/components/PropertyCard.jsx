@@ -133,7 +133,7 @@ const PropertyCard = ({ property }) => {
             >
               View Details
             </Link>
-            {(!user || user.role === 'buyer') && (
+            {(user && user.role === 'buyer') && (
               <Link
                 to={`/properties/${property._id}?buy=true`}
                 className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold text-xs hover:from-amber-400 hover:to-amber-500 transition-all shadow-md shadow-amber-500/20 flex items-center space-x-1"
