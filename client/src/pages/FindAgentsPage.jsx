@@ -166,6 +166,174 @@ const AgentCard = ({ agent }) => {
   );
 };
 
+const FALLBACK_AGENTS = [
+  {
+    _id: 'fa-001',
+    name: 'Ishika Bhatia',
+    email: 'ishikabhatia51@gmail.com',
+    phone: '+61 422 100 001',
+    role: 'agent',
+    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=400',
+    bio: 'Passionate real estate agent with a keen eye for premium properties. Dedicated to making every client\'s property journey smooth and rewarding.',
+    licenseNumber: 'NSW-AG-10021',
+    specialties: ['Luxury Homes', 'Apartments', 'Investments'],
+    rating: 4.9,
+    dealsCount: 64,
+    location: 'Sydney, NSW',
+    agencyName: 'Prestige Property Group'
+  },
+  {
+    _id: 'fa-002',
+    name: 'Upansh Verma',
+    email: 'upansh769@gmail.com',
+    phone: '+61 411 200 002',
+    role: 'agent',
+    avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=400',
+    bio: 'Results-driven agent specialising in first-home buyers and suburban growth corridors. Trusted advisor with a transparent, client-first approach.',
+    licenseNumber: 'ACT-AG-20025',
+    specialties: ['First Home Buyers', 'Suburbs', 'Land'],
+    rating: 4.7,
+    dealsCount: 48,
+    location: 'Canberra, ACT',
+    agencyName: 'Horizon Real Estate Canberra'
+  },
+  {
+    _id: 'fa-003',
+    name: 'Reet Kapoor',
+    email: 'reet67711@gmail.com',
+    phone: '+61 433 300 003',
+    role: 'agent',
+    avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400',
+    bio: 'Melbourne specialist with expertise in off-the-plan developments and inner-city investments. Helping clients build wealth through smart property choices.',
+    licenseNumber: 'VIC-AG-30036',
+    specialties: ['Off-the-Plan', 'Inner-City', 'Investments'],
+    rating: 4.8,
+    dealsCount: 77,
+    location: 'Melbourne, VIC',
+    agencyName: 'Melbourne Elite Properties'
+  },
+  {
+    _id: 'fa-004',
+    name: 'Ruhi Bhatia',
+    email: 'ruhibhatia0022@gmail.com',
+    phone: '+61 455 400 004',
+    role: 'agent',
+    avatar: 'https://images.unsplash.com/photo-1614644147798-f8c0fc9da7f6?auto=format&fit=crop&q=80&w=400',
+    bio: 'Brisbane coastal living expert. Specialising in holiday homes and beachfront properties with a passion for matching families with their dream lifestyle.',
+    licenseNumber: 'QLD-AG-40047',
+    specialties: ['Coastal', 'Holiday Homes', 'Family Homes'],
+    rating: 5.0,
+    dealsCount: 91,
+    location: 'Brisbane, QLD',
+    agencyName: 'Brisbane Coastal Realty'
+  },
+  {
+    _id: 'fa-005',
+    name: 'Saghun Mehta',
+    email: 'saghun8699@gmail.com',
+    phone: '+61 499 500 005',
+    role: 'agent',
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=400',
+    bio: 'Perth luxury property specialist with a strong track record in premium Western suburb estates. Known for negotiating the best outcomes for clients.',
+    licenseNumber: 'WA-AG-50058',
+    specialties: ['Luxury', 'Western Suburbs', 'Acreage'],
+    rating: 4.8,
+    dealsCount: 53,
+    location: 'Perth, WA',
+    agencyName: 'Perth Premium Realty'
+  },
+  {
+    _id: 'fa-006',
+    name: 'Samantha Reed',
+    email: 'samantha@prestigerealty.com.au',
+    phone: '+61 422 333 444',
+    role: 'agent',
+    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400',
+    bio: 'Award-winning agent with 10+ years in Sydney luxury real estate. Specialist in waterfront properties and high-rise apartments.',
+    licenseNumber: 'NSW-AG-10012',
+    specialties: ['Luxury Homes', 'Waterfront', 'Investments'],
+    rating: 4.9,
+    dealsCount: 148,
+    location: 'Sydney, NSW',
+    agencyName: 'Prestige Property Group'
+  },
+  {
+    _id: 'fa-007',
+    name: 'Liam Carter',
+    email: 'liam.carter@horizonrealty.com.au',
+    phone: '+61 411 900 123',
+    role: 'agent',
+    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=400',
+    bio: 'Canberra-based specialist helping first-home buyers navigate the market with confidence. Transparent, honest and results-driven.',
+    licenseNumber: 'ACT-AG-20034',
+    specialties: ['First Home Buyers', 'Apartments', 'Suburbs'],
+    rating: 4.8,
+    dealsCount: 93,
+    location: 'Canberra, ACT',
+    agencyName: 'Horizon Real Estate Canberra'
+  },
+  {
+    _id: 'fa-008',
+    name: 'Priya Sharma',
+    email: 'priya@melbourneelite.com.au',
+    phone: '+61 433 755 900',
+    role: 'agent',
+    avatar: 'https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&q=80&w=400',
+    bio: "Melbourne's top-rated agent for inner-city living. Expert in off-the-plan projects and short-term investment yields.",
+    licenseNumber: 'VIC-AG-30089',
+    specialties: ['Off-the-Plan', 'Investments', 'Inner-City'],
+    rating: 5.0,
+    dealsCount: 211,
+    location: 'Melbourne, VIC',
+    agencyName: 'Melbourne Elite Properties'
+  },
+  {
+    _id: 'fa-009',
+    name: 'Derek Walsh',
+    email: 'derek@brisbanecoastal.com.au',
+    phone: '+61 400 222 567',
+    role: 'agent',
+    avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400',
+    bio: 'Southeast Queensland coastal property guru. Specialising in holiday homes, beachfront blocks, and high-growth corridors.',
+    licenseNumber: 'QLD-AG-40056',
+    specialties: ['Coastal', 'Holiday Homes', 'Land'],
+    rating: 4.7,
+    dealsCount: 127,
+    location: 'Brisbane, QLD',
+    agencyName: 'Brisbane Coastal Realty'
+  },
+  {
+    _id: 'fa-010',
+    name: 'Aisha Noor',
+    email: 'aisha@perthpremium.com.au',
+    phone: '+61 455 678 901',
+    role: 'agent',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400',
+    bio: 'Perth property expert with deep knowledge of the Western suburbs. Passionate about matching families with their forever homes.',
+    licenseNumber: 'WA-AG-50023',
+    specialties: ['Family Homes', 'Western Suburbs', 'Luxury'],
+    rating: 4.9,
+    dealsCount: 176,
+    location: 'Perth, WA',
+    agencyName: 'Perth Premium Realty'
+  },
+  {
+    _id: 'fa-011',
+    name: 'Thomas Blake',
+    email: 'thomas@adelaidehomes.com.au',
+    phone: '+61 499 321 654',
+    role: 'agent',
+    avatar: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?auto=format&fit=crop&q=80&w=400',
+    bio: 'Adelaide hills and wine country specialist. Helping buyers find acreage properties, vineyards and rural escapes since 2010.',
+    licenseNumber: 'SA-AG-60011',
+    specialties: ['Acreage', 'Rural', 'Wine Country'],
+    rating: 4.8,
+    dealsCount: 89,
+    location: 'Adelaide, SA',
+    agencyName: 'Adelaide Homes & Lifestyle'
+  }
+];
+
 const FindAgentsPage = () => {
   const [agents, setAgents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -176,9 +344,16 @@ const FindAgentsPage = () => {
     const load = async () => {
       try {
         const res = await fetchAgents();
-        if (res.data.success) setAgents(res.data.agents);
+        // Use API data if it returns agents, otherwise fall back to built-in list
+        if (res.data.success && res.data.agents.length > 0) {
+          setAgents(res.data.agents);
+        } else {
+          setAgents(FALLBACK_AGENTS);
+        }
       } catch (err) {
-        console.error(err);
+        // API error — always show fallback agents so page is never blank
+        console.warn('Agents API unavailable, using fallback data.');
+        setAgents(FALLBACK_AGENTS);
       } finally {
         setLoading(false);
       }
