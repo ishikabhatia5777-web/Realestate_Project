@@ -402,24 +402,6 @@ const FindAgentsPage = () => {
         </p>
       </div>
 
-      {/* Stats bar */}
-      <div className="grid grid-cols-3 gap-4">
-        {[
-          { icon: Users, label: 'Verified Agents', value: agents.length || '200+' },
-          { icon: Award, label: 'Avg. Rating', value: agents.length ? (agents.reduce((s, a) => s + (a.rating || 4.8), 0) / agents.length).toFixed(1) : '4.9' },
-          { icon: Briefcase, label: 'Total Deals', value: agents.length ? `${agents.reduce((s, a) => s + (a.dealsCount || 0), 0)}+` : '1,000+' },
-        ].map(({ icon: Icon, label, value }) => (
-          <div key={label} className="glass-panel rounded-2xl border border-slate-800 p-4 flex items-center space-x-3">
-            <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20">
-              <Icon className="w-5 h-5 text-amber-400" />
-            </div>
-            <div>
-              <p className="text-lg font-extrabold text-white">{value}</p>
-              <p className="text-[11px] text-slate-500">{label}</p>
-            </div>
-          </div>
-        ))}
-      </div>
 
       {/* Search + Filter */}
       <div className="flex flex-col sm:flex-row gap-3">
