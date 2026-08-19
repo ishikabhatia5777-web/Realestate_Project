@@ -136,12 +136,6 @@ const PropertiesPage = () => {
           </div>
           
           <div className="flex flex-wrap items-center gap-2">
-            <button
-              onClick={() => alert('Search saved! We will notify you of new properties matching this criteria.')}
-              className="px-4 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs font-bold text-white hover:border-amber-500 hover:text-amber-400 transition-colors flex items-center gap-1.5"
-            >
-              <Bell className="w-3.5 h-3.5" /> <span>Save Search</span>
-            </button>
             <div className="flex items-center space-x-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
               <button
                 onClick={() => setViewMode('grid')}
