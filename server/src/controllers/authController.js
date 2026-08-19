@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const crypto = require('crypto');
 const ActivityLog = require('../models/ActivityLog');
 const sendEmail = require('../utils/sendEmail');
+const { sendEmail: sendEmailService } = require('../services/emailService');
 
 const mockUsers = [
   { _id: '507f1f77bcf86cd799439000', name: 'Ishika (Admin)', email: 'ishbhatia484@gmail.com', role: 'admin' },
@@ -400,39 +401,119 @@ const toggleWishlist = async (req, res, next) => {
   }
 };
 
-// @desc    Forgot password
+// @desc    Forgot password / Send OTP
 // @route   POST /api/auth/forgotpassword
 const forgotPassword = async (req, res, next) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
+    const emailInput = (req.body.email || '').trim().toLowerCase();
 
+    if (!emailInput) {
+      return res.status(400).json({ success: false, message: 'Please provide an email address' });
+    }
+
+    // 1. Try MongoDB
+    let user = null;
+    if (mongoose.connection.readyState === 1) {
+      try {
+        user = await User.findOne({ email: emailInput });
+      } catch (dbErr) {
+        console.log('MongoDB forgotPassword lookup error:', dbErr.message);
+      }
+    }
+
+    // 2. Fallback: local users.json
     if (!user) {
+      const localUsers = getLocalUsers();
+      const localUser = localUsers.find(u => (u.email || '').toLowerCase() === emailInput);
+      if (localUser) {
+        // Local users cannot run .getResetPasswordToken(), so handle inline
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const hashedOtp = require('crypto').createHash('sha256').update(otp).digest('hex');
+        const expire = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+        // Persist OTP into local user record
+        const localUsers2 = getLocalUsers();
+        const idx = localUsers2.findIndex(u => (u.email || '').toLowerCase() === emailInput);
+        if (idx > -1) {
+          localUsers2[idx].resetPasswordToken = hashedOtp;
+          localUsers2[idx].resetPasswordExpire = expire;
+          fs.writeFileSync(usersFilePath, JSON.stringify(localUsers2, null, 2));
+        }
+
+        try {
+          await sendEmailService({
+            to: emailInput,
+            subject: '🔐 Your AuraEstates Login OTP',
+            html: `
+              <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:560px;margin:auto;background:#0f172a;color:#e2e8f0;border-radius:14px;overflow:hidden;">
+                <div style="background:linear-gradient(135deg,#1e293b,#0f172a);padding:24px 32px;border-bottom:2px solid #f59e0b;">
+                  <h1 style="margin:0;font-size:20px;color:#f59e0b;">🏡 AuraEstates</h1>
+                  <p style="margin:4px 0 0;font-size:12px;color:#94a3b8;">One-Time Login Code</p>
+                </div>
+                <div style="padding:32px;">
+                  <p>Hi <strong>${localUser.name || 'there'}</strong>,</p>
+                  <p>You requested to log in via OTP. Here is your one-time code:</p>
+                  <div style="background:#1e293b;border:2px solid #f59e0b;border-radius:12px;padding:24px;text-align:center;margin:24px 0;">
+                    <p style="margin:0;font-size:12px;color:#94a3b8;letter-spacing:2px;text-transform:uppercase;">Your OTP Code</p>
+                    <p style="margin:8px 0 0;font-size:42px;font-weight:bold;color:#f59e0b;letter-spacing:10px;">${otp}</p>
+                    <p style="margin:8px 0 0;font-size:12px;color:#64748b;">⏱ Expires in 10 minutes</p>
+                  </div>
+                  <p style="font-size:13px;color:#94a3b8;">If you did not request this, please ignore this email.</p>
+                </div>
+                <div style="background:#1e293b;padding:14px 32px;border-top:1px solid #1e3a5f;">
+                  <p style="margin:0;font-size:11px;color:#475569;text-align:center;">Automated notification from AuraEstates — do not reply.</p>
+                </div>
+              </div>
+            `
+          });
+          return res.status(200).json({ success: true, data: 'OTP sent to email' });
+        } catch (emailErr) {
+          console.error('OTP email (local user) failed:', emailErr.message);
+          return res.status(500).json({ success: false, message: 'Email could not be sent. Please check server email configuration.' });
+        }
+      }
+
       return res.status(404).json({ success: false, message: 'There is no user with that email' });
     }
 
-    // Get reset token (now an OTP)
+    // MongoDB user found — use model method
     const otp = user.getResetPasswordToken();
-
     await user.save({ validateBeforeSave: false });
 
-    const message = `You requested to log in via OTP. Your 6-digit code is: ${otp}\n\nThis code will expire in 10 minutes.`;
-
     try {
-      await sendEmail({
-        email: user.email,
-        subject: 'Your Login OTP',
-        message
+      await sendEmailService({
+        to: user.email,
+        subject: '🔐 Your AuraEstates Login OTP',
+        html: `
+          <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:560px;margin:auto;background:#0f172a;color:#e2e8f0;border-radius:14px;overflow:hidden;">
+            <div style="background:linear-gradient(135deg,#1e293b,#0f172a);padding:24px 32px;border-bottom:2px solid #f59e0b;">
+              <h1 style="margin:0;font-size:20px;color:#f59e0b;">🏡 AuraEstates</h1>
+              <p style="margin:4px 0 0;font-size:12px;color:#94a3b8;">One-Time Login Code</p>
+            </div>
+            <div style="padding:32px;">
+              <p>Hi <strong>${user.name || 'there'}</strong>,</p>
+              <p>You requested to log in via OTP. Here is your one-time code:</p>
+              <div style="background:#1e293b;border:2px solid #f59e0b;border-radius:12px;padding:24px;text-align:center;margin:24px 0;">
+                <p style="margin:0;font-size:12px;color:#94a3b8;letter-spacing:2px;text-transform:uppercase;">Your OTP Code</p>
+                <p style="margin:8px 0 0;font-size:42px;font-weight:bold;color:#f59e0b;letter-spacing:10px;">${otp}</p>
+                <p style="margin:8px 0 0;font-size:12px;color:#64748b;">⏱ Expires in 10 minutes</p>
+              </div>
+              <p style="font-size:13px;color:#94a3b8;">If you did not request this, please ignore this email.</p>
+            </div>
+            <div style="background:#1e293b;padding:14px 32px;border-top:1px solid #1e3a5f;">
+              <p style="margin:0;font-size:11px;color:#475569;text-align:center;">Automated notification from AuraEstates — do not reply.</p>
+            </div>
+          </div>
+        `
       });
 
       res.status(200).json({ success: true, data: 'OTP sent to email' });
     } catch (err) {
-      console.log(err);
+      console.error('OTP email failed:', err.message);
       user.resetPasswordToken = undefined;
       user.resetPasswordExpire = undefined;
-
       await user.save({ validateBeforeSave: false });
-
-      return res.status(500).json({ success: false, message: 'Email could not be sent' });
+      return res.status(500).json({ success: false, message: 'Email could not be sent. Please check server email configuration.' });
     }
   } catch (error) {
     next(error);
@@ -449,20 +530,73 @@ const verifyOtpAndLogin = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Please provide email and OTP' });
     }
 
+    const cleanEmail = email.trim().toLowerCase();
     // Get hashed OTP
     const resetPasswordToken = crypto
       .createHash('sha256')
-      .update(otp)
+      .update(otp.trim())
       .digest('hex');
 
-    const user = await User.findOne({
-      email: email.toLowerCase(),
-      resetPasswordToken,
-      resetPasswordExpire: { $gt: Date.now() }
-    });
+    // 1. Try MongoDB
+    let user = null;
+    let isLocalUser = false;
+
+    if (mongoose.connection.readyState === 1) {
+      try {
+        user = await User.findOne({
+          email: cleanEmail,
+          resetPasswordToken,
+          resetPasswordExpire: { $gt: Date.now() }
+        });
+      } catch (dbErr) {
+        console.log('MongoDB verifyOtp lookup error:', dbErr.message);
+      }
+    }
+
+    // 2. Fallback: local users.json
+    if (!user) {
+      const localUsers = getLocalUsers();
+      const localUser = localUsers.find(u =>
+        (u.email || '').toLowerCase() === cleanEmail &&
+        u.resetPasswordToken === resetPasswordToken &&
+        u.resetPasswordExpire &&
+        u.resetPasswordExpire > Date.now()
+      );
+      if (localUser) {
+        user = localUser;
+        isLocalUser = true;
+      }
+    }
 
     if (!user) {
       return res.status(400).json({ success: false, message: 'Invalid or expired OTP' });
+    }
+
+    // If local user: clear OTP in file
+    if (isLocalUser) {
+      const localUsers = getLocalUsers();
+      const idx = localUsers.findIndex(u => (u.email || '').toLowerCase() === cleanEmail);
+      if (idx > -1) {
+        delete localUsers[idx].resetPasswordToken;
+        delete localUsers[idx].resetPasswordExpire;
+        fs.writeFileSync(usersFilePath, JSON.stringify(localUsers, null, 2));
+      }
+      const token = generateToken(user._id);
+      return res.status(200).json({
+        success: true,
+        token,
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          avatar: user.avatar,
+          phone: user.phone,
+          agencyId: user.agencyId,
+          twoFactorEnabled: user.twoFactorEnabled,
+          savedProperties: user.savedProperties || []
+        }
+      });
     }
 
     // Clear OTP fields
