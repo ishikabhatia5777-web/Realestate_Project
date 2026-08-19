@@ -32,7 +32,12 @@ const PropertyDetailPage = () => {
 
   useEffect(() => {
     if (searchParams.get('buy') === 'true' && property) {
-      setIsPaymentOpen(true);
+      if (!user) {
+        requireAuth('Please sign in to buy or reserve this property');
+        setIsPaymentOpen(false);
+      } else {
+        setIsPaymentOpen(true);
+      }
     }
   }, [searchParams, property, user]);
 
@@ -233,16 +238,18 @@ const PropertyDetailPage = () => {
         <div className="lg:col-span-4 space-y-6">
           
           {/* Action Box */}
-          {((user && user.role === 'buyer') || property.agentId) && (
+          {((!user || user.role === 'buyer') || property.agentId) && (
             <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4 sticky top-28">
-              {/* Show Buy, Offer, Inspection & Live Chat ONLY to Buyers */}
-            {(user && user.role === 'buyer') && (
+              {/* Show Buy, Offer, Inspection & Live Chat ONLY to Buyers or Guests */}
+            {(!user || user.role === 'buyer') && (
               <>
                 <h3 className="text-base font-bold text-white">Take Action</h3>
                 
                 <button
                   onClick={() => {
-                    setIsPaymentOpen(true);
+                    if (requireAuth('Sign in to purchase or reserve this property')) {
+                      setIsPaymentOpen(true);
+                    }
                   }}
                   className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-slate-950 font-black text-sm hover:from-emerald-400 hover:to-emerald-500 transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center space-x-2"
                 >
@@ -252,7 +259,9 @@ const PropertyDetailPage = () => {
 
                 <button
                   onClick={() => {
-                    setIsOfferOpen(true);
+                    if (requireAuth('Sign in to submit an offer on this property')) {
+                      setIsOfferOpen(true);
+                    }
                   }}
                   className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold text-sm hover:from-amber-400 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/20"
                 >
@@ -261,7 +270,9 @@ const PropertyDetailPage = () => {
 
                 <button
                   onClick={() => {
-                    setIsBookingOpen(true);
+                    if (requireAuth('Sign in to book a private inspection')) {
+                      setIsBookingOpen(true);
+                    }
                   }}
                   className="w-full py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-sm hover:border-amber-500 transition-colors"
                 >
@@ -270,7 +281,9 @@ const PropertyDetailPage = () => {
 
                 <button
                   onClick={() => {
-                    setIsChatOpen(true);
+                    if (requireAuth('Sign in to start a live chat with this agent')) {
+                      setIsChatOpen(true);
+                    }
                   }}
                   className="w-full py-3 rounded-xl bg-cyan-950/60 border border-cyan-500/30 text-cyan-300 font-bold text-sm hover:bg-cyan-900/60 transition-colors flex items-center justify-center space-x-2"
                 >
@@ -282,7 +295,7 @@ const PropertyDetailPage = () => {
 
             {/* Agent / Agency Card */}
             {property.agentId && (
-              <div className={`${(user && user.role === 'buyer') ? 'pt-4 border-t border-slate-800' : ''} flex items-center space-x-4`}>
+              <div className={`${(!user || user.role === 'buyer') ? 'pt-4 border-t border-slate-800' : ''} flex items-center space-x-4`}>
                 <img
                   src={property.agentId.avatar || 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400'}
                   alt={property.agentId.name}
