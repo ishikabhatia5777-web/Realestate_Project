@@ -257,7 +257,7 @@ const HomePage = () => {
               Our network of 1,250+ certified agents across Australia specialise in luxury residential, commercial, and development properties. Get matched with the right expert for your goals.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/agencies" className="px-8 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold text-sm hover:from-amber-400 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/30">
+              <Link to="/agents" className="px-8 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold text-sm hover:from-amber-400 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/30">
                 Find an Agent
               </Link>
               <Link to="/properties" className="px-8 py-3.5 rounded-xl border border-slate-600 text-white font-extrabold text-sm hover:border-amber-500 hover:text-amber-400 transition-colors">
