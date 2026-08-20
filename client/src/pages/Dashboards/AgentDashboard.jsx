@@ -15,7 +15,7 @@ import {
   TrendingUp, DollarSign, Users, Calendar, Search,
   ChevronDown, ChevronUp, BarChart2,
   Activity, Star, Phone, Clock, CheckCircle,
-  ArrowUp, ArrowDown, RefreshCw
+  ArrowUp, ArrowDown, RefreshCw, UserPlus
 } from 'lucide-react';
 
 // ─── Mock Data ──────────────────────────────────────────────────────────────
@@ -392,13 +392,49 @@ const AgentDashboard = () => {
               </div>
             )}
           </div>
-          {/* Quick Actions */}
-          <button
-            onClick={() => setIsAddModalOpen(true)}
-            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 text-white font-extrabold text-xs flex items-center gap-2 hover:from-sky-400 hover:to-sky-500 transition-all shadow-lg shadow-sky-500/20"
-          >
-            <Plus className="w-4 h-4" /> Add Property
-          </button>
+          {/* Quick Actions Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setIsAddModalOpen(!isAddModalOpen)}
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 text-white font-extrabold text-xs flex items-center gap-2 hover:from-sky-400 hover:to-sky-500 transition-all shadow-lg shadow-sky-500/20"
+            >
+              <Plus className="w-4 h-4" /> Quick Actions <ChevronDown className="w-3 h-3" />
+            </button>
+            {isAddModalOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl border border-slate-200 shadow-xl z-50 py-1 overflow-hidden">
+                <button
+                  onClick={() => { setIsAddModalOpen(false); /* Trigger Add Property logic if there was a separate modal */ }}
+                  className="w-full px-4 py-2.5 text-left flex items-center space-x-2 text-slate-600 hover:bg-slate-50 text-xs font-semibold"
+                >
+                  <Building2 className="w-3.5 h-3.5" /> <span>Add Property</span>
+                </button>
+                <button
+                  onClick={() => { setIsAddModalOpen(false); setActiveTab('leads'); }}
+                  className="w-full px-4 py-2.5 text-left flex items-center space-x-2 text-slate-600 hover:bg-slate-50 text-xs font-semibold"
+                >
+                  <Users className="w-3.5 h-3.5" /> <span>Add Lead</span>
+                </button>
+                <button
+                  onClick={() => { setIsAddModalOpen(false); setActiveTab('appointments'); }}
+                  className="w-full px-4 py-2.5 text-left flex items-center space-x-2 text-slate-600 hover:bg-slate-50 text-xs font-semibold"
+                >
+                  <Calendar className="w-3.5 h-3.5" /> <span>Schedule Appointment</span>
+                </button>
+                <button
+                  onClick={() => { setIsAddModalOpen(false); setActiveTab('messages'); }}
+                  className="w-full px-4 py-2.5 text-left flex items-center space-x-2 text-slate-600 hover:bg-slate-50 text-xs font-semibold"
+                >
+                  <MessageSquare className="w-3.5 h-3.5" /> <span>Messages</span>
+                </button>
+                <button
+                  onClick={() => { setIsAddModalOpen(false); setActiveTab('properties'); }}
+                  className="w-full px-4 py-2.5 text-left flex items-center space-x-2 text-slate-600 hover:bg-slate-50 text-xs font-semibold"
+                >
+                  <Eye className="w-3.5 h-3.5" /> <span>View Listings</span>
+                </button>
+              </div>
+            )}
+          </div>
           <button
             onClick={loadData}
             className="p-2.5 rounded-xl border border-slate-200 bg-white hover:border-sky-500/40 text-slate-500 hover:text-sky-500 transition-all"
