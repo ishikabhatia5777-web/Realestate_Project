@@ -240,7 +240,7 @@ const Navbar = ({ onOpenAIChat }) => {
                   to="/register"
                   className="px-4 py-2 rounded-lg text-sm font-bold bg-gradient-to-r from-sky-500 to-sky-600 text-slate-950 hover:from-sky-400 hover:to-sky-500 transition-all shadow-md shadow-sky-500/20"
                 >
-                  Get Started
+                  Sign Up
                 </Link>
               </div>
             )}

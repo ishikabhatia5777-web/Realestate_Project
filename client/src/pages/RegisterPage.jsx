@@ -69,32 +69,7 @@ const RegisterPage = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           
-          {/* Role selector pills */}
-          <div className="space-y-1 text-xs">
-            <label className="font-bold text-slate-600">Select Account Type (RBAC)</label>
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { id: 'buyer', label: 'Buyer / Renter' },
-                { id: 'seller', label: 'Property Seller (FSBO)' },
-                { id: 'agent', label: 'Real Estate Agent' },
-                { id: 'agency', label: 'Agency Owner' },
-                { id: 'admin', label: 'Admin User' }
-              ].map((r) => (
-                <button
-                  key={r.id}
-                  type="button"
-                  onClick={() => setRole(r.id)}
-                  className={`p-2.5 rounded-xl text-xs font-bold border transition-all text-left ${
-                    role === r.id
-                      ? 'bg-sky-500 text-slate-950 border-sky-500 shadow-md'
-                      : 'bg-white border-slate-200 text-slate-500 hover:text-slate-900'
-                  }`}
-                >
-                  {r.label}
-                </button>
-              ))}
-            </div>
-          </div>
+
 
           <div className="space-y-1 text-xs">
             <label className="font-bold text-slate-600">Full Name</label>
