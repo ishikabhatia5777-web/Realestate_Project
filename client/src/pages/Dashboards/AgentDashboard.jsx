@@ -16,6 +16,7 @@ const AgentDashboard = () => {
   const [bookings, setBookings] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [activeTab, setActiveTab] = useState('properties');
+  const [settingsDropdownOpen, setSettingsDropdownOpen] = useState(false);
   const [expertRequests, setExpertRequests] = useState([]);
   const [expertUnreadCount, setExpertUnreadCount] = useState(0);
   const [activeChatRequest, setActiveChatRequest] = useState(null);
@@ -188,41 +189,73 @@ const AgentDashboard = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap gap-2 bg-white p-1.5 rounded-2xl border border-slate-200 text-xs font-bold w-fit">
+      <div className="flex flex-wrap items-center gap-2 bg-white p-1.5 rounded-2xl border border-slate-200 text-xs font-bold w-fit">
         <button
           onClick={() => setActiveTab('properties')}
           className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'properties' ? 'bg-sky-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
         >
           Listed Properties ({properties.length})
         </button>
-        <button
-          onClick={() => setActiveTab('messages')}
-          className={`px-4 py-2.5 rounded-xl transition-all flex items-center space-x-1.5 ${activeTab === 'messages' ? 'bg-sky-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
-        >
-          <MessageSquare className="w-3.5 h-3.5" />
-          <span>Live Chat Inbox</span>
-        </button>
 
+        {/* Settings Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setSettingsDropdownOpen(!settingsDropdownOpen)}
+            className={`px-4 py-2.5 rounded-xl transition-all flex items-center space-x-1.5 ${
+              ['messages', 'requests', 'profile'].includes(activeTab)
+                ? 'bg-sky-500 text-slate-950 shadow-md'
+                : 'text-slate-500 hover:text-slate-900'
+            }`}
+          >
+            <User className="w-3.5 h-3.5" />
+            <span>Settings</span>
+            {expertUnreadCount > 0 && (
+              <span className="w-4 h-4 bg-rose-500 text-slate-900 text-[9px] font-black rounded-full flex items-center justify-center animate-pulse ml-1">
+                {expertUnreadCount}
+              </span>
+            )}
+            <svg className={`w-3 h-3 ml-1 transition-transform ${settingsDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
 
-        <button
-          onClick={() => { setActiveTab('requests'); setExpertUnreadCount(0); }}
-          className={`px-4 py-2.5 rounded-xl transition-all flex items-center space-x-1.5 relative ${activeTab === 'requests' ? 'bg-rose-500 text-slate-900 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
-        >
-          <Bell className="w-3.5 h-3.5" />
-          <span>Connection Requests</span>
-          {expertUnreadCount > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-rose-500 text-slate-900 text-[9px] font-black rounded-full flex items-center justify-center animate-pulse">
-              {expertUnreadCount}
-            </span>
+          {settingsDropdownOpen && (
+            <div className="absolute top-full left-0 mt-2 w-52 bg-white rounded-xl border border-slate-200 shadow-xl z-50 py-1 overflow-hidden">
+              <button
+                onClick={() => { setActiveTab('messages'); setSettingsDropdownOpen(false); }}
+                className={`w-full px-4 py-2.5 text-left flex items-center space-x-2.5 transition-colors ${
+                  activeTab === 'messages' ? 'bg-sky-50 text-sky-500' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                }`}
+              >
+                <MessageSquare className="w-3.5 h-3.5" />
+                <span>Live Chat Inbox</span>
+              </button>
+              <button
+                onClick={() => { setActiveTab('requests'); setExpertUnreadCount(0); setSettingsDropdownOpen(false); }}
+                className={`w-full px-4 py-2.5 text-left flex items-center space-x-2.5 relative transition-colors ${
+                  activeTab === 'requests' ? 'bg-sky-50 text-sky-500' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                }`}
+              >
+                <Bell className="w-3.5 h-3.5" />
+                <span>Connection Requests</span>
+                {expertUnreadCount > 0 && (
+                  <span className="ml-auto w-4 h-4 bg-rose-500 text-slate-900 text-[9px] font-black rounded-full flex items-center justify-center animate-pulse">
+                    {expertUnreadCount}
+                  </span>
+                )}
+              </button>
+              <button
+                onClick={() => { setActiveTab('profile'); setSettingsDropdownOpen(false); }}
+                className={`w-full px-4 py-2.5 text-left flex items-center space-x-2.5 transition-colors ${
+                  activeTab === 'profile' ? 'bg-sky-50 text-sky-500' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                }`}
+              >
+                <User className="w-3.5 h-3.5" />
+                <span>Profile Settings</span>
+              </button>
+            </div>
           )}
-        </button>
-        <button
-          onClick={() => setActiveTab('profile')}
-          className={`px-4 py-2.5 rounded-xl transition-all flex items-center space-x-1.5 ${activeTab === 'profile' ? 'bg-sky-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
-        >
-          <User className="w-3.5 h-3.5" />
-          <span>Profile Settings</span>
-        </button>
+        </div>
       </div>
 
       {/* Tab Content: Profile */}
