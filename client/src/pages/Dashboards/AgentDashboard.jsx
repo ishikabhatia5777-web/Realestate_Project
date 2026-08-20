@@ -321,7 +321,6 @@ const AgentDashboard = () => {
   const sold = properties.filter(p => p && p.status === 'Sold').length;
   const rented = properties.filter(p => p && p.listingType === 'Rent').length;
   const totalRevenue = sold * 18500 + rented * 2800;
-  const hotLeads = leads.filter(l => l.status === 'Hot').length;
   const chartData = CHART_DATA[chartPeriod];
 
   // Filtered lists
@@ -406,11 +405,10 @@ const AgentDashboard = () => {
       {activeTab === 'overview' && (
         <div className="space-y-6">
           {/* KPI Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
             <KPICard icon={Building2} label="Total Listings" value={properties.length} sub={`${active} active`} trend={12} color="sky" loading={loading} />
             <KPICard icon={TrendingUp} label="Active / Sale" value={active} sub="On market" trend={5} color="emerald" loading={loading} />
             <KPICard icon={CheckCircle} label="Sold" value={sold} sub="This year" trend={8} color="violet" loading={loading} />
-            <KPICard icon={Users} label="Hot Leads" value={hotLeads} sub={`${leads.length} total`} trend={-3} color="amber" loading={loading} />
             <KPICard icon={DollarSign} label="Est. Commission" value={`$${(totalRevenue * 0.025).toLocaleString()}`} sub="at 2.5%" trend={15} color="rose" loading={loading} />
           </div>
 
