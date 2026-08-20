@@ -95,7 +95,7 @@ const Navbar = ({ onOpenAIChat }) => {
 
           {/* Desktop Navigation Links */}
           <nav className="hidden md:flex items-center space-x-7">
-            {(!user || user.role !== 'agent') && (
+            {(!user || (user.role !== 'agent' && user.role !== 'admin' && user.role !== 'super_admin')) && (
               <Link to="/" className={linkClass('/')}>
                 Home
               </Link>
@@ -127,7 +127,7 @@ const Navbar = ({ onOpenAIChat }) => {
             )}
 
             {/* Direct Dashboard Nav Link for Logged In Users */}
-            {user && user.role !== 'agent' && (
+            {user && (user.role !== 'agent' && user.role !== 'admin' && user.role !== 'super_admin') && (
               <Link 
                 to={getDashboardRoute()} 
                 className={`px-3.5 py-1.5 rounded-xl border font-bold text-xs flex items-center space-x-1.5 transition-all shadow-sm ${
@@ -354,7 +354,7 @@ const Navbar = ({ onOpenAIChat }) => {
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="md:hidden glass-panel border-t border-slate-200 px-4 pt-4 pb-6 space-y-4">
-          {(!user || user.role !== 'agent') && (
+          {(!user || (user.role !== 'agent' && user.role !== 'admin' && user.role !== 'super_admin')) && (
             <Link
               to="/"
               onClick={() => setMobileMenuOpen(false)}
@@ -409,7 +409,7 @@ const Navbar = ({ onOpenAIChat }) => {
 
           {user ? (
             <div className="pt-4 border-t border-slate-200 space-y-3">
-              {user.role !== 'agent' && (
+              {(user.role !== 'agent' && user.role !== 'admin' && user.role !== 'super_admin') && (
                 <Link
                   to={getDashboardRoute()}
                   onClick={() => setMobileMenuOpen(false)}
