@@ -178,11 +178,7 @@ const AdminDashboard = () => {
               <KpiCard title="Total Users" value={metrics?.totalUsers || 0} icon={Users} trend="+8.2%" trendUp={true} color="blue" />
               <KpiCard title="Total Properties" value={metrics?.totalProperties || 0} icon={Building2} trend="+4.3%" trendUp={true} color="indigo" />
               <KpiCard title="Pending Approvals" value={metrics?.pendingListings || 0} icon={Clock} trend="-2.1%" trendUp={false} color="amber" />
-              
-              <KpiCard title="Active Agents" value={metrics?.totalAgencies || 0} icon={Briefcase} trend="+1.5%" trendUp={true} color="violet" />
-              <KpiCard title="Total Leads" value={metrics?.totalLeads || 0} icon={BarChart2} trend="+18.4%" trendUp={true} color="cyan" />
-              <KpiCard title="Total Inquiries" value={metrics?.totalInquiries || 0} icon={MessageSquare} trend="+5.2%" trendUp={true} color="rose" />
-              <KpiCard title="Appointments" value={metrics?.totalAppointments || 0} icon={Calendar} trend="+11.1%" trendUp={true} color="sky" />
+
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
