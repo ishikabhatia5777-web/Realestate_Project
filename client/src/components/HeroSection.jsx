@@ -36,14 +36,14 @@ const HeroSection = () => {
   ];
 
   return (
-    <div className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-slate-50 pt-8 pb-16">
+    <div className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-slate-900 pt-8 pb-16">
       <div className="absolute inset-0 z-0">
         <img
           src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&q=80&w=2000"
           alt="Bright Modern Architecture"
-          className="w-full h-full object-cover object-center opacity-30"
+          className="w-full h-full object-cover object-center filter brightness-[0.35]"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-50 via-slate-50/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-slate-900/20" />
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
@@ -51,13 +51,13 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-slate-900 tracking-tight leading-tight"
+          className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-tight"
         >
           Discover Exceptional <br />
           <span className="brand-gradient-text">Real Estate Masterpieces</span>
         </motion.h1>
 
-        <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
           Explore iconic waterfront villas, sky penthouses, and high-yield commercial assets backed by real-time valuation models and verified agency credentials.
         </p>
 
@@ -208,25 +208,25 @@ const HeroSection = () => {
         </motion.div>
 
         {/* Metrics */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 max-w-4xl mx-auto border-t border-slate-200/80">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 max-w-4xl mx-auto border-t border-white/20">
           <div className="text-center">
-            <h4 className="text-2xl sm:text-3xl font-extrabold text-slate-900">$4.8B+</h4>
-            <p className="text-xs text-slate-500 mt-0.5">Total Property Portfolio</p>
+            <h4 className="text-2xl sm:text-3xl font-extrabold text-white">$4.8B+</h4>
+            <p className="text-xs text-slate-400 mt-0.5">Total Property Portfolio</p>
           </div>
           <div className="text-center">
-            <h4 className="text-2xl sm:text-3xl font-extrabold text-slate-900">98.4%</h4>
-            <p className="text-xs text-slate-500 mt-0.5">AI Valuation Accuracy</p>
+            <h4 className="text-2xl sm:text-3xl font-extrabold text-white">98.4%</h4>
+            <p className="text-xs text-slate-400 mt-0.5">AI Valuation Accuracy</p>
           </div>
           <div className="text-center">
-            <h4 className="text-2xl sm:text-3xl font-extrabold text-slate-900">1,250+</h4>
-            <p className="text-xs text-slate-500 mt-0.5">Verified Agencies</p>
+            <h4 className="text-2xl sm:text-3xl font-extrabold text-white">1,250+</h4>
+            <p className="text-xs text-slate-400 mt-0.5">Verified Agencies</p>
           </div>
           <div className="text-center">
             <div className="flex items-center justify-center gap-1">
               <TrendingUp className="w-5 h-5 text-emerald-400" />
-              <h4 className="text-2xl sm:text-3xl font-extrabold text-slate-900">8.2%</h4>
+              <h4 className="text-2xl sm:text-3xl font-extrabold text-white">8.2%</h4>
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">Avg. Annual Growth</p>
+            <p className="text-xs text-slate-400 mt-0.5">Avg. Annual Growth</p>
           </div>
         </div>
       </div>
