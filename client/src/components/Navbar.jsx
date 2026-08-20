@@ -231,20 +231,7 @@ const Navbar = ({ onOpenAIChat }) => {
                           <BarChart2 className="w-3.5 h-3.5" />
                           <span>Leads</span>
                         </button>
-                        <button
-                          onClick={() => { navigate('/dashboard/admin?tab=inquiries'); setSettingsNavOpen(false); }}
-                          className="w-full px-4 py-2.5 text-left flex items-center space-x-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-xs font-semibold transition-colors"
-                        >
-                          <MessageSquare className="w-3.5 h-3.5" />
-                          <span>Inquiries</span>
-                        </button>
-                        <button
-                          onClick={() => { navigate('/dashboard/admin?tab=appointments'); setSettingsNavOpen(false); }}
-                          className="w-full px-4 py-2.5 text-left flex items-center space-x-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-xs font-semibold transition-colors"
-                        >
-                          <Bell className="w-3.5 h-3.5" />
-                          <span>Appointments</span>
-                        </button>
+
                       </>
                     )}
                   </div>
