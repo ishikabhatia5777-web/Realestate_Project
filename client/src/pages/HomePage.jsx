@@ -83,41 +83,7 @@ const HomePage = () => {
       {/* Hero Banner */}
       <HeroSection />
 
-      {/* Featured Properties Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
-            <div className="flex items-center space-x-2 text-sky-500 font-bold text-xs uppercase tracking-widest mb-1">
-              <Sparkles className="w-4 h-4" />
-              <span>HANDPICKED EXCLUSIVES</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-              Featured Luxury Listings
-            </h2>
-          </div>
-          <Link
-            to="/properties"
-            className="inline-flex items-center space-x-2 text-sm font-bold text-sky-500 hover:text-amber-300 transition-colors"
-          >
-            <span>Explore All Properties</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
 
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-96 glass-panel rounded-2xl animate-pulse" />
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredProperties.map((property) => (
-              <PropertyCard key={property._id} property={property} />
-            ))}
-          </div>
-        )}
-      </section>
 
       {/* Interactive Map Showcase Banner */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
