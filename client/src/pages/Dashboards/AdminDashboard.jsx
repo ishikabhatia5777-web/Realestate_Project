@@ -182,6 +182,23 @@ const AdminDashboard = () => {
               </h1>
               <p className="text-xs text-slate-500 mt-1">Manage the platform, users, properties, and analytics.</p>
             </div>
+            
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <input
+                  type="file"
+                  accept=".csv"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  onChange={handleCsvUpload}
+                  disabled={uploadingCsv}
+                  title="Upload CSV"
+                />
+                <button className="px-4 py-2 bg-indigo-500 text-white rounded-xl text-xs font-bold hover:bg-indigo-600 transition-colors flex items-center gap-2 w-full justify-center disabled:opacity-50">
+                  <UploadCloud className="w-4 h-4" /> 
+                  {uploadingCsv ? 'Uploading...' : 'Upload Properties CSV'}
+                </button>
+              </div>
+            </div>
 
           </div>
         </div>
