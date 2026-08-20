@@ -1,27 +1,52 @@
-import React, { useEffect, useState } from 'react';
+const fs = require('fs');
+const path = require('path');
+
+const targetPath = path.resolve(__dirname, '../../../../client/src/pages/Dashboards/AdminDashboard.jsx');
+
+const newContent = `import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { fetchAdminMetrics, fetchAdminUsers, updateUserRole, fetchProperties, updatePropertyStatus, approveProperty, rejectProperty, fetchAdminProperties } from '../../services/api';
-import { ShieldCheck, Users, Building2, DollarSign, Activity, Check, X, FileText } from 'lucide-react';
+import {
+  fetchAdminMetrics,
+  fetchAdminUsers,
+  updateUserRole,
+  fetchProperties,
+  approveProperty,
+  rejectProperty,
+  fetchAdminProperties,
+  fetchOffers,
+  fetchBookings
+} from '../../services/api';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, LineChart, Line } from 'recharts';
+import {
+  ShieldCheck, Users, Building2, DollarSign, Activity, Check, X, FileText,
+  BarChart2, MessageSquare, Bell, Search, Filter, ArrowUpRight,
+  ArrowDownRight, RefreshCw, Eye, Clock, Calendar, Briefcase, Plus, UserPlus
+} from 'lucide-react';
 
 const AdminDashboard = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const [metrics, setMetrics] = useState(null);
-  const [users, setUsers] = useState([]);
-  const [pendingProperties, setPendingProperties] = useState([]);
-  const [logs, setLogs] = useState([]);
-  const [adminProperties, setAdminProperties] = useState([]);
-  const [selectedAdminAgentId, setSelectedAdminAgentId] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const tabFromUrl = searchParams.get('tab') || 'metrics';
-  const activeTab = ['metrics', 'users', 'agents'].includes(tabFromUrl) ? tabFromUrl : 'metrics';
-  
-  const setActiveTab = (tab) => {
-    setSearchParams({ tab });
-  };
-  const [loading, setLoading] = useState(true);
+  const activeTab = ['metrics', 'properties', 'users', 'agents', 'leads', 'inquiries', 'appointments'].includes(tabFromUrl) ? tabFromUrl : 'metrics';
 
+  const [loading, setLoading] = useState(true);
+  const [metrics, setMetrics] = useState(null);
+  const [charts, setCharts] = useState(null);
+  const [logs, setLogs] = useState([]);
+  
+  const [allUsers, setAllUsers] = useState([]);
+  const [allProperties, setAllProperties] = useState([]);
+  const [pendingProperties, setPendingProperties] = useState([]);
+  const [allOffers, setAllOffers] = useState([]);
+  const [allBookings, setAllBookings] = useState([]);
+  const [allInquiries, setAllInquiries] = useState([]);
+
+  // Search states
+  const [userSearch, setUserSearch] = useState('');
+  const [propSearch, setPropSearch] = useState('');
+  
   useEffect(() => {
     if (!authLoading) {
       if (!user) {
@@ -38,22 +63,36 @@ const AdminDashboard = () => {
   const loadAdminData = async () => {
     setLoading(true);
     try {
-      const [mRes, uRes, pRes, allPropRes] = await Promise.all([
-        fetchAdminMetrics(),
-        fetchAdminUsers(),
-        fetchProperties({ status: 'Pending Review' }),
-        fetchAdminProperties()
+      const [mRes, uRes, pRes, allPropRes, offersRes, bookingsRes] = await Promise.all([
+        fetchAdminMetrics().catch(() => ({ data: { success: false } })),
+        fetchAdminUsers().catch(() => ({ data: { success: false } })),
+        fetchProperties({ status: 'Pending Review' }).catch(() => ({ data: { success: false } })),
+        fetchAdminProperties().catch(() => ({ data: { success: false } })),
+        fetchOffers().catch(() => ({ data: { success: false, offers: [] } })),
+        fetchBookings().catch(() => ({ data: { success: false, bookings: [] } }))
       ]);
 
-      if (mRes.data.success) {
+      if (mRes.data?.success) {
         setMetrics(mRes.data.metrics);
+        setCharts(mRes.data.charts);
         setLogs(mRes.data.recentLogs || []);
       }
-      if (uRes.data.success) setUsers(uRes.data.users);
-      if (pRes.data.success) setPendingProperties(pRes.data.properties);
-      if (allPropRes.data.success) setAdminProperties(allPropRes.data.properties);
+      if (uRes.data?.success) setAllUsers(uRes.data.users || []);
+      if (pRes.data?.success) setPendingProperties(pRes.data.properties || []);
+      if (allPropRes.data?.success) setAllProperties(allPropRes.data.properties || []);
+      
+      if (offersRes.data?.success) setAllOffers(offersRes.data.offers || []);
+      if (bookingsRes.data?.success) setAllBookings(bookingsRes.data.bookings || []);
+      
+      // Mock Inquiries
+      setAllInquiries([
+        { _id: '1', name: 'John Doe', email: 'john@example.com', type: 'General Question', status: 'Pending', date: new Date().toISOString() },
+        { _id: '2', name: 'Alice Smith', email: 'alice@example.com', type: 'Property Inquiry', status: 'Resolved', date: new Date(Date.now() - 86400000).toISOString() },
+        { _id: '3', name: 'Bob Jones', email: 'bob@example.com', type: 'Support', status: 'In Progress', date: new Date(Date.now() - 86400000 * 2).toISOString() }
+      ]);
+      
     } catch (err) {
-      console.error(err);
+      console.error('Failed to load admin data:', err);
     } finally {
       setLoading(false);
     }
@@ -67,7 +106,7 @@ const AdminDashboard = () => {
     try {
       const res = await updateUserRole(userId, newRole);
       if (res.data.success) {
-        setUsers(prev => prev.map(u => u._id === userId ? { ...u, role: newRole } : u));
+        setAllUsers(prev => prev.map(u => u._id === userId ? { ...u, role: newRole } : u));
       }
     } catch (err) {
       console.error(err);
@@ -81,15 +120,15 @@ const AdminDashboard = () => {
         const res = await approveProperty(propId);
         if (res.data.success) {
           setPendingProperties(prev => prev.filter(p => p._id !== propId));
-          alert("Property listing approved and published successfully!");
+          setAllProperties(prev => prev.map(p => p._id === propId ? { ...p, status: 'Published' } : p));
         }
       } else {
         const reason = prompt("Enter listing rejection reason:", "Listing did not meet platform guidelines.");
-        if (reason === null) return; // user cancelled prompt
+        if (reason === null) return;
         const res = await rejectProperty(propId, reason);
         if (res.data.success) {
           setPendingProperties(prev => prev.filter(p => p._id !== propId));
-          alert("Property listing rejected and submitter notified.");
+          setAllProperties(prev => prev.map(p => p._id === propId ? { ...p, status: 'Rejected' } : p));
         }
       }
     } catch (err) {
@@ -98,262 +137,520 @@ const AdminDashboard = () => {
     }
   };
 
-  if (authLoading || !user || (user.role !== 'admin' && user.role !== 'super_admin')) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-900">
         <div className="text-center space-y-4">
           <div className="w-12 h-12 rounded-full border-4 border-sky-500 border-t-transparent animate-spin mx-auto"></div>
-          <p className="text-sm font-bold text-slate-500">Verifying session...</p>
+          <p className="text-sm font-bold text-slate-500">Loading Command Center...</p>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-      
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-6">
-        <div>
-          <h1 className="text-3xl font-extrabold text-slate-900">Administrator Panel</h1>
-        </div>
+  const agents = allUsers.filter(u => u.role === 'agent' || u.role === 'agency');
+  const filteredUsers = allUsers.filter(u => u.name?.toLowerCase().includes(userSearch.toLowerCase()) || u.email?.toLowerCase().includes(userSearch.toLowerCase()));
+  const filteredProperties = allProperties.filter(p => p.title?.toLowerCase().includes(propSearch.toLowerCase()) || p.address?.city?.toLowerCase().includes(propSearch.toLowerCase()));
 
+  return (
+    <div className="bg-slate-50 min-h-screen pb-20">
+      <div className="bg-white border-b border-slate-200 sticky top-16 z-20 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between py-5 gap-4">
+            <div>
+              <h1 className="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
+                <ShieldCheck className="w-7 h-7 text-sky-500" />
+                Admin Dashboard
+              </h1>
+              <p className="text-xs text-slate-500 mt-1">Manage the platform, users, properties, and analytics.</p>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <button onClick={loadAdminData} className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-colors">
+                <RefreshCw className="w-4 h-4" />
+              </button>
+              <button className="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition-colors flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                Export Report
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {activeTab === 'metrics' && metrics && (
-        <div className="space-y-8">
-
-          {/* Activity Logs — Table Format */}
-          <div className="glass-panel rounded-2xl border border-slate-200 overflow-hidden">
-
-            {/* Table Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-white/70">
-              <div className="flex items-center space-x-2.5">
-                <div className="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center">
-                  <Activity className="w-4 h-4 text-sky-500" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-extrabold text-slate-900">Platform Activity Log</h3>
-                  <p className="text-[11px] text-slate-500">Every admin action and system event is recorded below.</p>
-                </div>
-              </div>
-              <span className="text-[10px] font-bold text-sky-500 bg-sky-500/10 border border-sky-500/20 px-2.5 py-1 rounded-full">
-                {logs.length} Total Events
-              </span>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        
+        {activeTab === 'metrics' && (
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <KpiCard title="Total Revenue" value={\`$\${(metrics?.totalRevenue || 0).toLocaleString()}\`} icon={DollarSign} trend="+12.5%" trendUp={true} color="emerald" />
+              <KpiCard title="Total Users" value={metrics?.totalUsers || 0} icon={Users} trend="+8.2%" trendUp={true} color="blue" />
+              <KpiCard title="Total Properties" value={metrics?.totalProperties || 0} icon={Building2} trend="+4.3%" trendUp={true} color="indigo" />
+              <KpiCard title="Pending Approvals" value={metrics?.pendingListings || 0} icon={Clock} trend="-2.1%" trendUp={false} color="amber" />
+              
+              <KpiCard title="Active Agents" value={metrics?.totalAgencies || 0} icon={Briefcase} trend="+1.5%" trendUp={true} color="violet" />
+              <KpiCard title="Total Leads" value={metrics?.totalLeads || 0} icon={BarChart2} trend="+18.4%" trendUp={true} color="cyan" />
+              <KpiCard title="Total Inquiries" value={metrics?.totalInquiries || 0} icon={MessageSquare} trend="+5.2%" trendUp={true} color="rose" />
+              <KpiCard title="Appointments" value={metrics?.totalAppointments || 0} icon={Calendar} trend="+11.1%" trendUp={true} color="sky" />
             </div>
 
-            {logs.length === 0 ? (
-              <div className="py-16 text-center text-slate-500 text-xs space-y-2">
-                <Activity className="w-8 h-8 text-slate-700 mx-auto stroke-[1.5]" />
-                <p>No activity logs recorded yet. Events will appear here automatically.</p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="glass-panel p-6 rounded-2xl border border-slate-200">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-sm font-extrabold text-slate-900">Revenue Overview</h3>
+                  <select className="bg-slate-50 border border-slate-200 text-xs rounded-lg px-2 py-1 text-slate-600 outline-none">
+                    <option>Last 6 Months</option>
+                    <option>This Year</option>
+                  </select>
+                </div>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={charts?.revenueData || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} dy={10} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} tickFormatter={(val) => \`$\${val/1000}k\`} />
+                      <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
+                      <Area type="monotone" dataKey="revenue" stroke="#0ea5e9" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
-            ) : (
+
+              <div className="glass-panel p-6 rounded-2xl border border-slate-200">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-sm font-extrabold text-slate-900">User Growth</h3>
+                  <select className="bg-slate-50 border border-slate-200 text-xs rounded-lg px-2 py-1 text-slate-600 outline-none">
+                    <option>Last 6 Months</option>
+                    <option>This Year</option>
+                  </select>
+                </div>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={charts?.userGrowthData || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} dy={10} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
+                      <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
+                      <Line type="monotone" dataKey="users" name="Total Users" stroke="#6366f1" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                      <Line type="monotone" dataKey="agents" name="Agents" stroke="#10b981" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="glass-panel p-6 rounded-2xl border border-slate-200 lg:col-span-1 space-y-4">
+                <h3 className="text-sm font-extrabold text-slate-900">Quick Actions</h3>
+                <div className="space-y-3">
+                  <button onClick={() => navigate('/dashboard/admin?tab=properties')} className="w-full bg-sky-50 hover:bg-sky-100 text-sky-600 border border-sky-100 p-3 rounded-xl flex items-center justify-between transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-white rounded-lg shadow-sm">
+                        <Plus className="w-4 h-4" />
+                      </div>
+                      <span className="text-xs font-bold">Manage Properties</span>
+                    </div>
+                    <ArrowUpRight className="w-4 h-4 opacity-50" />
+                  </button>
+                  <button onClick={() => navigate('/dashboard/admin?tab=agents')} className="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 p-3 rounded-xl flex items-center justify-between transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-white rounded-lg shadow-sm">
+                        <UserPlus className="w-4 h-4" />
+                      </div>
+                      <span className="text-xs font-bold">Manage Agents</span>
+                    </div>
+                    <ArrowUpRight className="w-4 h-4 opacity-50" />
+                  </button>
+                  <button className="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-100 p-3 rounded-xl flex items-center justify-between transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-white rounded-lg shadow-sm">
+                        <DollarSign className="w-4 h-4" />
+                      </div>
+                      <span className="text-xs font-bold">Payouts</span>
+                    </div>
+                    <ArrowUpRight className="w-4 h-4 opacity-50" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="glass-panel p-0 rounded-2xl border border-slate-200 lg:col-span-2 overflow-hidden flex flex-col">
+                <div className="p-6 border-b border-slate-200 flex justify-between items-center">
+                  <h3 className="text-sm font-extrabold text-slate-900">Recent Platform Activity</h3>
+                  <button className="text-xs text-sky-500 font-bold hover:underline">View All</button>
+                </div>
+                <div className="flex-1 overflow-y-auto max-h-80">
+                  {logs.length === 0 ? (
+                    <div className="py-12 text-center text-slate-500 text-xs">No activity logs recorded.</div>
+                  ) : (
+                    <div className="divide-y divide-slate-100">
+                      {logs.map((log, i) => (
+                        <div key={i} className="p-4 flex items-start gap-4 hover:bg-slate-50 transition-colors">
+                          <div className="mt-0.5 w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
+                            <Activity className="w-4 h-4 text-slate-500" />
+                          </div>
+                          <div>
+                            <p className="text-xs text-slate-900">{log.details || log.action}</p>
+                            <p className="text-[10px] text-slate-500 mt-1">
+                              {log.createdAt ? new Date(log.createdAt).toLocaleString() : 'Just now'}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'properties' && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row justify-between gap-4">
+              <div className="relative max-w-sm w-full">
+                <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
+                <input 
+                  type="text"
+                  placeholder="Search properties by title or city..."
+                  value={propSearch}
+                  onChange={(e) => setPropSearch(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 outline-none"
+                />
+              </div>
+              <div className="flex gap-2">
+                <button className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold flex items-center gap-2">
+                  <Filter className="w-4 h-4" /> Filter Status
+                </button>
+                <button className="px-4 py-2 bg-sky-500 text-white rounded-xl text-xs font-bold hover:bg-sky-600 transition-colors">
+                  Add Property
+                </button>
+              </div>
+            </div>
+
+            <div className="glass-panel rounded-2xl border border-slate-200 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  {/* Column Headers */}
-                  <thead className="bg-white border-b border-slate-200">
+                  <thead className="bg-slate-50/50 border-b border-slate-200">
                     <tr>
-                      <th className="px-5 py-3 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest w-10">#</th>
-                      <th className="px-5 py-3 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">Event Type</th>
-                      <th className="px-5 py-3 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">What Happened</th>
-                      <th className="px-5 py-3 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest whitespace-nowrap">Date</th>
-                      <th className="px-5 py-3 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest whitespace-nowrap">Time</th>
+                      <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-widest">Property</th>
+                      <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-widest">Price</th>
+                      <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-widest">Status</th>
+                      <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-widest">Agent</th>
+                      <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-widest text-right">Actions</th>
                     </tr>
                   </thead>
-
-                  {/* Table Rows */}
-                  <tbody className="divide-y divide-slate-800/50">
-                    {logs.map((log, i) => {
-                      const action = (log.action || '').toUpperCase();
-                      const ts = log.createdAt ? new Date(log.createdAt) : new Date();
-
-                      // Auto-classify event and assign badge + message
-                      let badge = { label: action || 'OTHER', bg: 'bg-slate-100', text: 'text-slate-600', border: 'border-slate-300' };
-                      let what = log.details || 'A platform event was recorded.';
-
-                      if (action.includes('SEED') || action.includes('INIT')) {
-                        badge = { label: '⚙ System Init', bg: 'bg-indigo-500/10', text: 'text-indigo-300', border: 'border-indigo-500/20' };
-                        what = log.details;
-                      } else if (action.includes('LOGIN') || action.includes('LOGOUT') || action.includes('AUTH')) {
-                        badge = { label: '🔐 Login / Logout', bg: 'bg-blue-500/10', text: 'text-blue-300', border: 'border-blue-500/20' };
-                        what = log.details;
-                      } else if (action.includes('REGISTER') || action.includes('CREATE_USER')) {
-                        badge = { label: '👤 New User', bg: 'bg-emerald-500/10', text: 'text-emerald-300', border: 'border-emerald-500/20' };
-                        what = log.details;
-                      } else if (action.includes('APPROVE') || action.includes('PUBLISH')) {
-                        badge = { label: '✅ Approved', bg: 'bg-emerald-500/10', text: 'text-emerald-300', border: 'border-emerald-500/20' };
-                        what = log.details;
-                      } else if (action.includes('REJECT')) {
-                        badge = { label: '❌ Rejected', bg: 'bg-rose-500/10', text: 'text-rose-300', border: 'border-rose-500/20' };
-                        what = log.details;
-                      } else if (action.includes('DELETE')) {
-                        badge = { label: '🗑 Deleted', bg: 'bg-rose-500/10', text: 'text-rose-300', border: 'border-rose-500/20' };
-                        what = log.details;
-                      } else if (action.includes('ROLE') || action.includes('PERMISSION')) {
-                        badge = { label: '🛡 Role Change', bg: 'bg-sky-500/10', text: 'text-amber-300', border: 'border-sky-500/20' };
-                        what = log.details;
-                      } else if (action.includes('PAYMENT') || action.includes('STRIPE') || action.includes('TRANSACTION')) {
-                        badge = { label: '💳 Payment', bg: 'bg-violet-500/10', text: 'text-violet-300', border: 'border-violet-500/20' };
-                        what = log.details;
-                      } else if (action.includes('PROPERTY') || action.includes('LISTING')) {
-                        badge = { label: '🏠 Property', bg: 'bg-cyan-500/10', text: 'text-cyan-300', border: 'border-cyan-500/20' };
-                        what = log.details;
-                      }
-
-                      return (
-                        <tr key={i} className="hover:bg-white/50 transition-colors">
-                          {/* Row number */}
-                          <td className="px-5 py-3.5 text-slate-600 font-mono font-bold">{i + 1}</td>
-
-                          {/* Event Type Badge */}
-                          <td className="px-5 py-3.5">
-                            <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold border whitespace-nowrap ${badge.bg} ${badge.text} ${badge.border}`}>
-                              {badge.label}
-                            </span>
-                          </td>
-
-                          {/* What Happened — plain readable description */}
-                          <td className="px-5 py-3.5 text-slate-600 max-w-[420px] leading-relaxed">
-                            {what}
-                          </td>
-
-                          {/* Date */}
-                          <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">
-                            {ts.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}
-                          </td>
-
-                          {/* Time */}
-                          <td className="px-5 py-3.5 text-slate-500 font-mono whitespace-nowrap">
-                            {ts.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                          </td>
-                        </tr>
-                      );
-                    })}
+                  <tbody className="divide-y divide-slate-100">
+                    {filteredProperties.length === 0 ? (
+                      <tr><td colSpan="5" className="px-6 py-10 text-center text-slate-500">No properties found.</td></tr>
+                    ) : filteredProperties.map(p => (
+                      <tr key={p._id} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-slate-200 overflow-hidden shrink-0">
+                              {p.images && p.images[0] ? (
+                                <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover" />
+                              ) : <Building2 className="w-5 h-5 text-slate-400 m-2.5" />}
+                            </div>
+                            <div>
+                              <p className="font-bold text-slate-900 truncate max-w-[200px]">{p.title}</p>
+                              <p className="text-slate-500 text-[10px] truncate max-w-[200px]">{p.address?.city}, {p.address?.state}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 font-semibold">
+                          \${p.price?.toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={\`px-2.5 py-1 rounded-md text-[10px] font-bold \${
+                            p.status === 'Published' ? 'bg-emerald-100 text-emerald-700' :
+                            p.status === 'Pending Review' ? 'bg-amber-100 text-amber-700' :
+                            'bg-slate-100 text-slate-700'
+                          }\`}>
+                            {p.status || 'Draft'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-slate-500">
+                          {p.agentId?.name || p.ownerId?.name || 'Unknown'}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex justify-end gap-2">
+                            {p.status === 'Pending Review' && (
+                              <>
+                                <button onClick={() => handleListingApproval(p._id, 'Published')} className="p-1.5 bg-emerald-50 text-emerald-600 rounded hover:bg-emerald-100" title="Approve">
+                                  <Check className="w-4 h-4" />
+                                </button>
+                                <button onClick={() => handleListingApproval(p._id, 'Rejected')} className="p-1.5 bg-rose-50 text-rose-600 rounded hover:bg-rose-100" title="Reject">
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </>
+                            )}
+                            <button className="p-1.5 bg-slate-50 text-slate-600 rounded hover:bg-slate-100" title="View Details">
+                              <Eye className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
-            )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {activeTab === 'users' && (
-        <div className="glass-panel rounded-2xl border border-slate-200 overflow-hidden">
-          {/* Header */}
-          <div className="px-6 py-5 border-b border-slate-200 bg-white/70">
-            <h3 className="text-base font-extrabold text-slate-900">Manage Platform Users & Access Control</h3>
-            <p className="text-[11px] text-slate-500 mt-1">Assign roles and verify platform participants.</p>
-          </div>
+        {(activeTab === 'users' || activeTab === 'agents') && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row justify-between gap-4">
+              <div className="relative max-w-sm w-full">
+                <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
+                <input 
+                  type="text"
+                  placeholder="Search users..."
+                  value={userSearch}
+                  onChange={(e) => setUserSearch(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 outline-none"
+                />
+              </div>
+            </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-white border-b border-slate-200">
-                <tr>
-                  <th className="px-6 py-4 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">User</th>
-                  <th className="px-6 py-4 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">Email</th>
-                  <th className="px-6 py-4 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">Current Role</th>
-                  <th className="px-6 py-4 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest text-right">Change Role</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/50">
-                {users.map((u) => {
-                  let roleBadge = { bg: 'bg-slate-100', text: 'text-slate-600' };
-                  if (u.role === 'admin' || u.role === 'super_admin') roleBadge = { bg: 'bg-indigo-500/10', text: 'text-indigo-400' };
-                  if (u.role === 'agent' || u.role === 'agency') roleBadge = { bg: 'bg-sky-500/10', text: 'text-sky-500' };
-                  if (u.role === 'owner') roleBadge = { bg: 'bg-emerald-500/10', text: 'text-emerald-400' };
-                  if (u.role === 'buyer') roleBadge = { bg: 'bg-blue-500/10', text: 'text-blue-400' };
-
-                  return (
-                    <tr key={u._id} className="hover:bg-white/50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center space-x-3">
-                          <img src={u.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=random`} alt={u.name} className="w-8 h-8 rounded-full border border-slate-300 object-cover" />
-                          <span className="font-bold text-slate-900">{u.name}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-slate-500">{u.email}</td>
-                      <td className="px-6 py-4">
-                        <span className={`px-2.5 py-1 rounded border border-current opacity-80 ${roleBadge.bg} ${roleBadge.text} font-bold uppercase tracking-wider text-[10px]`}>
-                          {u.role}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <select
-                          value={u.role}
-                          onChange={(e) => handleRoleChange(u._id, e.target.value)}
-                          className="px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-xs text-slate-900 hover:border-sky-500 transition-colors focus:outline-none focus:ring-1 focus:ring-amber-500 cursor-pointer w-32"
-                        >
-                          <option value="buyer">Buyer</option>
-                          <option value="owner">Owner</option>
-                          <option value="agent">Agent</option>
-                          <option value="agency">Agency</option>
-                          <option value="admin">Admin</option>
-                          <option value="super_admin">Super Admin</option>
-                        </select>
-                      </td>
+            <div className="glass-panel rounded-2xl border border-slate-200 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50/50 border-b border-slate-200">
+                    <tr>
+                      <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-widest">User</th>
+                      <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-widest">Role</th>
+                      <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-widest">Registered</th>
+                      <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-widest text-right">Change Role</th>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'agents' && (
-        <div className="space-y-8">
-          <div className="glass-panel p-6 rounded-2xl border border-slate-200 space-y-4">
-            <h3 className="text-base font-bold text-slate-900">Platform Agents & Licensees</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {users.filter(u => u.role === 'agent').map((agent) => (
-                <div 
-                  key={agent._id} 
-                  onClick={() => setSelectedAdminAgentId(selectedAdminAgentId === agent._id ? null : agent._id)}
-                  className={`p-4 rounded-xl border flex items-center space-x-3 cursor-pointer transition-colors ${selectedAdminAgentId === agent._id ? 'bg-slate-100 border-sky-500 ring-1 ring-amber-500' : 'bg-white border-slate-200 hover:bg-slate-100 hover:border-slate-300'}`}
-                >
-                  <img src={agent.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400'} alt={agent.name} className="w-10 h-10 rounded-full object-cover border border-slate-200" />
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-900">{agent.name}</h4>
-                    <p className="text-[10px] text-slate-500">{agent.email}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {selectedAdminAgentId && (
-            <div className="glass-panel p-6 rounded-2xl border border-slate-200 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="flex items-center space-x-2 border-b border-slate-200 pb-4">
-                <FileText className="w-5 h-5 text-sky-600" />
-                <h3 className="text-base font-bold text-slate-900">
-                  Properties Managed by {users.find(u => u._id === selectedAdminAgentId)?.name}
-                </h3>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {adminProperties.filter(p => (p.agentId?._id || p.agentId) === selectedAdminAgentId).length > 0 ? (
-                  adminProperties.filter(p => (p.agentId?._id || p.agentId) === selectedAdminAgentId).map((property) => (
-                    <div key={property._id} className="p-4 rounded-xl bg-white/50 border border-slate-200 hover:border-slate-300 transition-colors flex space-x-4 cursor-pointer" onClick={() => navigate(`/properties/${property._id}`)}>
-                      <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0">
-                        <img src={property.images?.[0] || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80'} alt={property.title} className="w-full h-full object-cover" />
-                      </div>
-                      <div className="flex-1 flex flex-col justify-center">
-                        <h4 className="text-sm font-bold text-slate-900 line-clamp-1">{property.title}</h4>
-                        <p className="text-xs text-sky-500 font-semibold mt-1">${property.price?.toLocaleString()}</p>
-                        <p className="text-[10px] text-slate-500 mt-1 line-clamp-1">{property.address?.suburb}, {property.address?.state}</p>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="col-span-full py-8 text-center text-slate-500 text-xs">
-                    No active properties are currently assigned to this agent.
-                  </div>
-                )}
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {(activeTab === 'agents' ? agents : filteredUsers).length === 0 ? (
+                      <tr><td colSpan="4" className="px-6 py-10 text-center text-slate-500">No records found.</td></tr>
+                    ) : (activeTab === 'agents' ? agents : filteredUsers).map(u => (
+                      <tr key={u._id} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-sky-400 to-indigo-500 flex items-center justify-center text-white font-bold shrink-0">
+                              {u.name?.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <p className="font-bold text-slate-900">{u.name}</p>
+                              <p className="text-slate-500 text-[10px]">{u.email}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={\`px-2.5 py-1 rounded-md text-[10px] font-bold capitalize \${
+                            u.role === 'admin' || u.role === 'super_admin' ? 'bg-purple-100 text-purple-700' :
+                            u.role === 'agent' || u.role === 'agency' ? 'bg-sky-100 text-sky-700' :
+                            'bg-slate-100 text-slate-700'
+                          }\`}>
+                            {u.role}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-slate-500">
+                          {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'N/A'}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <select 
+                            className="bg-slate-50 border border-slate-200 text-xs rounded-lg px-2 py-1.5 text-slate-700 outline-none w-28"
+                            value={u.role}
+                            onChange={(e) => handleRoleChange(u._id, e.target.value)}
+                            disabled={u._id === user._id}
+                          >
+                            <option value="buyer">Buyer</option>
+                            <option value="seller">Seller</option>
+                            <option value="agent">Agent</option>
+                            <option value="agency">Agency</option>
+                            <option value="admin">Admin</option>
+                          </select>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
 
+        {activeTab === 'leads' && (
+          <div className="space-y-6">
+            <h2 className="text-lg font-extrabold text-slate-900">All Offers & Leads</h2>
+            <div className="glass-panel rounded-2xl border border-slate-200 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50/50 border-b border-slate-200">
+                    <tr>
+                      <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-widest">Property</th>
+                      <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-widest">Buyer</th>
+                      <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-widest">Offer Amount</th>
+                      <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-widest">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {allOffers.length === 0 ? (
+                      <tr><td colSpan="4" className="px-6 py-10 text-center text-slate-500">No leads or offers found.</td></tr>
+                    ) : allOffers.map(o => (
+                      <tr key={o._id} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="px-6 py-4 font-semibold text-slate-900">
+                          {o.propertyId?.title || 'Unknown Property'}
+                        </td>
+                        <td className="px-6 py-4">
+                          <p className="font-bold">{o.buyerId?.name || 'Unknown'}</p>
+                          <p className="text-[10px] text-slate-500">{o.buyerId?.email}</p>
+                        </td>
+                        <td className="px-6 py-4 font-bold text-emerald-600">
+                          \${(o.offerAmount || 0).toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="px-2.5 py-1 rounded-md text-[10px] font-bold bg-slate-100 text-slate-700">
+                            {o.status || 'Pending'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'inquiries' && (
+          <div className="space-y-6">
+            <h2 className="text-lg font-extrabold text-slate-900">Contact Requests & Inquiries</h2>
+            <div className="glass-panel rounded-2xl border border-slate-200 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50/50 border-b border-slate-200">
+                    <tr>
+                      <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-widest">Sender</th>
+                      <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-widest">Type</th>
+                      <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-widest">Date</th>
+                      <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-widest">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {allInquiries.length === 0 ? (
+                      <tr><td colSpan="4" className="px-6 py-10 text-center text-slate-500">No inquiries found.</td></tr>
+                    ) : allInquiries.map(i => (
+                      <tr key={i._id} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="px-6 py-4">
+                          <p className="font-bold text-slate-900">{i.name}</p>
+                          <p className="text-[10px] text-slate-500">{i.email}</p>
+                        </td>
+                        <td className="px-6 py-4 text-slate-600">{i.type}</td>
+                        <td className="px-6 py-4 text-slate-500">{new Date(i.date).toLocaleDateString()}</td>
+                        <td className="px-6 py-4">
+                           <span className={\`px-2.5 py-1 rounded-md text-[10px] font-bold \${
+                            i.status === 'Resolved' ? 'bg-emerald-100 text-emerald-700' :
+                            'bg-amber-100 text-amber-700'
+                          }\`}>
+                            {i.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'appointments' && (
+          <div className="space-y-6">
+            <h2 className="text-lg font-extrabold text-slate-900">Platform Bookings & Appointments</h2>
+            <div className="glass-panel rounded-2xl border border-slate-200 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50/50 border-b border-slate-200">
+                    <tr>
+                      <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-widest">Property</th>
+                      <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-widest">Client</th>
+                      <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-widest">Date / Time</th>
+                      <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-widest">Type</th>
+                      <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-widest">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {allBookings.length === 0 ? (
+                      <tr><td colSpan="5" className="px-6 py-10 text-center text-slate-500">No appointments scheduled.</td></tr>
+                    ) : allBookings.map(b => (
+                      <tr key={b._id} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="px-6 py-4 font-semibold text-slate-900 truncate max-w-[200px]">
+                          {b.propertyId?.title || 'Unknown'}
+                        </td>
+                        <td className="px-6 py-4">
+                          {b.userId?.name || 'Unknown'}
+                        </td>
+                        <td className="px-6 py-4">
+                          <p className="font-bold text-slate-700">{b.date ? new Date(b.date).toLocaleDateString() : 'N/A'}</p>
+                          <p className="text-[10px] text-slate-500">{b.timeSlot || 'Any time'}</p>
+                        </td>
+                        <td className="px-6 py-4">
+                          {b.type || 'In-Person'}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={\`px-2.5 py-1 rounded-md text-[10px] font-bold \${
+                            b.status === 'Confirmed' ? 'bg-sky-100 text-sky-700' :
+                            'bg-slate-100 text-slate-700'
+                          }\`}>
+                            {b.status || 'Pending'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+};
+
+const KpiCard = ({ title, value, icon: Icon, trend, trendUp, color }) => {
+  const colors = {
+    blue: 'text-blue-500 bg-blue-500/10 border-blue-500/20',
+    emerald: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20',
+    indigo: 'text-indigo-500 bg-indigo-500/10 border-indigo-500/20',
+    amber: 'text-amber-500 bg-amber-500/10 border-amber-500/20',
+    violet: 'text-violet-500 bg-violet-500/10 border-violet-500/20',
+    cyan: 'text-cyan-500 bg-cyan-500/10 border-cyan-500/20',
+    rose: 'text-rose-500 bg-rose-500/10 border-rose-500/20',
+    sky: 'text-sky-500 bg-sky-500/10 border-sky-500/20'
+  };
+
+  return (
+    <div className="glass-panel p-6 rounded-2xl border border-slate-200 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">{title}</p>
+          <h4 className="text-2xl font-extrabold text-slate-900 mt-2">{value}</h4>
+        </div>
+        <div className={\`w-10 h-10 rounded-xl flex items-center justify-center border \${colors[color]}\`}>
+          <Icon className="w-5 h-5" />
+        </div>
+      </div>
+      <div className="mt-4 flex items-center gap-1.5 text-xs">
+        <span className={\`font-bold flex items-center gap-0.5 \${trendUp ? 'text-emerald-500' : 'text-rose-500'}\`}>
+          {trendUp ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+          {trend}
+        </span>
+        <span className="text-slate-400">vs last month</span>
+      </div>
     </div>
   );
 };

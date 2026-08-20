@@ -5,6 +5,9 @@ const Agency = require('../models/Agency');
 const Transaction = require('../models/Transaction');
 const ActivityLog = require('../models/ActivityLog');
 const Blog = require('../models/Blog');
+const Booking = require('../models/Booking');
+const Offer = require('../models/Offer');
+const ContactRequest = require('../models/ContactRequest');
 const { sendPropertyApprovalEmail, sendPropertyRejectionEmail } = require('../services/emailService');
 const fs = require('fs');
 const path = require('path');
@@ -30,6 +33,9 @@ const getAdminMetrics = async (req, res, next) => {
     let pendingListings = 0;
     let totalAgencies = 0;
     let totalRevenue = 14850;
+    let totalLeads = 0;
+    let totalInquiries = 0;
+    let totalAppointments = 0;
     let recentLogs = [
       { action: 'ADMIN_ACCESS', details: 'Admin logged into Command Center.', createdAt: new Date() }
     ];
@@ -46,6 +52,10 @@ const getAdminMetrics = async (req, res, next) => {
       const transactions = await Transaction.find({ status: 'succeeded' });
       totalRevenue = transactions.reduce((acc, item) => acc + item.amount, 0);
 
+      totalLeads = await Offer.countDocuments();
+      totalInquiries = await ContactRequest.countDocuments();
+      totalAppointments = await Booking.countDocuments();
+
       recentLogs = await ActivityLog.find().sort({ createdAt: -1 }).limit(10);
     } catch (dbErr) {
       console.log('Database offline. Serving mock admin metrics.');
@@ -53,6 +63,47 @@ const getAdminMetrics = async (req, res, next) => {
       totalProperties = 18;
       pendingListings = 3;
       totalAgencies = 8;
+      totalLeads = 24;
+      totalInquiries = 56;
+      totalAppointments = 12;
+    }
+
+    // Generate mock chart data for interactive analytics
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const currentMonth = new Date().getMonth();
+    
+    // User Growth (last 6 months)
+    const userGrowthData = [];
+    let baseUsers = Math.max(100, totalUsers - 50);
+    for (let i = 5; i >= 0; i--) {
+      const m = (currentMonth - i + 12) % 12;
+      baseUsers += Math.floor(Math.random() * 15) + 5;
+      userGrowthData.push({
+        name: months[m],
+        users: baseUsers,
+        agents: Math.floor(baseUsers * 0.15)
+      });
+    }
+
+    // Revenue Data
+    const revenueData = [];
+    for (let i = 5; i >= 0; i--) {
+      const m = (currentMonth - i + 12) % 12;
+      revenueData.push({
+        name: months[m],
+        revenue: Math.floor(Math.random() * 5000) + 1000
+      });
+    }
+
+    // Property Trends Data
+    const propertyTrendsData = [];
+    for (let i = 5; i >= 0; i--) {
+      const m = (currentMonth - i + 12) % 12;
+      propertyTrendsData.push({
+        name: months[m],
+        newListings: Math.floor(Math.random() * 20) + 5,
+        sold: Math.floor(Math.random() * 10) + 2
+      });
     }
 
     res.json({
@@ -62,7 +113,15 @@ const getAdminMetrics = async (req, res, next) => {
         totalProperties,
         pendingListings,
         totalAgencies,
-        totalRevenue
+        totalRevenue,
+        totalLeads,
+        totalInquiries,
+        totalAppointments
+      },
+      charts: {
+        userGrowthData,
+        revenueData,
+        propertyTrendsData
       },
       recentLogs
     });
