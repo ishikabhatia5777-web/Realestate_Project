@@ -173,11 +173,10 @@ const AdminDashboard = () => {
         
         {activeTab === 'metrics' && (
           <div className="space-y-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <KpiCard title="Total Revenue" value={`$${(metrics?.totalRevenue || 0).toLocaleString()}`} icon={DollarSign} trend="+12.5%" trendUp={true} color="emerald" />
               <KpiCard title="Total Users" value={metrics?.totalUsers || 0} icon={Users} trend="+8.2%" trendUp={true} color="blue" />
               <KpiCard title="Total Properties" value={metrics?.totalProperties || 0} icon={Building2} trend="+4.3%" trendUp={true} color="indigo" />
-              <KpiCard title="Pending Approvals" value={metrics?.pendingListings || 0} icon={Clock} trend="-2.1%" trendUp={false} color="amber" />
 
             </div>
 
