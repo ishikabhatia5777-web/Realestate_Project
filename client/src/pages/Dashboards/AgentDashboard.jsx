@@ -18,51 +18,31 @@ import {
   ArrowUp, ArrowDown, RefreshCw, UserPlus
 } from 'lucide-react';
 
-// ─── Mock Data ──────────────────────────────────────────────────────────────
-const MOCK_LEADS = [
-  { id: 'l1', name: 'James Harrison', email: 'james@email.com', phone: '+61 400 111 222', property: 'Point Piper Villa', status: 'Hot', source: 'Website', date: '2026-08-19', budget: '$8M–$12M', notes: 'Very interested, wants inspection this week' },
-  { id: 'l2', name: 'Sophia Chen', email: 'sophia@email.com', phone: '+61 400 333 444', property: 'Bondi Penthouse', status: 'Warm', source: 'Referral', date: '2026-08-18', budget: '$3M–$5M', notes: 'Comparing 3 properties' },
-  { id: 'l3', name: 'Marcus White', email: 'marcus@email.com', phone: '+61 400 555 666', property: 'Toorak Mansion', status: 'Cold', source: 'Ad', date: '2026-08-17', budget: '$5M–$8M', notes: 'Early research phase' },
-  { id: 'l4', name: 'Emma Nguyen', email: 'emma@email.com', phone: '+61 400 777 888', property: 'Mosman Estate', status: 'Hot', source: 'Open House', date: '2026-08-16', budget: '$6M–$9M', notes: 'Pre-approved, ready to make offer' },
-  { id: 'l5', name: 'David Kim', email: 'david@email.com', phone: '+61 400 999 000', property: 'Vaucluse Residence', status: 'Warm', source: 'Website', date: '2026-08-15', budget: '$2M–$3M', notes: 'Looking for investment' },
-];
-
-const MOCK_APPOINTMENTS = [
-  { id: 'a1', client: 'James Harrison', property: 'Point Piper Villa', type: 'Inspection', date: '2026-08-21', time: '10:00 AM', status: 'Confirmed', address: '12 Wolseley Rd, Point Piper' },
-  { id: 'a2', client: 'Emma Nguyen', property: 'Mosman Estate', type: 'Valuation', date: '2026-08-22', time: '2:00 PM', status: 'Pending', address: '45 Raglan St, Mosman' },
-  { id: 'a3', client: 'Sophia Chen', property: 'Bondi Penthouse', type: 'Inspection', date: '2026-08-23', time: '11:30 AM', status: 'Confirmed', address: '88 Campbell Pde, Bondi' },
-  { id: 'a4', client: 'Marcus White', property: 'Toorak Mansion', type: 'Follow-up Call', date: '2026-08-24', time: '3:00 PM', status: 'Pending', address: 'Virtual' },
-];
-
-const MOCK_ACTIVITIES = [
-  { id: 'ac1', type: 'lead', text: 'New lead from James Harrison for Point Piper Villa', time: '2 min ago', icon: 'user', color: 'sky' },
-  { id: 'ac2', type: 'property', text: 'Your listing "Bondi Penthouse" received 12 new views', time: '15 min ago', icon: 'eye', color: 'emerald' },
-  { id: 'ac3', type: 'offer', text: 'Emma Nguyen submitted an offer of $8.2M on Mosman Estate', time: '1 hr ago', icon: 'dollar', color: 'amber' },
-  { id: 'ac4', type: 'appointment', text: 'Inspection confirmed with Sophia Chen for Bondi Penthouse', time: '3 hrs ago', icon: 'calendar', color: 'violet' },
-  { id: 'ac5', type: 'message', text: 'New message from David Kim about Vaucluse Residence', time: '5 hrs ago', icon: 'message', color: 'rose' },
-  { id: 'ac6', type: 'property', text: 'Listing "Toorak Mansion" moved to Featured tier', time: 'Yesterday', icon: 'star', color: 'sky' },
-];
+// ─── Live Data Initialization ──────────────────────────────────────────────────────────────
+const MOCK_LEADS = [];
+const MOCK_APPOINTMENTS = [];
+const MOCK_ACTIVITIES = [];
 
 const CHART_DATA = {
   '7d': [
-    { label: 'Mon', leads: 3, views: 45, conversions: 1 },
-    { label: 'Tue', leads: 5, views: 62, conversions: 2 },
-    { label: 'Wed', leads: 2, views: 38, conversions: 0 },
-    { label: 'Thu', leads: 7, views: 85, conversions: 3 },
-    { label: 'Fri', leads: 4, views: 71, conversions: 1 },
-    { label: 'Sat', leads: 6, views: 93, conversions: 2 },
-    { label: 'Sun', leads: 8, views: 110, conversions: 4 },
+    { label: 'Mon', leads: 0, views: 0, conversions: 0 },
+    { label: 'Tue', leads: 0, views: 0, conversions: 0 },
+    { label: 'Wed', leads: 0, views: 0, conversions: 0 },
+    { label: 'Thu', leads: 0, views: 0, conversions: 0 },
+    { label: 'Fri', leads: 0, views: 0, conversions: 0 },
+    { label: 'Sat', leads: 0, views: 0, conversions: 0 },
+    { label: 'Sun', leads: 0, views: 0, conversions: 0 },
   ],
   '30d': [
-    { label: 'W1', leads: 18, views: 290, conversions: 7 },
-    { label: 'W2', leads: 24, views: 380, conversions: 9 },
-    { label: 'W3', leads: 15, views: 245, conversions: 5 },
-    { label: 'W4', leads: 31, views: 455, conversions: 12 },
+    { label: 'W1', leads: 0, views: 0, conversions: 0 },
+    { label: 'W2', leads: 0, views: 0, conversions: 0 },
+    { label: 'W3', leads: 0, views: 0, conversions: 0 },
+    { label: 'W4', leads: 0, views: 0, conversions: 0 },
   ],
   '90d': [
-    { label: 'Jul', leads: 72, views: 1100, conversions: 28 },
-    { label: 'Aug', leads: 88, views: 1370, conversions: 33 },
-    { label: 'Sep', leads: 65, views: 980, conversions: 22 },
+    { label: 'Jul', leads: 0, views: 0, conversions: 0 },
+    { label: 'Aug', leads: 0, views: 0, conversions: 0 },
+    { label: 'Sep', leads: 0, views: 0, conversions: 0 },
   ],
 };
 
@@ -221,15 +201,52 @@ const AgentDashboard = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [pRes, erRes] = await Promise.all([
+      const [pRes, erRes, bRes, oRes] = await Promise.all([
         fetchProperties({ agentId: user._id, limit: 500 }),
         fetchExpertRequests(),
+        fetchBookings().catch(() => ({ data: { success: true, bookings: [] } })),
+        fetchOffers().catch(() => ({ data: { success: true, offers: [] } }))
       ]);
+      
       if (pRes.data?.success) setProperties(pRes.data.properties || []);
+      
       if (erRes.data?.success) {
         setExpertRequests(erRes.data.requests || []);
         setExpertUnreadCount(erRes.data.unreadCount || 0);
       }
+      
+      // Wire up live Bookings to the Appointments CRM tab
+      if (bRes.data?.success && bRes.data.bookings) {
+        const liveAppts = bRes.data.bookings.map(b => ({
+          id: b._id,
+          client: b.buyerId?.name || 'Client',
+          property: b.propertyId?.title || 'Unknown Property',
+          type: b.bookingType || 'Inspection',
+          date: new Date(b.date).toLocaleDateString('en-AU'),
+          time: b.time || 'TBD',
+          status: b.status || 'Pending',
+          address: b.propertyId?.address?.street || 'N/A'
+        }));
+        setAppointments(liveAppts);
+      }
+
+      // Wire up live Offers to the Leads CRM tab
+      if (oRes.data?.success && oRes.data.offers) {
+        const liveLeads = oRes.data.offers.map(o => ({
+          id: o._id,
+          name: o.buyerId?.name || 'Buyer',
+          email: o.buyerId?.email || 'N/A',
+          phone: o.buyerId?.phone || 'N/A',
+          property: o.propertyId?.title || 'Unknown Property',
+          status: o.status === 'Accepted' ? 'Hot' : o.status === 'Pending' ? 'Warm' : 'Cold',
+          source: 'Offer',
+          date: new Date(o.createdAt).toLocaleDateString('en-AU'),
+          budget: `$${(o.offerAmount || 0).toLocaleString()}`,
+          notes: o.message || 'Offer submitted via platform'
+        }));
+        setLeads(liveLeads);
+      }
+      
     } catch (err) {
       console.error('Dashboard load error:', err);
     } finally {
