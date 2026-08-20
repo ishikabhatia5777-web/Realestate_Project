@@ -174,7 +174,7 @@ const AgentDashboard = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-bold text-sky-500 uppercase tracking-widest block">REAL ESTATE AGENT PORTAL</span>
-          <h1 className="text-3xl font-extrabold text-slate-900">Agent Property & Pipeline Management</h1>
+          <h1 className="text-3xl font-extrabold text-slate-900">Agent Property Management</h1>
         </div>
         <div className="flex items-center space-x-3">
           <button
