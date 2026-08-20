@@ -352,7 +352,6 @@ const AgentDashboard = () => {
     { id: 'properties', label: 'Properties', icon: Building2 },
     { id: 'messages', label: 'Messages', icon: MessageSquare },
     { id: 'requests', label: 'Requests', icon: Bell },
-    { id: 'profile', label: 'Profile', icon: User },
   ];
 
   return (
@@ -856,57 +855,6 @@ const AgentDashboard = () => {
         </div>
       )}
 
-      {/* ── PROFILE TAB ─────────────────────────────────────────────────────── */}
-      {activeTab === 'profile' && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-slate-900">Agent Profile Settings</h3>
-            <button
-              onClick={() => setIsEditProfileOpen(true)}
-              className="px-4 py-2 rounded-xl bg-sky-500 text-white font-bold text-xs flex items-center gap-1.5 hover:bg-sky-400 transition-all"
-            >
-              <Edit2 className="w-3.5 h-3.5" /> Edit Profile
-            </button>
-          </div>
-          <div className="glass-panel p-6 rounded-2xl border border-slate-200 flex flex-col md:flex-row gap-6 items-start">
-            <div className="w-24 h-24 rounded-2xl bg-slate-100 overflow-hidden border-2 border-slate-200 shrink-0">
-              <img src={user.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400'} alt="Profile" className="w-full h-full object-cover" />
-            </div>
-            <div className="space-y-4 flex-1">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {[
-                  { label: 'Full Name', value: user.name },
-                  { label: 'Email Address', value: user.email },
-                  { label: 'Phone Number', value: user.phone || 'Not provided' },
-                  { label: 'Role', value: user.role, badge: true },
-                  { label: 'Total Listings', value: properties.length },
-                  { label: 'Active Since', value: user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-AU', { year: 'numeric', month: 'long' }) : 'N/A' },
-                ].map(({ label, value, badge }) => (
-                  <div key={label}>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">{label}</p>
-                    {badge ? (
-                      <span className="inline-block px-2 py-0.5 bg-emerald-50 border border-emerald-200 text-emerald-600 text-[10px] font-bold rounded-full uppercase">{value}</span>
-                    ) : (
-                      <p className="text-sm font-bold text-slate-900">{value}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Performance Summary */}
-          <div className="glass-panel p-6 rounded-2xl border border-slate-200 space-y-4">
-            <h4 className="text-sm font-extrabold text-slate-900">Performance Summary</h4>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <KPICard icon={Building2} label="Total Listings" value={properties.length} color="sky" />
-              <KPICard icon={Users} label="Total Leads" value={leads.length} color="emerald" />
-              <KPICard icon={Calendar} label="Appointments" value={appointments.length} color="violet" />
-              <KPICard icon={Star} label="Hot Leads" value={hotLeads} color="amber" />
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Modals */}
       <AddPropertyModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} onPropertyAdded={handlePropertyAdded} />
