@@ -33,10 +33,10 @@ const Navbar = ({ onOpenAIChat }) => {
   };
 
   const linkClass = (path) => 
-    `transition-colors ${isActive(path) ? 'text-amber-400 font-extrabold shadow-amber-500/50 drop-shadow-md' : 'text-slate-300 hover:text-amber-400 font-medium'}`;
+    `transition-colors ${isActive(path) ? 'text-amber-400 font-extrabold shadow-amber-500/50 drop-shadow-md' : 'text-slate-600 hover:text-amber-400 font-medium'}`;
     
   const mobileLinkClass = (path) =>
-    `block py-2 ${isActive(path) ? 'text-amber-400 font-extrabold bg-slate-800/40 px-3 -ml-3 rounded-lg' : 'text-slate-300 font-medium hover:text-amber-400'}`;
+    `block py-2 ${isActive(path) ? 'text-amber-400 font-extrabold bg-slate-100/40 px-3 -ml-3 rounded-lg' : 'text-slate-600 font-medium hover:text-amber-400'}`;
 
   const getDashboardRoute = () => {
     if (!user) return '/login';
@@ -56,7 +56,7 @@ const Navbar = ({ onOpenAIChat }) => {
   };
 
   return (
-    <header className="sticky top-0 z-50 glass-panel border-b border-slate-800">
+    <header className="sticky top-0 z-50 glass-panel border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
@@ -66,10 +66,10 @@ const Navbar = ({ onOpenAIChat }) => {
               <Building2 className="w-6 h-6 text-slate-950 font-bold" />
             </div>
             <div>
-              <span className="text-xl font-extrabold tracking-tight text-white block">
+              <span className="text-xl font-extrabold tracking-tight text-slate-900 block">
                 AURA<span className="gold-gradient-text">ESTATES</span>
               </span>
-              <span className="text-[10px] tracking-widest uppercase text-slate-400 font-semibold block">
+              <span className="text-[10px] tracking-widest uppercase text-slate-500 font-semibold block">
                 Luxury Real Estate
               </span>
             </div>
@@ -128,7 +128,7 @@ const Navbar = ({ onOpenAIChat }) => {
             {/* AI Assistant Button */}
             <button
               onClick={onOpenAIChat}
-              className="flex items-center space-x-2 px-3.5 py-2 rounded-lg bg-gradient-to-r from-cyan-900/60 to-blue-900/60 border border-cyan-500/30 text-cyan-300 hover:text-white hover:border-cyan-400 transition-all shadow-sm"
+              className="flex items-center space-x-2 px-3.5 py-2 rounded-lg bg-gradient-to-r from-cyan-900/60 to-blue-900/60 border border-cyan-500/30 text-cyan-300 hover:text-slate-900 hover:border-cyan-400 transition-all shadow-sm"
             >
               <Bot className="w-4 h-4 text-cyan-400 animate-pulse" />
               <span className="text-xs font-bold">Aura AI</span>
@@ -138,7 +138,7 @@ const Navbar = ({ onOpenAIChat }) => {
             {/* Theme Toggle Button */}
             <button
               onClick={toggleTheme}
-              className="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 hover:text-amber-500 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300 dark:hover:text-amber-400 dark:hover:border-amber-500/30 transition-all"
+              className="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 hover:text-amber-500 dark:border-slate-200 dark:bg-white/60 dark:text-slate-600 dark:hover:text-amber-400 dark:hover:border-amber-500/30 transition-all"
               title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
             >
               {isDark ? <Sun className="w-4.5 h-4.5 text-amber-400" /> : <Moon className="w-4.5 h-4.5 text-slate-500" />}
@@ -155,13 +155,13 @@ const Navbar = ({ onOpenAIChat }) => {
                 className={`relative p-2 rounded-lg border transition-colors ${
                   location.pathname === '/wishlist'
                     ? 'bg-rose-500/20 border-rose-500/50 text-rose-400'
-                    : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-rose-400'
+                    : 'bg-white border-slate-200 text-slate-500 hover:text-rose-400'
                 }`}
                 title="Saved Wishlist"
               >
                 <Heart className="w-5 h-5" />
                 {savedProperties.length > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-rose-500 text-white text-[11px] font-bold flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-rose-500 text-slate-900 text-[11px] font-bold flex items-center justify-center">
                     {savedProperties.length}
                   </span>
                 )}
@@ -173,7 +173,7 @@ const Navbar = ({ onOpenAIChat }) => {
               <div className="relative">
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="flex items-center space-x-3 p-1.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-amber-500/50 transition-all"
+                  className="flex items-center space-x-3 p-1.5 rounded-xl border border-slate-200 bg-white hover:border-amber-500/50 transition-all"
                 >
                   <img
                     src={user.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400'}
@@ -181,7 +181,7 @@ const Navbar = ({ onOpenAIChat }) => {
                     className="w-8 h-8 rounded-lg object-cover"
                   />
                   <div className="text-left hidden lg:block pr-1">
-                    <span className="text-xs font-bold text-white block leading-tight">{user.name}</span>
+                    <span className="text-xs font-bold text-slate-900 block leading-tight">{user.name}</span>
                     <span className="text-[10px] text-amber-400 font-semibold uppercase tracking-wider block">
                       {user.role.replace('_', ' ')}
                     </span>
@@ -190,16 +190,16 @@ const Navbar = ({ onOpenAIChat }) => {
 
                 {/* Dropdown Menu */}
                 {userDropdownOpen && (
-                  <div className="absolute right-0 mt-3 w-56 glass-panel rounded-xl shadow-2xl py-2 border border-slate-800 z-50">
-                    <div className="px-4 py-2 border-b border-slate-800/80">
-                      <p className="text-sm font-bold text-white">{user.name}</p>
-                      <p className="text-xs text-slate-400 truncate">{user.email}</p>
+                  <div className="absolute right-0 mt-3 w-56 glass-panel rounded-xl shadow-2xl py-2 border border-slate-200 z-50">
+                    <div className="px-4 py-2 border-b border-slate-200/80">
+                      <p className="text-sm font-bold text-slate-900">{user.name}</p>
+                      <p className="text-xs text-slate-500 truncate">{user.email}</p>
                     </div>
 
                     <Link
                       to="/"
                       onClick={() => setUserDropdownOpen(false)}
-                      className="flex items-center space-x-2.5 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800/60 hover:text-amber-400 transition-colors"
+                      className="flex items-center space-x-2.5 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-100/60 hover:text-amber-400 transition-colors"
                     >
                       <Home className="w-4 h-4 text-amber-400" />
                       <span>Home Page</span>
@@ -208,7 +208,7 @@ const Navbar = ({ onOpenAIChat }) => {
                     <Link
                       to={getDashboardRoute()}
                       onClick={() => setUserDropdownOpen(false)}
-                      className="flex items-center space-x-2.5 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800/60 hover:text-amber-400 transition-colors"
+                      className="flex items-center space-x-2.5 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-100/60 hover:text-amber-400 transition-colors"
                     >
                       <LayoutDashboard className="w-4 h-4 text-amber-400" />
                       <span>My Dashboard</span>
@@ -232,7 +232,7 @@ const Navbar = ({ onOpenAIChat }) => {
               <div className="flex items-center space-x-3">
                 <Link
                   to="/login"
-                  className="px-4 py-2 rounded-lg text-sm font-semibold text-slate-300 hover:text-white transition-colors"
+                  className="px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors"
                 >
                   Sign In
                 </Link>
@@ -251,7 +251,7 @@ const Navbar = ({ onOpenAIChat }) => {
             {/* Theme Toggle Button */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg border border-slate-200 bg-white text-slate-600 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300"
+              className="p-2 rounded-lg border border-slate-200 bg-white text-slate-600 dark:border-slate-200 dark:bg-white/60 dark:text-slate-600"
               title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
             >
               {isDark ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-slate-500" />}
@@ -266,7 +266,7 @@ const Navbar = ({ onOpenAIChat }) => {
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-300"
+              className="p-2 rounded-lg bg-white border border-slate-200 text-slate-600"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -277,7 +277,7 @@ const Navbar = ({ onOpenAIChat }) => {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden glass-panel border-t border-slate-800 px-4 pt-4 pb-6 space-y-4">
+        <div className="md:hidden glass-panel border-t border-slate-200 px-4 pt-4 pb-6 space-y-4">
           <Link
             to="/"
             onClick={() => setMobileMenuOpen(false)}
@@ -330,13 +330,13 @@ const Navbar = ({ onOpenAIChat }) => {
           )}
 
           {user ? (
-            <div className="pt-4 border-t border-slate-800 space-y-3">
+            <div className="pt-4 border-t border-slate-200 space-y-3">
               <Link
                 to={getDashboardRoute()}
                 onClick={() => setMobileMenuOpen(false)}
                 className={`w-full flex items-center justify-center space-x-2 py-2.5 rounded-lg font-bold text-sm ${
                   location.pathname.startsWith('/dashboard')
-                    ? 'bg-amber-600 text-white'
+                    ? 'bg-amber-600 text-slate-900'
                     : 'bg-amber-500 text-slate-950'
                 }`}
               >
@@ -354,11 +354,11 @@ const Navbar = ({ onOpenAIChat }) => {
               </button>
             </div>
           ) : (
-            <div className="pt-4 border-t border-slate-800 flex flex-col space-y-2">
+            <div className="pt-4 border-t border-slate-200 flex flex-col space-y-2">
               <Link
                 to="/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center py-2.5 rounded-lg border border-slate-700 text-white font-semibold text-sm"
+                className="w-full text-center py-2.5 rounded-lg border border-slate-300 text-slate-900 font-semibold text-sm"
               >
                 Sign In
               </Link>

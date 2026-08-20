@@ -106,23 +106,23 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
   )}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-lg glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-2xl space-y-6 my-6 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-50/80 backdrop-blur-md overflow-y-auto">
+      <div className="relative w-full max-w-lg glass-panel p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-2xl space-y-6 my-6 max-h-[90vh] overflow-y-auto">
         
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-4">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-xl gold-gradient-bg flex items-center justify-center shadow-lg shadow-amber-500/20">
               <CreditCard className="w-5 h-5 text-slate-950 font-bold" />
             </div>
             <div>
-              <h2 className="text-xl font-extrabold text-white">Secure Checkout</h2>
-              <p className="text-xs text-slate-400">Encrypted payment gateway powered by Stripe & UPI</p>
+              <h2 className="text-xl font-extrabold text-slate-900">Secure Checkout</h2>
+              <p className="text-xs text-slate-500">Encrypted payment gateway powered by Stripe & UPI</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition-all"
+            className="p-2 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-slate-900 transition-all"
           >
             <X className="w-5 h-5" />
           </button>
@@ -143,8 +143,8 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
               <CheckCircle2 className="w-8 h-8" />
             </div>
             <div className="space-y-1">
-              <h3 className="text-xl font-extrabold text-white">Payment Successful!</h3>
-              <p className="text-xs text-slate-400">Transaction ID: <span className="font-mono text-amber-400">{successData.stripePaymentIntentId || successData._id}</span></p>
+              <h3 className="text-xl font-extrabold text-slate-900">Payment Successful!</h3>
+              <p className="text-xs text-slate-500">Transaction ID: <span className="font-mono text-amber-400">{successData.stripePaymentIntentId || successData._id}</span></p>
               <p className="text-sm font-bold text-emerald-400 mt-2">AUD ${successData.amount} • {successData.packageType}</p>
             </div>
             <p className="text-xs text-slate-500">Your account and database record have been updated.</p>
@@ -154,7 +154,7 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
             
             {/* Package Selection */}
             <div className="space-y-2 text-xs">
-              <label className="font-bold text-slate-300">Select Purpose / Package</label>
+              <label className="font-bold text-slate-600">Select Purpose / Package</label>
               <div className={`grid ${availablePackages.length === 1 ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-3'} gap-2`}>
                 {availablePackages.map((item) => (
                   <button
@@ -164,10 +164,10 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
                     className={`p-3 rounded-xl text-left border transition-all ${
                       packageType === item.title
                         ? 'bg-amber-500/10 border-amber-500 text-amber-400'
-                        : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
+                        : 'bg-white border-slate-200 text-slate-500 hover:text-slate-900'
                     }`}
                   >
-                    <div className="font-bold text-white text-xs">{item.title}</div>
+                    <div className="font-bold text-slate-900 text-xs">{item.title}</div>
                     <div className="text-[11px] text-amber-400 font-extrabold mt-0.5">AUD ${item.price}</div>
                   </button>
                 ))}
@@ -176,7 +176,7 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
 
             {/* Payment Method Selector */}
             <div className="space-y-1 text-xs">
-              <label className="font-bold text-slate-300">Payment Method</label>
+              <label className="font-bold text-slate-600">Payment Method</label>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
@@ -184,7 +184,7 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
                   className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all flex items-center justify-center space-x-2 ${
                     paymentMethod === 'Credit Card'
                       ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-md'
-                      : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
+                      : 'bg-white border-slate-200 text-slate-500 hover:text-slate-900'
                   }`}
                 >
                   <CreditCard className="w-4 h-4" />
@@ -196,7 +196,7 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
                   className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all flex items-center justify-center space-x-2 ${
                     paymentMethod === 'Online NetBanking / UPI'
                       ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-md'
-                      : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
+                      : 'bg-white border-slate-200 text-slate-500 hover:text-slate-900'
                   }`}
                 >
                   <QrCode className="w-4 h-4" />
@@ -207,9 +207,9 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
 
             {/* Stripe Credit Card Form */}
             {paymentMethod === 'Credit Card' && (
-              <div className="space-y-3 p-4 rounded-2xl bg-slate-900 border border-slate-800 text-xs">
+              <div className="space-y-3 p-4 rounded-2xl bg-white border border-slate-200 text-xs">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-slate-300 flex items-center space-x-1.5">
+                  <span className="font-bold text-slate-600 flex items-center space-x-1.5">
                     <ShieldCheck className="w-4 h-4 text-emerald-400" />
                     <span>Stripe Encrypted Card Checkout</span>
                   </span>
@@ -217,33 +217,33 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-400">Card Number</label>
+                  <label className="font-bold text-slate-500">Card Number</label>
                   <input
                     type="text"
                     value={cardNumber}
                     onChange={(e) => setCardNumber(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-mono"
                     required
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-1">
-                    <label className="font-bold text-slate-400">Expiry (MM/YY)</label>
+                    <label className="font-bold text-slate-500">Expiry (MM/YY)</label>
                     <input
                       type="text"
                       value={expiry}
                       onChange={(e) => setExpiry(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-mono"
                       required
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="font-bold text-slate-400">CVC / CVV</label>
+                    <label className="font-bold text-slate-500">CVC / CVV</label>
                     <input
                       type="password"
                       value={cvc}
                       onChange={(e) => setCvc(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-mono"
                       required
                     />
                   </div>
@@ -253,19 +253,19 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
 
             {/* UPI QR Code Scanner Section */}
             {paymentMethod === 'Online NetBanking / UPI' && (
-              <div className="space-y-4 p-4 rounded-2xl bg-slate-900 border border-slate-800 text-xs text-center">
+              <div className="space-y-4 p-4 rounded-2xl bg-white border border-slate-200 text-xs text-center">
                 <div className="space-y-1">
-                  <span className="font-extrabold text-white text-sm flex items-center justify-center space-x-1.5">
+                  <span className="font-extrabold text-slate-900 text-sm flex items-center justify-center space-x-1.5">
                     <Smartphone className="w-4 h-4 text-amber-400" />
                     <span>Scan QR Code to Pay</span>
                   </span>
-                  <p className="text-slate-400 text-[11px]">
+                  <p className="text-slate-500 text-[11px]">
                     Open Google Pay, PhonePe, Paytm, BHIM, or any UPI App and scan below
                   </p>
                 </div>
 
                 {/* QR Image */}
-                <div className="inline-block p-3 rounded-2xl bg-white border border-slate-700 shadow-xl my-1">
+                <div className="inline-block p-3 rounded-2xl bg-white border border-slate-300 shadow-xl my-1">
                   <img
                     src={qrCodeUrl}
                     alt="UPI Payment QR Code"
@@ -280,13 +280,13 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
                 </div>
 
                 {/* UPI VPA ID */}
-                <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-300">
-                  <span className="text-slate-400 font-medium">UPI VPA ID:</span>
+                <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-600">
+                  <span className="text-slate-500 font-medium">UPI VPA ID:</span>
                   <span className="font-mono text-amber-400 font-bold">auraestates@icici</span>
                   <button
                     type="button"
                     onClick={handleCopyUPI}
-                    className="p-1 rounded bg-slate-800 text-slate-300 hover:text-white"
+                    className="p-1 rounded bg-slate-100 text-slate-600 hover:text-slate-900"
                     title="Copy UPI ID"
                   >
                     {copiedUpi ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
@@ -295,13 +295,13 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
 
                 {/* Optional Ref UTR Input */}
                 <div className="space-y-1 text-left">
-                  <label className="font-bold text-slate-400 text-[11px]">UPI Transaction / Ref UTR Number (Optional)</label>
+                  <label className="font-bold text-slate-500 text-[11px]">UPI Transaction / Ref UTR Number (Optional)</label>
                   <input
                     type="text"
                     value={upiRefId}
                     onChange={(e) => setUpiRefId(e.target.value)}
                     placeholder="e.g. 420918239102"
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono text-xs"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-mono text-xs"
                   />
                 </div>
               </div>
@@ -309,8 +309,8 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
 
             {/* Total Amount Banner & Submit */}
             <div className="pt-2">
-              <div className="flex items-center justify-between py-2 border-t border-slate-800 text-xs mb-3">
-                <span className="font-bold text-slate-400">Total Payable:</span>
+              <div className="flex items-center justify-between py-2 border-t border-slate-200 text-xs mb-3">
+                <span className="font-bold text-slate-500">Total Payable:</span>
                 <span className="text-lg font-extrabold text-amber-400">AUD ${amount}</span>
               </div>
 

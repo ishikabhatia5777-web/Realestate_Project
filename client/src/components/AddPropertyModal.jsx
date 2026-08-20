@@ -167,23 +167,23 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-3xl glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 my-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-50/80 backdrop-blur-md overflow-y-auto">
+      <div className="relative w-full max-w-3xl glass-panel p-6 sm:p-8 rounded-3xl border border-slate-200 my-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
         
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-4">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-xl gold-gradient-bg flex items-center justify-center shadow-lg shadow-amber-500/20">
               <Building2 className="w-5 h-5 text-slate-950 font-bold" />
             </div>
             <div>
-              <h2 className="text-xl font-extrabold text-white">Add Real Estate Property</h2>
-              <p className="text-xs text-slate-400">List a property to buy or rent with instant database publishing</p>
+              <h2 className="text-xl font-extrabold text-slate-900">Add Real Estate Property</h2>
+              <p className="text-xs text-slate-500">List a property to buy or rent with instant database publishing</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
+            className="p-2 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-all"
           >
             <X className="w-5 h-5" />
           </button>
@@ -209,7 +209,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
           {/* Listing Type & Property Type Selection */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5 text-xs">
-              <label className="font-bold text-slate-300">Listing Purpose</label>
+              <label className="font-bold text-slate-600">Listing Purpose</label>
               <div className="grid grid-cols-2 gap-2">
                 {['Sale', 'Rent'].map((type) => (
                   <button
@@ -219,7 +219,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
                     className={`py-2 rounded-xl font-bold border transition-all text-xs ${
                       listingType === type
                         ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-md'
-                        : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
+                        : 'bg-white border-slate-200 text-slate-500 hover:text-slate-900'
                     }`}
                   >
                     {type === 'Sale' ? 'Buy' : 'Rent'}
@@ -229,11 +229,11 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
             </div>
 
             <div className="space-y-1.5 text-xs">
-              <label className="font-bold text-slate-300">Property Category</label>
+              <label className="font-bold text-slate-600">Property Category</label>
               <select
                 value={propertyType}
                 onChange={(e) => setPropertyType(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white focus:border-amber-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
               >
                 {['Residential', 'Apartment', 'Villa', 'Townhouse', 'Commercial', 'Land', 'Office', 'Warehouse', 'Farm'].map((pt) => (
                   <option key={pt} value={pt}>{pt}</option>
@@ -245,19 +245,19 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
           {/* Title & Price */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="sm:col-span-2 space-y-1.5 text-xs">
-              <label className="font-bold text-slate-300">Property Title *</label>
+              <label className="font-bold text-slate-600">Property Title *</label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Modern Ocean View Villa"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white focus:border-amber-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
                 required
               />
             </div>
 
             <div className="space-y-1.5 text-xs">
-              <label className="font-bold text-slate-300">Price (AUD $) *</label>
+              <label className="font-bold text-slate-600">Price (AUD $) *</label>
               <div className="relative">
                 <DollarSign className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
                 <input
@@ -265,7 +265,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                   placeholder="1250000"
-                  className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white focus:border-amber-500"
+                  className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
                   required
                 />
               </div>
@@ -274,7 +274,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
 
           {/* Location / Address */}
           <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-300 flex items-center space-x-1.5">
+            <label className="text-xs font-bold text-slate-600 flex items-center space-x-1.5">
               <MapPin className="w-3.5 h-3.5 text-amber-400" />
               <span>Property Address Details</span>
             </label>
@@ -284,7 +284,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
                 value={street}
                 onChange={(e) => setStreet(e.target.value)}
                 placeholder="Street Address (e.g. 42 George St)"
-                className="sm:col-span-2 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white focus:border-amber-500"
+                className="sm:col-span-2 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
                 required
               />
               <input
@@ -292,7 +292,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
                 value={suburb}
                 onChange={(e) => setSuburb(e.target.value)}
                 placeholder="Suburb (e.g. Bondi Beach)"
-                className="px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white focus:border-amber-500"
+                className="px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
                 required
               />
               <input
@@ -300,7 +300,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 placeholder="City (e.g. Sydney)"
-                className="px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white focus:border-amber-500"
+                className="px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
                 required
               />
               <input
@@ -308,14 +308,14 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
                 value={state}
                 onChange={(e) => setState(e.target.value)}
                 placeholder="State (e.g. NSW)"
-                className="px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white focus:border-amber-500"
+                className="px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
               />
               <input
                 type="text"
                 value={postcode}
                 onChange={(e) => setPostcode(e.target.value)}
                 placeholder="Postcode (e.g. 2026)"
-                className="px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white focus:border-amber-500"
+                className="px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
               />
             </div>
           </div>
@@ -323,66 +323,66 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
           {/* Key Property Specs */}
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
             <div className="space-y-1">
-              <label className="font-bold text-slate-300 flex items-center space-x-1">
-                <Bed className="w-3.5 h-3.5 text-slate-400" />
+              <label className="font-bold text-slate-600 flex items-center space-x-1">
+                <Bed className="w-3.5 h-3.5 text-slate-500" />
                 <span>Beds</span>
               </label>
               <input
                 type="number"
                 value={bedrooms}
                 onChange={(e) => setBedrooms(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900"
                 min="0"
               />
             </div>
             <div className="space-y-1">
-              <label className="font-bold text-slate-300 flex items-center space-x-1">
-                <Bath className="w-3.5 h-3.5 text-slate-400" />
+              <label className="font-bold text-slate-600 flex items-center space-x-1">
+                <Bath className="w-3.5 h-3.5 text-slate-500" />
                 <span>Baths</span>
               </label>
               <input
                 type="number"
                 value={bathrooms}
                 onChange={(e) => setBathrooms(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900"
                 min="0"
               />
             </div>
             <div className="space-y-1">
-              <label className="font-bold text-slate-300 flex items-center space-x-1">
-                <Car className="w-3.5 h-3.5 text-slate-400" />
+              <label className="font-bold text-slate-600 flex items-center space-x-1">
+                <Car className="w-3.5 h-3.5 text-slate-500" />
                 <span>Parking</span>
               </label>
               <input
                 type="number"
                 value={parkingSpaces}
                 onChange={(e) => setParkingSpaces(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900"
                 min="0"
               />
             </div>
             <div className="space-y-1">
-              <label className="font-bold text-slate-300 flex items-center space-x-1">
-                <Maximize2 className="w-3.5 h-3.5 text-slate-400" />
+              <label className="font-bold text-slate-600 flex items-center space-x-1">
+                <Maximize2 className="w-3.5 h-3.5 text-slate-500" />
                 <span>Land (m²)</span>
               </label>
               <input
                 type="number"
                 value={landArea}
                 onChange={(e) => setLandArea(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900"
               />
             </div>
             <div className="space-y-1 col-span-2 sm:col-span-1">
-              <label className="font-bold text-slate-300 flex items-center space-x-1">
-                <Maximize2 className="w-3.5 h-3.5 text-slate-400" />
+              <label className="font-bold text-slate-600 flex items-center space-x-1">
+                <Maximize2 className="w-3.5 h-3.5 text-slate-500" />
                 <span>Floor (m²)</span>
               </label>
               <input
                 type="number"
                 value={floorArea}
                 onChange={(e) => setFloorArea(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900"
               />
             </div>
           </div>
@@ -390,7 +390,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
           {/* Description & AI Generator */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-slate-300">Property Description *</label>
+              <label className="text-xs font-bold text-slate-600">Property Description *</label>
               <button
                 type="button"
                 onClick={handleGenerateAI}
@@ -406,26 +406,26 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe property highlight features, interior design, backyard, location proximity, view, etc..."
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white focus:border-amber-500"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
               required
             />
           </div>
 
           {/* Amenities Tags */}
           <div className="space-y-2 text-xs">
-            <label className="font-bold text-slate-300">Amenities & Key Features</label>
+            <label className="font-bold text-slate-600">Amenities & Key Features</label>
             <div className="flex space-x-2">
               <input
                 type="text"
                 value={amenityInput}
                 onChange={(e) => setAmenityInput(e.target.value)}
                 placeholder="Add amenity (e.g. Solar Panels, Garage, Garden)"
-                className="flex-1 px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white"
+                className="flex-1 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-900"
               />
               <button
                 type="button"
                 onClick={handleAddAmenity}
-                className="px-4 py-2 rounded-xl bg-slate-800 text-white font-bold text-xs hover:bg-slate-700"
+                className="px-4 py-2 rounded-xl bg-slate-100 text-slate-900 font-bold text-xs hover:bg-slate-200"
               >
                 Add Tag
               </button>
@@ -434,7 +434,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
               {amenities.map((item, idx) => (
                 <span
                   key={idx}
-                  className="px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 text-[11px] font-medium flex items-center space-x-1.5"
+                  className="px-3 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 text-[11px] font-medium flex items-center space-x-1.5"
                 >
                   <span>{item}</span>
                   <button type="button" onClick={() => handleRemoveAmenity(idx)} className="text-slate-500 hover:text-rose-400">
@@ -448,11 +448,11 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
           {/* Property Photos & Image Upload */}
           <div className="space-y-3 text-xs">
             <div className="flex items-center justify-between">
-              <label className="font-bold text-slate-300 flex items-center space-x-1.5">
+              <label className="font-bold text-slate-600 flex items-center space-x-1.5">
                 <ImageIcon className="w-4 h-4 text-amber-400" />
                 <span>Property Photos & Images</span>
               </label>
-              <span className="text-[11px] text-slate-400">({images.length} images added)</span>
+              <span className="text-[11px] text-slate-500">({images.length} images added)</span>
             </div>
 
             {/* Hidden File Input */}
@@ -483,12 +483,12 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
                   value={imageUrl}
                   onChange={(e) => setImageUrl(e.target.value)}
                   placeholder="Or paste web image URL (https://...)"
-                  className="flex-1 px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white placeholder-slate-500 focus:border-amber-500"
+                  className="flex-1 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 placeholder-slate-500 focus:border-amber-500"
                 />
                 <button
                   type="button"
                   onClick={handleAddImage}
-                  className="px-4 py-2 rounded-xl bg-slate-800 text-white font-bold text-xs hover:bg-slate-700 whitespace-nowrap"
+                  className="px-4 py-2 rounded-xl bg-slate-100 text-slate-900 font-bold text-xs hover:bg-slate-200 whitespace-nowrap"
                 >
                   Add URL
                 </button>
@@ -498,7 +498,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
             {/* Images Preview Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
               {images.map((img, idx) => (
-                <div key={idx} className="relative group rounded-xl overflow-hidden border border-slate-800 aspect-video bg-slate-900 shadow-md">
+                <div key={idx} className="relative group rounded-xl overflow-hidden border border-slate-200 aspect-video bg-white shadow-md">
                   <img
                     src={img}
                     alt={`Property preview ${idx + 1}`}
@@ -512,14 +512,14 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
                     <button
                       type="button"
                       onClick={() => handleRemoveImage(idx)}
-                      className="absolute top-1.5 right-1.5 p-1.5 rounded-lg bg-rose-600/90 text-white opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
+                      className="absolute top-1.5 right-1.5 p-1.5 rounded-lg bg-rose-600/90 text-slate-900 opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
                       title="Remove image"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   )}
                   {idx === 0 && (
-                    <span className="absolute bottom-1 left-1 px-2 py-0.5 rounded bg-slate-950/80 backdrop-blur-md text-[10px] font-bold text-amber-400 border border-amber-500/30">
+                    <span className="absolute bottom-1 left-1 px-2 py-0.5 rounded bg-slate-50/80 backdrop-blur-md text-[10px] font-bold text-amber-400 border border-amber-500/30">
                       Main Cover
                     </span>
                   )}

@@ -36,19 +36,19 @@ const RegisterPage = () => {
 
   return (
     <div className="min-h-[85vh] flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md glass-panel p-8 rounded-3xl border border-slate-800 space-y-6 shadow-2xl">
+      <div className="w-full max-w-md glass-panel p-8 rounded-3xl border border-slate-200 space-y-6 shadow-2xl">
         
         {/* Back & Home Header */}
-        <div className="flex items-center justify-between border-b border-slate-800/80 pb-4">
+        <div className="flex items-center justify-between border-b border-slate-200/80 pb-4">
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="inline-flex items-center space-x-1.5 text-xs font-bold text-slate-400 hover:text-amber-400 transition-colors"
+            className="inline-flex items-center space-x-1.5 text-xs font-bold text-slate-500 hover:text-amber-400 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back</span>
           </button>
-          <Link to="/" className="text-xs font-bold text-slate-400 hover:text-amber-400 transition-colors">
+          <Link to="/" className="text-xs font-bold text-slate-500 hover:text-amber-400 transition-colors">
             Back to Home
           </Link>
         </div>
@@ -57,8 +57,8 @@ const RegisterPage = () => {
           <div className="w-12 h-12 rounded-2xl gold-gradient-bg flex items-center justify-center mx-auto shadow-lg shadow-amber-500/20">
             <Building2 className="w-6 h-6 text-slate-950 font-bold" />
           </div>
-          <h2 className="text-2xl font-extrabold text-white">Create Account</h2>
-          <p className="text-xs text-slate-400">Join Australia's luxury real estate portal</p>
+          <h2 className="text-2xl font-extrabold text-slate-900">Create Account</h2>
+          <p className="text-xs text-slate-500">Join Australia's luxury real estate portal</p>
         </div>
 
         {error && (
@@ -71,7 +71,7 @@ const RegisterPage = () => {
           
           {/* Role selector pills */}
           <div className="space-y-1 text-xs">
-            <label className="font-bold text-slate-300">Select Account Type (RBAC)</label>
+            <label className="font-bold text-slate-600">Select Account Type (RBAC)</label>
             <div className="grid grid-cols-2 gap-2">
               {[
                 { id: 'buyer', label: 'Buyer / Renter' },
@@ -87,7 +87,7 @@ const RegisterPage = () => {
                   className={`p-2.5 rounded-xl text-xs font-bold border transition-all text-left ${
                     role === r.id
                       ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-md'
-                      : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
+                      : 'bg-white border-slate-200 text-slate-500 hover:text-slate-900'
                   }`}
                 >
                   {r.label}
@@ -97,55 +97,55 @@ const RegisterPage = () => {
           </div>
 
           <div className="space-y-1 text-xs">
-            <label className="font-bold text-slate-300">Full Name</label>
+            <label className="font-bold text-slate-600">Full Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Julian Thorne"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white focus:border-amber-500"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
               required
             />
           </div>
 
           <div className="space-y-1 text-xs">
-            <label className="font-bold text-slate-300">Email Address</label>
+            <label className="font-bold text-slate-600">Email Address</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="julian@prestigerealty.com.au"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white focus:border-amber-500"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
               required
             />
           </div>
 
           <div className="space-y-1 text-xs">
-            <label className="font-bold text-slate-300">Phone Number</label>
+            <label className="font-bold text-slate-600">Phone Number</label>
             <input
               type="text"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+61 400 000 000"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white focus:border-amber-500"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
             />
           </div>
 
           <div className="space-y-1 text-xs">
-            <label className="font-bold text-slate-300">Password</label>
+            <label className="font-bold text-slate-600">Password</label>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-3.5 pr-10 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white focus:border-amber-500"
+                className="w-full pl-3.5 pr-10 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-2.5 text-slate-500 hover:text-slate-300"
+                className="absolute right-3 top-2.5 text-slate-500 hover:text-slate-600"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -161,7 +161,7 @@ const RegisterPage = () => {
           </button>
         </form>
 
-        <p className="text-center text-xs text-slate-400">
+        <p className="text-center text-xs text-slate-500">
           Already have an account?{' '}
           <Link to="/login" className="text-amber-400 font-bold hover:underline">
             Sign In

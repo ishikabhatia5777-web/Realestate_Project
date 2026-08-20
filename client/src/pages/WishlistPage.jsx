@@ -10,20 +10,20 @@ const WishlistPage = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 min-h-[70vh]">
       {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-6">
         <div>
           <span className="text-xs font-bold text-rose-400 uppercase tracking-widest block flex items-center space-x-1.5">
             <Heart className="w-3.5 h-3.5 fill-current" />
             <span>FAVORITE LUXURY PORTFOLIO</span>
           </span>
-          <h1 className="text-3xl font-extrabold text-white mt-1">My Saved Wishlist</h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <h1 className="text-3xl font-extrabold text-slate-900 mt-1">My Saved Wishlist</h1>
+          <p className="text-xs text-slate-500 mt-1">
             Properties saved to your personal collection for quick review, price tracking, and scheduling.
           </p>
         </div>
 
         <div className="flex items-center space-x-3">
-          <span className="px-4 py-2 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 text-xs font-bold flex items-center space-x-2">
+          <span className="px-4 py-2 rounded-2xl bg-white border border-slate-200 text-slate-600 text-xs font-bold flex items-center space-x-2">
             <Sparkles className="w-4 h-4 text-amber-400" />
             <span>Saved: {savedProperties.length} Properties</span>
           </span>
@@ -39,13 +39,13 @@ const WishlistPage = () => {
 
       {/* Grid or Empty State */}
       {savedProperties.length === 0 ? (
-        <div className="glass-panel p-12 rounded-3xl border border-slate-800 text-center space-y-4 max-w-xl mx-auto my-12 shadow-2xl">
+        <div className="glass-panel p-12 rounded-3xl border border-slate-200 text-center space-y-4 max-w-xl mx-auto my-12 shadow-2xl">
           <div className="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mx-auto text-rose-400 shadow-inner">
             <Heart className="w-8 h-8" />
           </div>
           <div className="space-y-1">
-            <h3 className="text-xl font-extrabold text-white">Your Saved Wishlist is Empty</h3>
-            <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
+            <h3 className="text-xl font-extrabold text-slate-900">Your Saved Wishlist is Empty</h3>
+            <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
               Click the heart icon on any luxury villa, apartment, townhouse, or commercial listing to add it to your saved portfolio.
             </p>
           </div>

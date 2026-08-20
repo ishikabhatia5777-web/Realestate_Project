@@ -25,7 +25,7 @@ const SPECIALTY_COLORS = {
   'Wine Country': 'bg-red-500/20 text-red-400 border-red-500/30',
 };
 
-const defaultColor = 'bg-slate-700/50 text-slate-300 border-slate-600/40';
+const defaultColor = 'bg-slate-200/50 text-slate-600 border-slate-600/40';
 
 const StarRating = ({ rating }) => {
   const full = Math.floor(rating);
@@ -54,7 +54,7 @@ const AgentCard = ({ agent }) => {
   const agencyLabel = agent.agencyId?.name || agent.agencyName || null;
 
   return (
-    <div className="glass-panel rounded-3xl border border-slate-800 hover:border-amber-500/50 transition-all duration-300 group flex flex-col bg-gradient-to-b from-slate-900/80 to-slate-950/80 hover:shadow-xl hover:shadow-amber-500/10 overflow-hidden">
+    <div className="glass-panel rounded-3xl border border-slate-200 hover:border-amber-500/50 transition-all duration-300 group flex flex-col bg-gradient-to-b from-slate-900/80 to-slate-950/80 hover:shadow-xl hover:shadow-amber-500/10 overflow-hidden">
 
       {/* Top accent bar */}
       <div className="h-1 w-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -66,7 +66,7 @@ const AgentCard = ({ agent }) => {
             <img
               src={agent.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400'}
               alt={agent.name}
-              className="w-18 h-18 w-[72px] h-[72px] rounded-2xl object-cover border-2 border-slate-700 group-hover:border-amber-500/60 transition-all shadow-lg"
+              className="w-18 h-18 w-[72px] h-[72px] rounded-2xl object-cover border-2 border-slate-300 group-hover:border-amber-500/60 transition-all shadow-lg"
             />
             {/* Online badge */}
             <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-slate-900 rounded-full shadow" title="Active" />
@@ -74,7 +74,7 @@ const AgentCard = ({ agent }) => {
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center space-x-1.5 mb-0.5">
-              <h3 className="text-base font-extrabold text-white group-hover:text-amber-400 transition-colors truncate">{agent.name}</h3>
+              <h3 className="text-base font-extrabold text-slate-900 group-hover:text-amber-400 transition-colors truncate">{agent.name}</h3>
               <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0" title="Verified Agent" />
             </div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-amber-500 mb-1.5">Licensed Real Estate Agent</p>
@@ -83,7 +83,7 @@ const AgentCard = ({ agent }) => {
         </div>
 
         {/* Bio */}
-        <p className="text-xs text-slate-400 leading-relaxed line-clamp-3 mb-4 flex-1">
+        <p className="text-xs text-slate-500 leading-relaxed line-clamp-3 mb-4 flex-1">
           {agent.bio || `${agent.name} is a dedicated real estate professional providing exceptional service and deep market insights to help clients buy, sell, and invest with confidence.`}
         </p>
 
@@ -99,19 +99,19 @@ const AgentCard = ({ agent }) => {
         )}
 
         {/* Stats row */}
-        <div className="flex items-center justify-between py-3 border-y border-slate-800/80 mb-4 text-center">
+        <div className="flex items-center justify-between py-3 border-y border-slate-200/80 mb-4 text-center">
           <div>
-            <p className="text-sm font-extrabold text-white">{agent.dealsCount || '—'}</p>
+            <p className="text-sm font-extrabold text-slate-900">{agent.dealsCount || '—'}</p>
             <p className="text-[10px] text-slate-500 font-medium">Deals Closed</p>
           </div>
-          <div className="w-px h-8 bg-slate-800" />
+          <div className="w-px h-8 bg-slate-100" />
           <div>
-            <p className="text-sm font-extrabold text-white">{agent.rating ? agent.rating.toFixed(1) : '—'}</p>
+            <p className="text-sm font-extrabold text-slate-900">{agent.rating ? agent.rating.toFixed(1) : '—'}</p>
             <p className="text-[10px] text-slate-500 font-medium">Rating</p>
           </div>
-          <div className="w-px h-8 bg-slate-800" />
+          <div className="w-px h-8 bg-slate-100" />
           <div>
-            <p className="text-sm font-extrabold text-white truncate max-w-[80px]">{agent.licenseNumber || '—'}</p>
+            <p className="text-sm font-extrabold text-slate-900 truncate max-w-[80px]">{agent.licenseNumber || '—'}</p>
             <p className="text-[10px] text-slate-500 font-medium">License</p>
           </div>
         </div>
@@ -119,32 +119,32 @@ const AgentCard = ({ agent }) => {
         {/* Contact info */}
         <div className="space-y-2 mb-5">
           {agent.location || agent.address?.city ? (
-            <div className="flex items-center space-x-2.5 text-xs text-slate-400">
-              <div className="p-1.5 rounded-lg bg-slate-800">
+            <div className="flex items-center space-x-2.5 text-xs text-slate-500">
+              <div className="p-1.5 rounded-lg bg-slate-100">
                 <MapPin className="w-3.5 h-3.5 text-amber-500" />
               </div>
               <span>{agent.location || `${agent.address?.city}, ${agent.address?.state}`}</span>
             </div>
           ) : null}
           {agencyLabel && (
-            <div className="flex items-center space-x-2.5 text-xs text-slate-400">
-              <div className="p-1.5 rounded-lg bg-slate-800">
+            <div className="flex items-center space-x-2.5 text-xs text-slate-500">
+              <div className="p-1.5 rounded-lg bg-slate-100">
                 <Building2 className="w-3.5 h-3.5 text-amber-500" />
               </div>
               <span className="truncate">{agencyLabel}</span>
             </div>
           )}
           {agent.phone && (
-            <div className="flex items-center space-x-2.5 text-xs text-slate-400">
-              <div className="p-1.5 rounded-lg bg-slate-800">
+            <div className="flex items-center space-x-2.5 text-xs text-slate-500">
+              <div className="p-1.5 rounded-lg bg-slate-100">
                 <Phone className="w-3.5 h-3.5 text-amber-500" />
               </div>
               <span>{agent.phone}</span>
             </div>
           )}
           {agent.email && (
-            <div className="flex items-center space-x-2.5 text-xs text-slate-400 group/email">
-              <div className="p-1.5 rounded-lg bg-slate-800">
+            <div className="flex items-center space-x-2.5 text-xs text-slate-500 group/email">
+              <div className="p-1.5 rounded-lg bg-slate-100">
                 <Mail className="w-3.5 h-3.5 text-amber-500" />
               </div>
               <span className="truncate">{agent.email}</span>
@@ -306,8 +306,8 @@ const FindAgentsPage = () => {
           </div>
           <span className="text-xs font-bold uppercase tracking-widest text-amber-400">Verified Professionals</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-white">Find Your Perfect Agent</h1>
-        <p className="text-slate-400 text-sm max-w-xl">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900">Find Your Perfect Agent</h1>
+        <p className="text-slate-500 text-sm max-w-xl">
           Browse Australia's top-rated real estate agents. Each agent is fully verified, licensed, and ready to help you buy, sell, or invest.
         </p>
       </div>
@@ -322,7 +322,7 @@ const FindAgentsPage = () => {
             placeholder="Search by name, specialty, location or agency..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-amber-500/50 transition-colors"
+            className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm placeholder-slate-500 focus:outline-none focus:border-amber-500/50 transition-colors"
           />
         </div>
         <div className="flex flex-wrap gap-2 items-center">
@@ -333,7 +333,7 @@ const FindAgentsPage = () => {
               className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all ${
                 locationFilter === loc
                   ? 'bg-amber-500 text-slate-950 border-amber-500'
-                  : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-amber-500/50 hover:text-amber-400'
+                  : 'bg-white border-slate-200 text-slate-500 hover:border-amber-500/50 hover:text-amber-400'
               }`}
             >
               {loc}
@@ -346,7 +346,7 @@ const FindAgentsPage = () => {
       {!loading && (
         <p className="text-xs text-slate-500">
           Showing <span className="text-amber-400 font-bold">{filtered.length}</span> agent{filtered.length !== 1 ? 's' : ''}
-          {search && <> matching "<span className="text-white">{search}</span>"</>}
+          {search && <> matching "<span className="text-slate-900">{search}</span>"</>}
         </p>
       )}
 
@@ -354,30 +354,30 @@ const FindAgentsPage = () => {
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="glass-panel rounded-3xl border border-slate-800 p-6 space-y-4 animate-pulse">
+            <div key={i} className="glass-panel rounded-3xl border border-slate-200 p-6 space-y-4 animate-pulse">
               <div className="flex items-start space-x-4">
-                <div className="w-[72px] h-[72px] rounded-2xl bg-slate-800" />
+                <div className="w-[72px] h-[72px] rounded-2xl bg-slate-100" />
                 <div className="flex-1 space-y-2 pt-1">
-                  <div className="h-4 bg-slate-800 rounded w-3/4" />
-                  <div className="h-3 bg-slate-800 rounded w-1/2" />
-                  <div className="h-3 bg-slate-800 rounded w-1/3" />
+                  <div className="h-4 bg-slate-100 rounded w-3/4" />
+                  <div className="h-3 bg-slate-100 rounded w-1/2" />
+                  <div className="h-3 bg-slate-100 rounded w-1/3" />
                 </div>
               </div>
               <div className="space-y-2">
-                <div className="h-3 bg-slate-800 rounded" />
-                <div className="h-3 bg-slate-800 rounded w-5/6" />
-                <div className="h-3 bg-slate-800 rounded w-4/6" />
+                <div className="h-3 bg-slate-100 rounded" />
+                <div className="h-3 bg-slate-100 rounded w-5/6" />
+                <div className="h-3 bg-slate-100 rounded w-4/6" />
               </div>
-              <div className="h-10 bg-slate-800 rounded-xl" />
+              <div className="h-10 bg-slate-100 rounded-xl" />
             </div>
           ))}
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-20 space-y-3">
-          <div className="w-16 h-16 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center mx-auto">
+          <div className="w-16 h-16 rounded-full bg-white border border-slate-200 flex items-center justify-center mx-auto">
             <Users className="w-7 h-7 text-slate-600" />
           </div>
-          <p className="text-white font-bold">No agents found</p>
+          <p className="text-slate-900 font-bold">No agents found</p>
           <p className="text-slate-500 text-sm">Try adjusting your search or filter criteria</p>
           <button onClick={() => { setSearch(''); setLocationFilter('All'); }} className="px-4 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold hover:bg-amber-500/20 transition-colors">
             Clear Filters

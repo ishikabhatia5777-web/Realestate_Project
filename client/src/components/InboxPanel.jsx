@@ -100,7 +100,7 @@ const InboxPanel = ({ activeChatRequest }) => {
 
   if (loading) {
     return (
-      <div className="p-8 text-center text-slate-400 flex items-center justify-center space-x-2">
+      <div className="p-8 text-center text-slate-500 flex items-center justify-center space-x-2">
         <RefreshCw className="w-5 h-5 animate-spin text-amber-400" />
         <span>Loading your messages...</span>
       </div>
@@ -108,18 +108,18 @@ const InboxPanel = ({ activeChatRequest }) => {
   }
 
   return (
-    <div className="glass-panel rounded-2xl border border-slate-800 overflow-hidden grid grid-cols-1 md:grid-cols-3 min-h-[550px]">
+    <div className="glass-panel rounded-2xl border border-slate-200 overflow-hidden grid grid-cols-1 md:grid-cols-3 min-h-[550px]">
       
       {/* Threads Sidebar */}
-      <div className="border-r border-slate-800/80 bg-slate-950/40 flex flex-col">
-        <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+      <div className="border-r border-slate-200/80 bg-slate-50/40 flex flex-col">
+        <div className="p-4 border-b border-slate-200 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <MessageSquare className="w-5 h-5 text-amber-400" />
-            <h3 className="font-bold text-white text-base">Conversations</h3>
+            <h3 className="font-bold text-slate-900 text-base">Conversations</h3>
           </div>
           <button 
             onClick={loadInbox} 
-            className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition-colors"
+            className="p-1.5 rounded-lg bg-white border border-slate-200 text-slate-500 hover:text-slate-900 transition-colors"
             title="Refresh messages"
           >
             <RefreshCw className="w-3.5 h-3.5" />
@@ -139,17 +139,17 @@ const InboxPanel = ({ activeChatRequest }) => {
                   key={thread.threadId}
                   onClick={() => handleSelectThread(thread)}
                   className={`w-full p-4 text-left transition-colors flex items-start space-x-3 ${
-                    isSelected ? 'bg-amber-500/10 border-l-4 border-amber-500' : 'hover:bg-slate-900/60'
+                    isSelected ? 'bg-amber-500/10 border-l-4 border-amber-500' : 'hover:bg-white/60'
                   }`}
                 >
                   <img
                     src={thread.otherUser?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400'}
                     alt={thread.otherUser?.name || 'User'}
-                    className="w-10 h-10 rounded-xl object-cover border border-slate-800 flex-shrink-0"
+                    className="w-10 h-10 rounded-xl object-cover border border-slate-200 flex-shrink-0"
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-sm font-bold text-white truncate">{thread.otherUser?.name || 'User'}</h4>
+                      <h4 className="text-sm font-bold text-slate-900 truncate">{thread.otherUser?.name || 'User'}</h4>
                       {thread.unreadCount > 0 && (
                         <span className="w-5 h-5 rounded-full bg-amber-500 text-slate-950 font-black text-[10px] flex items-center justify-center">
                           {thread.unreadCount}
@@ -162,7 +162,7 @@ const InboxPanel = ({ activeChatRequest }) => {
                         <span className="truncate">{thread.property.title}</span>
                       </p>
                     )}
-                    <p className="text-xs text-slate-400 truncate mt-1">
+                    <p className="text-xs text-slate-500 truncate mt-1">
                       {thread.lastMessage?.text}
                     </p>
                   </div>
@@ -174,11 +174,11 @@ const InboxPanel = ({ activeChatRequest }) => {
       </div>
 
       {/* Active Conversation Detail Panel */}
-      <div className="md:col-span-2 flex flex-col bg-slate-900/30">
+      <div className="md:col-span-2 flex flex-col bg-white/30">
         {activeThread ? (
           <>
             {/* Header */}
-            <div className="p-4 border-b border-slate-800 bg-slate-950/60 flex items-center justify-between">
+            <div className="p-4 border-b border-slate-200 bg-slate-50/60 flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <img
                   src={activeThread.otherUser?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400'}
@@ -186,13 +186,13 @@ const InboxPanel = ({ activeChatRequest }) => {
                   className="w-10 h-10 rounded-xl object-cover border border-amber-500/40"
                 />
                 <div>
-                  <h4 className="text-sm font-bold text-white">{activeThread.otherUser?.name}</h4>
-                  <p className="text-xs text-slate-400 capitalize">{activeThread.otherUser?.role} • {activeThread.otherUser?.email}</p>
+                  <h4 className="text-sm font-bold text-slate-900">{activeThread.otherUser?.name}</h4>
+                  <p className="text-xs text-slate-500 capitalize">{activeThread.otherUser?.role} • {activeThread.otherUser?.email}</p>
                 </div>
               </div>
               {activeThread.property && (
                 <div className="text-right hidden sm:block">
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Property</span>
+                  <span className="text-[10px] uppercase font-bold text-slate-500 block">Property</span>
                   <span className="text-xs font-semibold text-amber-400 block truncate max-w-[200px]">
                     {activeThread.property.title}
                   </span>
@@ -222,7 +222,7 @@ const InboxPanel = ({ activeChatRequest }) => {
                       className={`max-w-[78%] rounded-2xl px-4 py-2.5 text-xs shadow-lg ${
                         isMe
                           ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-medium rounded-tr-none shadow-amber-500/10'
-                          : 'bg-slate-900 text-slate-100 border border-cyan-500/30 rounded-tl-none'
+                          : 'bg-white text-slate-100 border border-cyan-500/30 rounded-tl-none'
                       }`}
                     >
                       {/* Sender Role & Name Badge Header */}
@@ -230,14 +230,14 @@ const InboxPanel = ({ activeChatRequest }) => {
                         <span className={`text-[10px] font-black uppercase tracking-wider ${isMe ? 'text-slate-950 font-extrabold' : 'text-cyan-400 font-extrabold'}`}>
                           {senderRole}
                         </span>
-                        <span className={`text-[9px] font-semibold ${isMe ? 'text-slate-900' : 'text-slate-400'}`}>
+                        <span className={`text-[9px] font-semibold ${isMe ? 'text-slate-900' : 'text-slate-500'}`}>
                           {senderName}
                         </span>
                       </div>
 
                       <p className="whitespace-pre-line leading-relaxed text-xs">{msg.text}</p>
                       
-                      <span className={`text-[9px] block mt-1.5 text-right font-medium ${isMe ? 'text-slate-900' : 'text-slate-400'}`}>
+                      <span className={`text-[9px] block mt-1.5 text-right font-medium ${isMe ? 'text-slate-900' : 'text-slate-500'}`}>
                         {new Date(msg.createdAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
@@ -247,13 +247,13 @@ const InboxPanel = ({ activeChatRequest }) => {
             </div>
 
             {/* Reply Input Box */}
-            <form onSubmit={handleSendReply} className="p-4 border-t border-slate-800 bg-slate-950/80 flex items-center space-x-3">
+            <form onSubmit={handleSendReply} className="p-4 border-t border-slate-200 bg-slate-50/80 flex items-center space-x-3">
               <input
                 type="text"
                 value={replyText}
                 onChange={(e) => setReplyText(e.target.value)}
                 placeholder={`Reply to ${activeThread.otherUser?.name}...`}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-amber-500"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 text-xs focus:outline-none focus:border-amber-500"
               />
               <button
                 type="submit"

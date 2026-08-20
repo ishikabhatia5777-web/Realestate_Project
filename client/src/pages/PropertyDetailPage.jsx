@@ -77,7 +77,7 @@ const PropertyDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-20 text-center text-slate-400 font-bold animate-pulse flex items-center justify-center gap-2">
+      <div className="max-w-7xl mx-auto px-4 py-20 text-center text-slate-500 font-bold animate-pulse flex items-center justify-center gap-2">
         <span className="w-5 h-5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin inline-block" />
         Loading property details...
       </div>
@@ -87,8 +87,8 @@ const PropertyDetailPage = () => {
   if (!property) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-20 text-center space-y-4">
-        <h2 className="text-xl font-bold text-white">Property Not Found</h2>
-        <p className="text-xs text-slate-400">The property you requested could not be located.</p>
+        <h2 className="text-xl font-bold text-slate-900">Property Not Found</h2>
+        <p className="text-xs text-slate-500">The property you requested could not be located.</p>
         <Link to="/properties" className="inline-block px-5 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs">
           Explore All Properties
         </Link>
@@ -105,19 +105,19 @@ const PropertyDetailPage = () => {
       {/* Lightbox Modal */}
       {isLightboxOpen && (
         <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4">
-          <button onClick={() => setIsLightboxOpen(false)} className="absolute top-6 right-6 p-2 bg-slate-800 rounded-full text-white hover:bg-slate-700 transition-colors">
+          <button onClick={() => setIsLightboxOpen(false)} className="absolute top-6 right-6 p-2 bg-slate-100 rounded-full text-slate-900 hover:bg-slate-200 transition-colors">
             <X className="w-6 h-6" />
           </button>
           <button 
             onClick={(e) => { e.stopPropagation(); setActiveImage(prev => prev === 0 ? images.length - 1 : prev - 1); }} 
-            className="absolute left-6 top-1/2 -translate-y-1/2 p-3 bg-slate-800/80 rounded-full text-white hover:bg-slate-700 transition-colors"
+            className="absolute left-6 top-1/2 -translate-y-1/2 p-3 bg-slate-100/80 rounded-full text-slate-900 hover:bg-slate-200 transition-colors"
           >
             <ChevronLeft className="w-8 h-8" />
           </button>
           <img src={images[activeImage]} alt="Gallery Full" className="max-h-[90vh] max-w-[90vw] object-contain rounded-xl" />
           <button 
             onClick={(e) => { e.stopPropagation(); setActiveImage(prev => (prev + 1) % images.length); }} 
-            className="absolute right-6 top-1/2 -translate-y-1/2 p-3 bg-slate-800/80 rounded-full text-white hover:bg-slate-700 transition-colors"
+            className="absolute right-6 top-1/2 -translate-y-1/2 p-3 bg-slate-100/80 rounded-full text-slate-900 hover:bg-slate-200 transition-colors"
           >
             <ChevronRight className="w-8 h-8" />
           </button>
@@ -132,22 +132,22 @@ const PropertyDetailPage = () => {
 
       {/* Back Button */}
       <div>
-        <Link to="/properties" className="inline-flex items-center space-x-2 text-slate-400 hover:text-amber-400 transition-colors text-sm font-bold">
+        <Link to="/properties" className="inline-flex items-center space-x-2 text-slate-500 hover:text-amber-400 transition-colors text-sm font-bold">
           <ArrowLeft className="w-4 h-4" />
           <span>Back to All Properties</span>
         </Link>
       </div>
 
       {/* Title & Header Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-6">
         <div>
           <div className="flex items-center space-x-3 mb-2">
             <span className="px-3 py-1 rounded-md text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30 uppercase tracking-wider">
               {property.listingType === 'Sale' ? 'Buy' : property.listingType} • {property.propertyType}
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white">{property.title}</h1>
-          <p className="text-sm text-slate-400 flex items-center space-x-1.5 mt-1">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900">{property.title}</h1>
+          <p className="text-sm text-slate-500 flex items-center space-x-1.5 mt-1">
             <MapPin className="w-4 h-4 text-amber-400" />
             <span>{property.address?.street}, {property.address?.suburb}, {property.address?.state} {property.address?.postcode}</span>
           </p>
@@ -155,7 +155,7 @@ const PropertyDetailPage = () => {
 
         {/* Price Tag & Action */}
         <div className="text-left md:text-right space-y-2">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Price Guide</span>
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Price Guide</span>
           <p className="text-3xl sm:text-4xl font-extrabold gold-gradient-text">
             ${property.price ? property.price.toLocaleString() : 'Contact Agent'}
           </p>
@@ -165,7 +165,7 @@ const PropertyDetailPage = () => {
       {/* Gallery Carousel Grid */}
       <div className="space-y-4">
         <div 
-          className="relative aspect-[16/9] md:aspect-[21/9] rounded-3xl overflow-hidden border border-slate-800 bg-slate-900 cursor-pointer group"
+          className="relative aspect-[16/9] md:aspect-[21/9] rounded-3xl overflow-hidden border border-slate-200 bg-white cursor-pointer group"
           onClick={() => setIsLightboxOpen(true)}
         >
           <img
@@ -174,15 +174,15 @@ const PropertyDetailPage = () => {
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
           />
           <div className="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-            <div className="flex items-center space-x-2 px-4 py-2 bg-slate-900/80 rounded-full border border-slate-700">
-              <Maximize className="w-4 h-4 text-white" />
-              <span className="text-xs font-bold text-white uppercase tracking-wider">View Fullscreen</span>
+            <div className="flex items-center space-x-2 px-4 py-2 bg-white/80 rounded-full border border-slate-300">
+              <Maximize className="w-4 h-4 text-slate-900" />
+              <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">View Fullscreen</span>
             </div>
           </div>
           <button
             onClick={(e) => { e.stopPropagation(); toggleSavedProperty(property._id); }}
             className={`absolute top-4 right-4 p-3 rounded-full backdrop-blur-md border ${
-              saved ? 'bg-rose-500 text-white' : 'bg-slate-900/80 text-white border-slate-700'
+              saved ? 'bg-rose-500 text-slate-900' : 'bg-white/80 text-slate-900 border-slate-300'
             }`}
           >
             <Heart className="w-5 h-5 fill-current" />
@@ -196,7 +196,7 @@ const PropertyDetailPage = () => {
               key={idx}
               onClick={() => setActiveImage(idx)}
               className={`w-24 h-16 rounded-xl overflow-hidden border-2 flex-shrink-0 transition-all ${
-                activeImage === idx ? 'border-amber-500 scale-105' : 'border-slate-800 opacity-60'
+                activeImage === idx ? 'border-amber-500 scale-105' : 'border-slate-200 opacity-60'
               }`}
             >
               <img src={img} alt="Thumb" className="w-full h-full object-cover" />
@@ -206,31 +206,31 @@ const PropertyDetailPage = () => {
       </div>
 
       {/* Main Specs Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 p-6 glass-panel rounded-2xl border border-slate-800 text-center">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 p-6 glass-panel rounded-2xl border border-slate-200 text-center">
         <div>
           <Bed className="w-6 h-6 text-amber-400 mx-auto mb-1" />
-          <span className="text-lg font-bold text-white block">{property.bedrooms}</span>
-          <span className="text-xs text-slate-400">Bedrooms</span>
+          <span className="text-lg font-bold text-slate-900 block">{property.bedrooms}</span>
+          <span className="text-xs text-slate-500">Bedrooms</span>
         </div>
         <div>
           <Bath className="w-6 h-6 text-amber-400 mx-auto mb-1" />
-          <span className="text-lg font-bold text-white block">{property.bathrooms}</span>
-          <span className="text-xs text-slate-400">Bathrooms</span>
+          <span className="text-lg font-bold text-slate-900 block">{property.bathrooms}</span>
+          <span className="text-xs text-slate-500">Bathrooms</span>
         </div>
         <div>
           <Car className="w-6 h-6 text-amber-400 mx-auto mb-1" />
-          <span className="text-lg font-bold text-white block">{property.parkingSpaces}</span>
-          <span className="text-xs text-slate-400">Parking Spaces</span>
+          <span className="text-lg font-bold text-slate-900 block">{property.parkingSpaces}</span>
+          <span className="text-xs text-slate-500">Parking Spaces</span>
         </div>
         <div>
           <Map className="w-6 h-6 text-amber-400 mx-auto mb-1" />
-          <span className="text-lg font-bold text-white block">{property.landArea || 450}m²</span>
-          <span className="text-xs text-slate-400">Land Area</span>
+          <span className="text-lg font-bold text-slate-900 block">{property.landArea || 450}m²</span>
+          <span className="text-xs text-slate-500">Land Area</span>
         </div>
         <div>
           <Calendar className="w-6 h-6 text-amber-400 mx-auto mb-1" />
-          <span className="text-lg font-bold text-white block">{property.yearBuilt || 2022}</span>
-          <span className="text-xs text-slate-400">Year Built</span>
+          <span className="text-lg font-bold text-slate-900 block">{property.yearBuilt || 2022}</span>
+          <span className="text-xs text-slate-500">Year Built</span>
         </div>
       </div>
 
@@ -242,75 +242,75 @@ const PropertyDetailPage = () => {
           
           {/* Inspection Times Section */}
           <div className="glass-panel p-6 rounded-2xl border border-emerald-500/30 bg-emerald-950/10 space-y-4">
-            <h2 className="text-xl font-bold text-white flex items-center space-x-2">
+            <h2 className="text-xl font-bold text-slate-900 flex items-center space-x-2">
               <Clock className="w-5 h-5 text-emerald-400" />
               <span>Inspection Times</span>
             </h2>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-900 rounded-xl border border-slate-800">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white rounded-xl border border-slate-200">
                <div>
-                 <p className="text-sm font-bold text-white">Saturday, 21 Aug</p>
-                 <p className="text-xs text-slate-400">10:00 AM - 10:30 AM</p>
+                 <p className="text-sm font-bold text-slate-900">Saturday, 21 Aug</p>
+                 <p className="text-xs text-slate-500">10:00 AM - 10:30 AM</p>
                </div>
-               <button className="mt-3 sm:mt-0 px-4 py-2 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold hover:bg-emerald-500 hover:text-white transition-colors">
+               <button className="mt-3 sm:mt-0 px-4 py-2 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold hover:bg-emerald-500 hover:text-slate-900 transition-colors">
                  Add to Calendar
                </button>
             </div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-900 rounded-xl border border-slate-800">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white rounded-xl border border-slate-200">
                <div>
-                 <p className="text-sm font-bold text-white">Wednesday, 25 Aug</p>
-                 <p className="text-xs text-slate-400">5:00 PM - 5:30 PM</p>
+                 <p className="text-sm font-bold text-slate-900">Wednesday, 25 Aug</p>
+                 <p className="text-xs text-slate-500">5:00 PM - 5:30 PM</p>
                </div>
-               <button className="mt-3 sm:mt-0 px-4 py-2 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold hover:bg-emerald-500 hover:text-white transition-colors">
+               <button className="mt-3 sm:mt-0 px-4 py-2 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold hover:bg-emerald-500 hover:text-slate-900 transition-colors">
                  Add to Calendar
                </button>
             </div>
           </div>
 
           {/* Description */}
-          <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-4">
-            <h2 className="text-2xl font-bold text-white">About the Property</h2>
-            <div className="text-slate-300 leading-relaxed space-y-4 text-sm sm:text-base whitespace-pre-wrap">
+          <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-200 space-y-4">
+            <h2 className="text-2xl font-bold text-slate-900">About the Property</h2>
+            <div className="text-slate-600 leading-relaxed space-y-4 text-sm sm:text-base whitespace-pre-wrap">
               {property.description}
             </div>
           </div>
 
           {/* Property Attributes Table */}
-          <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-4">
-            <h2 className="text-2xl font-bold text-white mb-6">Property Details</h2>
+          <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-200 space-y-4">
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">Property Details</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
-              <div className="flex justify-between py-2 border-b border-slate-800">
-                <span className="text-sm text-slate-400">Property Type</span>
-                <span className="text-sm font-bold text-white">{property.propertyType}</span>
+              <div className="flex justify-between py-2 border-b border-slate-200">
+                <span className="text-sm text-slate-500">Property Type</span>
+                <span className="text-sm font-bold text-slate-900">{property.propertyType}</span>
               </div>
-              <div className="flex justify-between py-2 border-b border-slate-800">
-                <span className="text-sm text-slate-400">Listing Type</span>
-                <span className="text-sm font-bold text-white">{property.listingType === 'Sale' ? 'Buy' : property.listingType}</span>
+              <div className="flex justify-between py-2 border-b border-slate-200">
+                <span className="text-sm text-slate-500">Listing Type</span>
+                <span className="text-sm font-bold text-slate-900">{property.listingType === 'Sale' ? 'Buy' : property.listingType}</span>
               </div>
-              <div className="flex justify-between py-2 border-b border-slate-800">
-                <span className="text-sm text-slate-400">Land Size</span>
-                <span className="text-sm font-bold text-white">{property.landArea || '450'} m²</span>
+              <div className="flex justify-between py-2 border-b border-slate-200">
+                <span className="text-sm text-slate-500">Land Size</span>
+                <span className="text-sm font-bold text-slate-900">{property.landArea || '450'} m²</span>
               </div>
-              <div className="flex justify-between py-2 border-b border-slate-800">
-                <span className="text-sm text-slate-400">Council Rates</span>
-                <span className="text-sm font-bold text-white">$450 / quarter (approx)</span>
+              <div className="flex justify-between py-2 border-b border-slate-200">
+                <span className="text-sm text-slate-500">Council Rates</span>
+                <span className="text-sm font-bold text-slate-900">$450 / quarter (approx)</span>
               </div>
-              <div className="flex justify-between py-2 border-b border-slate-800">
-                <span className="text-sm text-slate-400">Water Rates</span>
-                <span className="text-sm font-bold text-white">$180 / quarter (approx)</span>
+              <div className="flex justify-between py-2 border-b border-slate-200">
+                <span className="text-sm text-slate-500">Water Rates</span>
+                <span className="text-sm font-bold text-slate-900">$180 / quarter (approx)</span>
               </div>
-              <div className="flex justify-between py-2 border-b border-slate-800">
-                <span className="text-sm text-slate-400">Year Built</span>
-                <span className="text-sm font-bold text-white">{property.yearBuilt || 2022}</span>
+              <div className="flex justify-between py-2 border-b border-slate-200">
+                <span className="text-sm text-slate-500">Year Built</span>
+                <span className="text-sm font-bold text-slate-900">{property.yearBuilt || 2022}</span>
               </div>
             </div>
           </div>
 
           {/* Features */}
-          <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-6">
-            <h2 className="text-2xl font-bold text-white">Features & Amenities</h2>
+          <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-200 space-y-6">
+            <h2 className="text-2xl font-bold text-slate-900">Features & Amenities</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               {property.features?.map((feature, i) => (
-                <div key={i} className="flex items-center space-x-2 text-slate-300">
+                <div key={i} className="flex items-center space-x-2 text-slate-600">
                   <Check className="w-5 h-5 text-amber-400" />
                   <span className="text-sm">{feature}</span>
                 </div>
@@ -319,22 +319,22 @@ const PropertyDetailPage = () => {
           </div>
 
           {/* Nearby Schools */}
-          <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-6">
-             <h2 className="text-2xl font-bold text-white flex items-center space-x-2">
+          <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-200 space-y-6">
+             <h2 className="text-2xl font-bold text-slate-900 flex items-center space-x-2">
                <School className="w-6 h-6 text-amber-400" />
                <span>Nearby Schools</span>
              </h2>
              <div className="space-y-3">
                {NEARBY_SCHOOLS.map((school, i) => (
-                 <div key={i} className="flex items-center justify-between p-4 bg-slate-900 rounded-xl border border-slate-800">
+                 <div key={i} className="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-200">
                    <div>
-                     <p className="text-sm font-bold text-white">{school.name}</p>
-                     <p className="text-[11px] text-slate-400">{school.type}</p>
+                     <p className="text-sm font-bold text-slate-900">{school.name}</p>
+                     <p className="text-[11px] text-slate-500">{school.type}</p>
                    </div>
                    <div className="text-right">
-                     <p className="text-sm font-bold text-white">{school.distance}</p>
+                     <p className="text-sm font-bold text-slate-900">{school.distance}</p>
                      <div className="flex items-center justify-end space-x-1 mt-1">
-                       <span className="text-[10px] text-slate-400">{school.rating}/5</span>
+                       <span className="text-[10px] text-slate-500">{school.rating}/5</span>
                      </div>
                    </div>
                  </div>
@@ -349,12 +349,12 @@ const PropertyDetailPage = () => {
           
           <div className="sticky top-24 space-y-6">
             {/* Agent Enquiry Form (Inline) */}
-            <div className="glass-panel p-6 rounded-3xl border border-slate-800 space-y-6">
+            <div className="glass-panel p-6 rounded-3xl border border-slate-200 space-y-6">
               <div className="text-center">
                 <div className="w-20 h-20 mx-auto rounded-full border-2 border-amber-500 overflow-hidden mb-3">
                   <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=200" alt="Agent" className="w-full h-full object-cover" />
                 </div>
-                <h3 className="text-lg font-bold text-white">Alexander Prestige</h3>
+                <h3 className="text-lg font-bold text-slate-900">Alexander Prestige</h3>
                 <p className="text-xs text-amber-400">Lead Sales Agent</p>
               </div>
 
@@ -362,17 +362,17 @@ const PropertyDetailPage = () => {
                 <button onClick={() => setIsChatOpen(true)} className="flex-1 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors">
                   <MessageSquare className="w-4 h-4" /> Message
                 </button>
-                <button className="flex-1 py-3 bg-slate-900 border border-slate-700 hover:border-amber-500 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors">
+                <button className="flex-1 py-3 bg-white border border-slate-300 hover:border-amber-500 text-slate-900 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors">
                   <Phone className="w-4 h-4" /> Call
                 </button>
               </div>
 
-              <form className="space-y-3 pt-4 border-t border-slate-800" onSubmit={e => { e.preventDefault(); alert('Enquiry sent!'); }}>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Enquire about this property</p>
-                <input type="text" placeholder="Full Name" className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-amber-500" required />
-                <input type="email" placeholder="Email Address" className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-amber-500" required />
-                <input type="tel" placeholder="Phone Number" className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-amber-500" required />
-                <textarea placeholder="I am interested in this property..." rows="3" className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-amber-500 resize-none" required></textarea>
+              <form className="space-y-3 pt-4 border-t border-slate-200" onSubmit={e => { e.preventDefault(); alert('Enquiry sent!'); }}>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Enquire about this property</p>
+                <input type="text" placeholder="Full Name" className="w-full px-4 py-3 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-amber-500" required />
+                <input type="email" placeholder="Email Address" className="w-full px-4 py-3 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-amber-500" required />
+                <input type="tel" placeholder="Phone Number" className="w-full px-4 py-3 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-amber-500" required />
+                <textarea placeholder="I am interested in this property..." rows="3" className="w-full px-4 py-3 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-amber-500 resize-none" required></textarea>
                 <button type="submit" className="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold rounded-xl text-sm transition-all shadow-lg shadow-amber-500/20">
                   Send Enquiry
                 </button>
@@ -380,29 +380,29 @@ const PropertyDetailPage = () => {
             </div>
 
             {/* Suburb Profile Widget */}
-            <div className="glass-panel p-6 rounded-3xl border border-slate-800 space-y-4">
+            <div className="glass-panel p-6 rounded-3xl border border-slate-200 space-y-4">
              <div className="flex justify-between items-center">
-               <h3 className="text-lg font-bold text-white">Suburb Insights</h3>
+               <h3 className="text-lg font-bold text-slate-900">Suburb Insights</h3>
                <Link to={`/suburbs/${encodeURIComponent(property.address?.suburb)}`} className="text-xs font-bold text-amber-400 hover:text-amber-300">
                  Full Profile →
                </Link>
              </div>
-             <p className="text-sm font-bold text-white">{property.address?.suburb}</p>
+             <p className="text-sm font-bold text-slate-900">{property.address?.suburb}</p>
              <div className="space-y-3 pt-2">
                <div className="flex justify-between text-sm">
-                 <span className="text-slate-400">Median House Price</span>
-                 <span className="font-bold text-white">$1.85M</span>
+                 <span className="text-slate-500">Median House Price</span>
+                 <span className="font-bold text-slate-900">$1.85M</span>
                </div>
                <div className="flex justify-between text-sm">
-                 <span className="text-slate-400">Annual Growth</span>
+                 <span className="text-slate-500">Annual Growth</span>
                  <span className="font-bold text-emerald-400 flex items-center space-x-1">
                    <TrendingUp className="w-3 h-3" />
                    <span>+12.4%</span>
                  </span>
                </div>
                <div className="flex justify-between text-sm">
-                 <span className="text-slate-400">Avg. Days on Market</span>
-                 <span className="font-bold text-white">41 Days</span>
+                 <span className="text-slate-500">Avg. Days on Market</span>
+                 <span className="font-bold text-slate-900">41 Days</span>
                </div>
              </div>
              </div>
@@ -413,8 +413,8 @@ const PropertyDetailPage = () => {
 
       {/* Similar Properties */}
       {similarProperties.length > 0 && (
-        <div className="space-y-6 pt-10 border-t border-slate-800">
-          <h2 className="text-2xl font-bold text-white">Similar Properties You May Like</h2>
+        <div className="space-y-6 pt-10 border-t border-slate-200">
+          <h2 className="text-2xl font-bold text-slate-900">Similar Properties You May Like</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {similarProperties.map(p => (
               <PropertyCard key={p._id} property={p} />

@@ -64,17 +64,17 @@ const ForgotPasswordPage = () => {
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md glass-panel p-8 rounded-3xl border border-slate-800 space-y-6 shadow-2xl">
-        <div className="flex items-center justify-between border-b border-slate-800/80 pb-4">
+      <div className="w-full max-w-md glass-panel p-8 rounded-3xl border border-slate-200 space-y-6 shadow-2xl">
+        <div className="flex items-center justify-between border-b border-slate-200/80 pb-4">
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="inline-flex items-center space-x-1.5 text-xs font-bold text-slate-400 hover:text-amber-400 transition-colors"
+            className="inline-flex items-center space-x-1.5 text-xs font-bold text-slate-500 hover:text-amber-400 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back</span>
           </button>
-          <Link to="/" className="text-xs font-bold text-slate-400 hover:text-amber-400 transition-colors">
+          <Link to="/" className="text-xs font-bold text-slate-500 hover:text-amber-400 transition-colors">
             Back to Home
           </Link>
         </div>
@@ -83,12 +83,12 @@ const ForgotPasswordPage = () => {
           <div className="w-12 h-12 rounded-2xl gold-gradient-bg flex items-center justify-center mx-auto shadow-lg shadow-amber-500/20">
             <Building2 className="w-6 h-6 text-slate-950 font-bold" />
           </div>
-          <h2 className="text-2xl font-extrabold text-white">
-            {step === 1 ? 'Login via OTP' : 'Verify OTP'}
+          <h2 className="text-2xl font-extrabold text-slate-900">
+            {step === 1 ? 'Forgot Password / OTP Login' : 'Verify OTP'}
           </h2>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-500">
             {step === 1 
-              ? "Enter your email and we'll send you a 6-digit code to log in."
+              ? "Enter your email to receive a 6-digit login or password reset code."
               : `Enter the 6-digit code sent to ${email}`
             }
           </p>
@@ -108,7 +108,7 @@ const ForgotPasswordPage = () => {
         {step === 1 ? (
           <form onSubmit={handleSendOtp} className="space-y-4">
             <div className="space-y-1 text-xs">
-              <label className="font-bold text-slate-300">Email Address</label>
+              <label className="font-bold text-slate-600">Email Address</label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
                 <input
@@ -116,7 +116,7 @@ const ForgotPasswordPage = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@company.com"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white focus:outline-none focus:border-amber-500"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-amber-500"
                   required
                 />
               </div>
@@ -125,7 +125,7 @@ const ForgotPasswordPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold text-sm hover:from-amber-400 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/20"
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold text-sm hover:from-amber-400 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Sending...' : 'Send OTP'}
             </button>
@@ -133,7 +133,7 @@ const ForgotPasswordPage = () => {
         ) : (
           <form onSubmit={handleVerifyOtp} className="space-y-4">
             <div className="space-y-1 text-xs">
-              <label className="font-bold text-slate-300">6-Digit Code</label>
+              <label className="font-bold text-slate-600">6-Digit Code</label>
               <div className="relative">
                 <KeyRound className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
                 <input
@@ -142,7 +142,7 @@ const ForgotPasswordPage = () => {
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))} // only numbers
                   placeholder="123456"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-center tracking-[0.5em] text-lg font-bold text-white focus:outline-none focus:border-amber-500"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-center tracking-[0.5em] text-lg font-bold text-slate-900 focus:outline-none focus:border-amber-500"
                   required
                 />
               </div>
@@ -164,7 +164,7 @@ const ForgotPasswordPage = () => {
                 setMessage('');
                 setError('');
               }}
-              className="w-full py-2 text-xs text-slate-400 hover:text-white transition-colors"
+              className="w-full py-2 text-xs text-slate-500 hover:text-slate-900 transition-colors"
             >
               Use a different email
             </button>

@@ -193,7 +193,7 @@ const AIChatbot = ({ isOpen, onClose }) => {
             boldParts.push(el.substring(bLastIdx, bMatch.index));
           }
           boldParts.push(
-            <strong key={bMatch.index} className="font-extrabold text-white">
+            <strong key={bMatch.index} className="font-extrabold text-slate-900">
               {bMatch[1]}
             </strong>
           );
@@ -240,24 +240,24 @@ const AIChatbot = ({ isOpen, onClose }) => {
             const dataRows = rows.slice(1).map(r => r.split('|').slice(1, -1).map(c => c.trim()));
 
             blocks.push(
-              <div key={`table-${blocks.length}`} className="my-2.5 overflow-x-auto rounded-xl border border-amber-500/30 bg-slate-950/90 shadow-xl max-w-full">
+              <div key={`table-${blocks.length}`} className="my-2.5 overflow-x-auto rounded-xl border border-amber-500/30 bg-slate-50/90 shadow-xl max-w-full">
                 <table className="w-full text-left text-[11px] border-collapse">
-                  <thead className="bg-slate-900 border-b border-amber-500/30 text-amber-400 font-extrabold uppercase tracking-wider">
+                  <thead className="bg-white border-b border-amber-500/30 text-amber-400 font-extrabold uppercase tracking-wider">
                     <tr>
                       {headerCells.map((h, hIdx) => (
-                        <th key={hIdx} className="px-2.5 py-1.5 border-r border-slate-800/80 last:border-0 whitespace-nowrap">
+                        <th key={hIdx} className="px-2.5 py-1.5 border-r border-slate-200/80 last:border-0 whitespace-nowrap">
                           {renderInlineMarkdown(h)}
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/60 text-slate-200">
+                  <tbody className="divide-y divide-slate-800/60 text-slate-700">
                     {dataRows.map((row, rIdx) => {
                       const fullRowText = row.join(' ');
                       return (
-                        <tr key={rIdx} className="hover:bg-slate-900/60 transition-colors">
+                        <tr key={rIdx} className="hover:bg-white/60 transition-colors">
                           {row.map((cell, cIdx) => (
-                            <td key={cIdx} className="px-2.5 py-1.5 border-r border-slate-800/60 last:border-0 whitespace-normal">
+                            <td key={cIdx} className="px-2.5 py-1.5 border-r border-slate-200/60 last:border-0 whitespace-normal">
                               {renderInlineMarkdown(cell, fullRowText)}
                             </td>
                           ))}
@@ -316,7 +316,7 @@ const AIChatbot = ({ isOpen, onClose }) => {
                 <Bot className="w-5 h-5 text-cyan-400" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-white flex items-center space-x-1.5">
+                <h3 className="text-sm font-bold text-slate-900 flex items-center space-x-1.5">
                   <span>Aura AI</span>
                   <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
                 </h3>
@@ -330,13 +330,13 @@ const AIChatbot = ({ isOpen, onClose }) => {
               <button
                 onClick={handleReset}
                 title="Clear chat"
-                className="p-1.5 rounded-lg text-slate-400 hover:text-cyan-400 hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-lg text-slate-500 hover:text-cyan-400 hover:bg-slate-100 transition-colors"
               >
                 <RefreshCw className="w-4 h-4" />
               </button>
               <button
                 onClick={onClose}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -363,7 +363,7 @@ const AIChatbot = ({ isOpen, onClose }) => {
                 <div className={`p-3 rounded-2xl max-w-[82%] leading-relaxed ${
                   msg.sender === 'user'
                     ? 'bg-amber-500 text-slate-950 font-semibold rounded-tr-none'
-                    : 'bg-slate-900 border border-slate-800 text-slate-200 rounded-tl-none'
+                    : 'bg-white border border-slate-200 text-slate-700 rounded-tl-none'
                 }`}>
                   {renderText(msg.text)}
                 </div>
@@ -376,7 +376,7 @@ const AIChatbot = ({ isOpen, onClose }) => {
                 <div className="w-7 h-7 rounded-lg bg-cyan-900/60 border border-cyan-500/30 flex items-center justify-center flex-shrink-0">
                   <Bot className="w-4 h-4 text-cyan-300" />
                 </div>
-                <div className="bg-slate-900 border border-slate-800 rounded-2xl rounded-tl-none p-3 flex items-center gap-1.5">
+                <div className="bg-white border border-slate-200 rounded-2xl rounded-tl-none p-3 flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: '0ms' }} />
                   <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: '150ms' }} />
                   <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -388,13 +388,13 @@ const AIChatbot = ({ isOpen, onClose }) => {
           </div>
 
           {/* Quick Prompts */}
-          <div className="px-3 pb-2 border-t border-slate-800/60 pt-2 bg-slate-950/40 flex gap-1.5 overflow-x-auto flex-shrink-0 scrollbar-hide">
+          <div className="px-3 pb-2 border-t border-slate-200/60 pt-2 bg-slate-50/40 flex gap-1.5 overflow-x-auto flex-shrink-0 scrollbar-hide">
             {quickPrompts.map((prompt, i) => (
               <button
                 key={i}
                 onClick={() => handleSend(prompt)}
                 disabled={loading}
-                className="whitespace-nowrap px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-[10px] font-semibold text-slate-300 hover:border-cyan-500 hover:text-cyan-300 transition-colors disabled:opacity-50"
+                className="whitespace-nowrap px-2.5 py-1 rounded-full bg-white border border-slate-200 text-[10px] font-semibold text-slate-600 hover:border-cyan-500 hover:text-cyan-300 transition-colors disabled:opacity-50"
               >
                 {prompt}
               </button>
@@ -404,7 +404,7 @@ const AIChatbot = ({ isOpen, onClose }) => {
           {/* Input */}
           <form
             onSubmit={(e) => { e.preventDefault(); handleSend(); }}
-            className="p-3 bg-slate-900 border-t border-slate-800 flex items-center gap-2 flex-shrink-0"
+            className="p-3 bg-white border-t border-slate-200 flex items-center gap-2 flex-shrink-0"
           >
             <input
               type="text"
@@ -412,7 +412,7 @@ const AIChatbot = ({ isOpen, onClose }) => {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask Aura AI any real estate question..."
               disabled={loading}
-              className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-cyan-500 transition-colors placeholder-slate-600 disabled:opacity-50"
+              className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-cyan-500 transition-colors placeholder-slate-600 disabled:opacity-50"
             />
             <button
               type="submit"

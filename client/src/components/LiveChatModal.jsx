@@ -262,7 +262,7 @@ const LiveChatModal = ({ agent, property, isOpen, onClose }) => {
         parts.push(text.substring(lastIndex, match.index));
       }
       parts.push(
-        <strong key={`${keyPrefix}-b-${match.index}`} className="font-bold text-white">
+        <strong key={`${keyPrefix}-b-${match.index}`} className="font-bold text-slate-900">
           {match[1]}
         </strong>
       );
@@ -277,11 +277,11 @@ const LiveChatModal = ({ agent, property, isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-      <div className="glass-panel w-full max-w-lg rounded-2xl border border-slate-800 shadow-2xl overflow-hidden flex flex-col h-[560px]">
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-slate-50/80 backdrop-blur-sm">
+      <div className="glass-panel w-full max-w-lg rounded-2xl border border-slate-200 shadow-2xl overflow-hidden flex flex-col h-[560px]">
         
         {/* Header */}
-        <div className="p-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+        <div className="p-4 bg-white border-b border-slate-200 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="relative">
               <img
@@ -291,7 +291,7 @@ const LiveChatModal = ({ agent, property, isOpen, onClose }) => {
               />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-white flex items-center space-x-1.5">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center space-x-1.5">
                 <span>{recipient.name}</span>
                 <span className="px-1.5 py-0.5 rounded text-[9px] font-black bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
                   24/7 SUPPORT ACTIVE
@@ -302,7 +302,7 @@ const LiveChatModal = ({ agent, property, isOpen, onClose }) => {
               </div>
             </div>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800">
+          <button onClick={onClose} className="text-slate-500 hover:text-slate-900 p-1 rounded-lg hover:bg-slate-100">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -314,8 +314,8 @@ const LiveChatModal = ({ agent, property, isOpen, onClose }) => {
               <div className="w-12 h-12 rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mx-auto text-cyan-400">
                 <Sparkles className="w-6 h-6 animate-pulse text-amber-400" />
               </div>
-              <p className="text-slate-300 font-semibold">Start chat with {recipient.name}</p>
-              <p className="text-[11px] text-slate-400 max-w-xs mx-auto">
+              <p className="text-slate-600 font-semibold">Start chat with {recipient.name}</p>
+              <p className="text-[11px] text-slate-500 max-w-xs mx-auto">
                 Get instant responses regarding property price, inspection times, recommendations, and buying steps!
               </p>
             </div>
@@ -342,14 +342,14 @@ const LiveChatModal = ({ agent, property, isOpen, onClose }) => {
                   <div className={`p-3 rounded-2xl max-w-[85%] leading-relaxed shadow-lg ${
                     isMe
                       ? 'bg-amber-500 text-slate-950 font-medium rounded-tr-none shadow-amber-500/10'
-                      : 'bg-slate-900 border border-cyan-500/30 text-slate-200 rounded-tl-none'
+                      : 'bg-white border border-cyan-500/30 text-slate-700 rounded-tl-none'
                   }`}>
                     <div className="flex items-center justify-between space-x-2 mb-1 pb-1 border-b border-black/10 text-[9px] font-black tracking-wider">
                       <span className={isMe ? 'text-slate-950 font-extrabold' : 'text-cyan-400 flex items-center space-x-1'}>
                         <span>{senderBadge}</span>
                       </span>
                       {!isMe && (
-                        <span className="text-slate-400">
+                        <span className="text-slate-500">
                           {recipient.name}
                         </span>
                       )}
@@ -383,7 +383,7 @@ const LiveChatModal = ({ agent, property, isOpen, onClose }) => {
 
           {isTyping && !agentJoined && (
             <div className="flex justify-start">
-              <div className="p-3 rounded-2xl bg-slate-900 border border-cyan-500/30 text-slate-300 rounded-tl-none flex items-center space-x-2">
+              <div className="p-3 rounded-2xl bg-white border border-cyan-500/30 text-slate-600 rounded-tl-none flex items-center space-x-2">
                 <Loader2 className="w-3.5 h-3.5 text-cyan-400 animate-spin" />
                 <span className="text-[11px] font-medium text-cyan-300">{recipient.name} is typing...</span>
                 <div className="flex space-x-1 items-center">
@@ -399,13 +399,13 @@ const LiveChatModal = ({ agent, property, isOpen, onClose }) => {
         </div>
 
         {/* Input */}
-        <form onSubmit={handleFormSubmit} className="p-3 bg-slate-900 border-t border-slate-800 flex items-center space-x-2">
+        <form onSubmit={handleFormSubmit} className="p-3 bg-white border-t border-slate-200 flex items-center space-x-2">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={`Ask ${recipient.name}...`}
-            className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-amber-500"
+            className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-amber-500"
           />
           <button type="submit" className="p-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold hover:bg-amber-400">
             <Send className="w-4 h-4" />

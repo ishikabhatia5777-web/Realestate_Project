@@ -68,12 +68,12 @@ const SoldPage = () => {
           <DollarSign className="w-4 h-4" />
           <span>Property Sales History</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-white">Recently Sold Properties</h1>
-        <p className="text-slate-400 text-sm">Search recent property sales and auction results across Australia's most prestigious suburbs.</p>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900">Recently Sold Properties</h1>
+        <p className="text-slate-500 text-sm">Search recent property sales and auction results across Australia's most prestigious suburbs.</p>
       </div>
 
       {/* Search Bar */}
-      <form onSubmit={handleSearch} className="glass-panel p-5 rounded-2xl border border-slate-800">
+      <form onSubmit={handleSearch} className="glass-panel p-5 rounded-2xl border border-slate-200">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="flex-1 relative">
             <MapPin className="w-4 h-4 text-amber-400 absolute left-3.5 top-3.5" />
@@ -82,13 +82,13 @@ const SoldPage = () => {
               value={suburbQuery}
               onChange={(e) => setSuburbQuery(e.target.value)}
               placeholder="Search suburb, street or postcode..."
-              className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white focus:outline-none focus:border-amber-500 transition-colors"
+              className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-sm text-slate-900 focus:outline-none focus:border-amber-500 transition-colors"
             />
           </div>
           <select
             value={sortBy}
             onChange={(e) => handleSort(e.target.value)}
-            className="px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white focus:outline-none focus:border-amber-500 transition-colors"
+            className="px-4 py-3 rounded-xl bg-white border border-slate-200 text-sm text-slate-900 focus:outline-none focus:border-amber-500 transition-colors"
           >
             <option value="date_desc">Most Recent First</option>
             <option value="price_desc">Highest Price First</option>
@@ -104,7 +104,7 @@ const SoldPage = () => {
         </div>
 
         {/* Popular suburb pills */}
-        <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-slate-800">
+        <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-slate-200">
           <span className="text-xs text-slate-500 font-semibold self-center">Popular:</span>
           {POPULAR_SOLD_SUBURBS.map(s => (
             <button
@@ -112,7 +112,7 @@ const SoldPage = () => {
               type="button"
               onClick={() => { setSuburbQuery(s); setSearchParams({ suburb: s }); filterResults(s, sortBy); }}
               className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
-                suburbQuery === s ? 'bg-amber-500/20 text-amber-400 border-amber-500/60' : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-600 hover:text-white'
+                suburbQuery === s ? 'bg-amber-500/20 text-amber-400 border-amber-500/60' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-600 hover:text-slate-900'
               }`}
             >
               {s}
@@ -123,17 +123,17 @@ const SoldPage = () => {
 
       {/* Stats summary */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="glass-panel p-4 rounded-2xl border border-slate-800 text-center">
-          <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Properties Found</p>
-          <p className="text-3xl font-extrabold text-white">{filtered.length}</p>
+        <div className="glass-panel p-4 rounded-2xl border border-slate-200 text-center">
+          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Properties Found</p>
+          <p className="text-3xl font-extrabold text-slate-900">{filtered.length}</p>
         </div>
-        <div className="glass-panel p-4 rounded-2xl border border-slate-800 text-center">
-          <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Total Sales Value</p>
+        <div className="glass-panel p-4 rounded-2xl border border-slate-200 text-center">
+          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Total Sales Value</p>
           <p className="text-3xl font-extrabold text-amber-400">${(totalSoldValue / 1000000).toFixed(1)}M</p>
         </div>
-        <div className="glass-panel p-4 rounded-2xl border border-slate-800 text-center">
-          <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Avg. Days on Market</p>
-          <p className="text-3xl font-extrabold text-white">
+        <div className="glass-panel p-4 rounded-2xl border border-slate-200 text-center">
+          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Avg. Days on Market</p>
+          <p className="text-3xl font-extrabold text-slate-900">
             {filtered.length > 0 ? Math.round(filtered.reduce((a, p) => a + p.daysOnMarket, 0) / filtered.length) : 0}
           </p>
         </div>
@@ -141,10 +141,10 @@ const SoldPage = () => {
 
       {/* Results */}
       {filtered.length === 0 ? (
-        <div className="py-16 text-center glass-panel rounded-2xl border border-slate-800 space-y-4">
+        <div className="py-16 text-center glass-panel rounded-2xl border border-slate-200 space-y-4">
           <Search className="w-12 h-12 mx-auto text-slate-600" />
-          <h3 className="text-xl font-bold text-white">No sold properties found</h3>
-          <p className="text-sm text-slate-400">Try searching a different suburb or clear your filter.</p>
+          <h3 className="text-xl font-bold text-slate-900">No sold properties found</h3>
+          <p className="text-sm text-slate-500">Try searching a different suburb or clear your filter.</p>
           <button onClick={() => { setSuburbQuery(''); setSearchParams({}); filterResults('', sortBy); }}
             className="px-6 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs">
             Clear Filter
@@ -152,16 +152,16 @@ const SoldPage = () => {
         </div>
       ) : (
         <div className="space-y-4">
-          <p className="text-xs text-slate-400 font-semibold">
+          <p className="text-xs text-slate-500 font-semibold">
             Showing {filtered.length} sold properties{suburbQuery ? ` in "${suburbQuery}"` : ''}
           </p>
           <div className="space-y-4">
             {filtered.map((property) => (
-              <div key={property.id} className="glass-panel rounded-2xl border border-slate-800 overflow-hidden flex flex-col sm:flex-row hover:border-amber-500/30 transition-colors">
+              <div key={property.id} className="glass-panel rounded-2xl border border-slate-200 overflow-hidden flex flex-col sm:flex-row hover:border-amber-500/30 transition-colors">
                 <div className="relative w-full sm:w-56 h-48 sm:h-auto flex-shrink-0">
                   <img src={property.image} alt={property.title} className="w-full h-full object-cover" />
                   <div className="absolute top-3 left-3">
-                    <span className="px-3 py-1 rounded-md text-xs font-bold bg-slate-900/90 text-slate-300 border border-slate-700">
+                    <span className="px-3 py-1 rounded-md text-xs font-bold bg-white/90 text-slate-600 border border-slate-300">
                       SOLD
                     </span>
                   </div>
@@ -169,39 +169,39 @@ const SoldPage = () => {
 
                 <div className="flex-1 p-5 space-y-3">
                   <div>
-                    <h3 className="text-lg font-bold text-white">{property.title}</h3>
-                    <p className="text-xs text-slate-400 flex items-center space-x-1 mt-0.5">
+                    <h3 className="text-lg font-bold text-slate-900">{property.title}</h3>
+                    <p className="text-xs text-slate-500 flex items-center space-x-1 mt-0.5">
                       <MapPin className="w-3 h-3 text-amber-400" />
                       <span>{property.address}</span>
                     </p>
                   </div>
 
-                  <div className="flex items-center space-x-4 text-xs text-slate-400">
+                  <div className="flex items-center space-x-4 text-xs text-slate-500">
                     <span>{property.bedrooms} bed</span>
                     <span>{property.bathrooms} bath</span>
                     <span>{property.parking} car</span>
                     <span>{property.landArea}m² land</span>
                   </div>
 
-                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-800">
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-200">
                     <div>
-                      <p className="text-xs text-slate-400">Sold Price</p>
-                      <p className="text-2xl font-extrabold text-white">${property.soldPrice.toLocaleString()}</p>
+                      <p className="text-xs text-slate-500">Sold Price</p>
+                      <p className="text-2xl font-extrabold text-slate-900">${property.soldPrice.toLocaleString()}</p>
                       <p className="text-[11px] text-slate-500">${property.pricePerSqm.toLocaleString()}/m²</p>
                     </div>
                     <div className="text-right">
-                      <div className="flex items-center space-x-1.5 text-xs text-slate-400 mb-1">
+                      <div className="flex items-center space-x-1.5 text-xs text-slate-500 mb-1">
                         <Calendar className="w-3.5 h-3.5" />
                         <span>Sold {new Date(property.soldDate).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                       </div>
-                      <div className="flex items-center space-x-1.5 text-xs text-slate-400">
+                      <div className="flex items-center space-x-1.5 text-xs text-slate-500">
                         <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
                         <span>{property.daysOnMarket} days on market</span>
                       </div>
                     </div>
                     <Link
                       to={`/suburbs/${encodeURIComponent(property.suburb)}`}
-                      className="flex items-center space-x-1.5 px-4 py-2 rounded-xl border border-slate-700 text-xs font-bold text-slate-300 hover:border-amber-500 hover:text-amber-400 transition-colors"
+                      className="flex items-center space-x-1.5 px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-600 hover:border-amber-500 hover:text-amber-400 transition-colors"
                     >
                       <span>View Suburb</span>
                       <ChevronRight className="w-3.5 h-3.5" />

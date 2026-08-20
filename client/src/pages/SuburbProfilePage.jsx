@@ -54,13 +54,13 @@ const SuburbProfilePage = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
 
       {/* Back */}
-      <Link to="/properties" className="inline-flex items-center space-x-2 text-slate-400 hover:text-amber-400 transition-colors text-sm font-bold">
+      <Link to="/properties" className="inline-flex items-center space-x-2 text-slate-500 hover:text-amber-400 transition-colors text-sm font-bold">
         <ArrowLeft className="w-4 h-4" />
         <span>Back to Properties</span>
       </Link>
 
       {/* Hero Header */}
-      <div className="glass-panel rounded-3xl border border-slate-800 overflow-hidden">
+      <div className="glass-panel rounded-3xl border border-slate-200 overflow-hidden">
         <div className="relative h-48 sm:h-64 bg-gradient-to-br from-slate-800 to-slate-900 flex items-end">
           <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&q=80&w=1200)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
           <div className="relative z-10 p-8">
@@ -68,32 +68,32 @@ const SuburbProfilePage = () => {
               <MapPin className="w-4 h-4" />
               <span>Suburb Profile</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl font-extrabold text-white">{suburb}</h1>
+            <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900">{suburb}</h1>
           </div>
         </div>
 
         {/* Stats Bar */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-slate-800/60 border-t border-slate-800">
-          <div className="bg-slate-900/80 p-5 text-center">
-            <p className="text-[11px] text-slate-400 uppercase tracking-wider mb-1">Median House Price</p>
-            <p className="text-2xl font-extrabold text-white">{fmt(stats.medianHouse)}</p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-slate-100/60 border-t border-slate-200">
+          <div className="bg-white/80 p-5 text-center">
+            <p className="text-[11px] text-slate-500 uppercase tracking-wider mb-1">Median House Price</p>
+            <p className="text-2xl font-extrabold text-slate-900">{fmt(stats.medianHouse)}</p>
           </div>
-          <div className="bg-slate-900/80 p-5 text-center">
-            <p className="text-[11px] text-slate-400 uppercase tracking-wider mb-1">Median Unit Price</p>
-            <p className="text-2xl font-extrabold text-white">{fmt(stats.medianUnit)}</p>
+          <div className="bg-white/80 p-5 text-center">
+            <p className="text-[11px] text-slate-500 uppercase tracking-wider mb-1">Median Unit Price</p>
+            <p className="text-2xl font-extrabold text-slate-900">{fmt(stats.medianUnit)}</p>
           </div>
-          <div className="bg-slate-900/80 p-5 text-center">
-            <p className="text-[11px] text-slate-400 uppercase tracking-wider mb-1">Clearance Rate</p>
+          <div className="bg-white/80 p-5 text-center">
+            <p className="text-[11px] text-slate-500 uppercase tracking-wider mb-1">Clearance Rate</p>
             <div className="flex items-center justify-center space-x-1">
-              <p className="text-2xl font-extrabold text-white">{stats.clearanceRate}%</p>
+              <p className="text-2xl font-extrabold text-slate-900">{stats.clearanceRate}%</p>
               {stats.trend === 'up'
                 ? <TrendingUp className="w-5 h-5 text-emerald-400" />
                 : <TrendingDown className="w-5 h-5 text-rose-400" />}
             </div>
           </div>
-          <div className="bg-slate-900/80 p-5 text-center">
-            <p className="text-[11px] text-slate-400 uppercase tracking-wider mb-1">Avg. Days on Market</p>
-            <p className="text-2xl font-extrabold text-white">{stats.daysOnMarket}</p>
+          <div className="bg-white/80 p-5 text-center">
+            <p className="text-[11px] text-slate-500 uppercase tracking-wider mb-1">Avg. Days on Market</p>
+            <p className="text-2xl font-extrabold text-slate-900">{stats.daysOnMarket}</p>
           </div>
         </div>
       </div>
@@ -101,14 +101,14 @@ const SuburbProfilePage = () => {
       {/* Growth + Description */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-3">
-            <h2 className="text-xl font-bold text-white">About {suburb}</h2>
-            <p className="text-slate-300 text-sm leading-relaxed">{stats.description}</p>
+          <div className="glass-panel p-6 rounded-2xl border border-slate-200 space-y-3">
+            <h2 className="text-xl font-bold text-slate-900">About {suburb}</h2>
+            <p className="text-slate-600 text-sm leading-relaxed">{stats.description}</p>
           </div>
 
           {/* Price Growth Card */}
-          <div className="glass-panel p-6 rounded-2xl border border-slate-800">
-            <h2 className="text-xl font-bold text-white mb-4">Annual Price Growth</h2>
+          <div className="glass-panel p-6 rounded-2xl border border-slate-200">
+            <h2 className="text-xl font-bold text-slate-900 mb-4">Annual Price Growth</h2>
             <div className="flex items-center space-x-4">
               <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${stats.trend === 'up' ? 'bg-emerald-500/10 border border-emerald-500/30' : 'bg-rose-500/10 border border-rose-500/30'}`}>
                 {stats.trend === 'up'
@@ -119,29 +119,29 @@ const SuburbProfilePage = () => {
                 <p className={`text-4xl font-extrabold ${stats.trend === 'up' ? 'text-emerald-400' : 'text-rose-400'}`}>
                   {stats.trend === 'up' ? '+' : '-'}{stats.growth}%
                 </p>
-                <p className="text-sm text-slate-400 mt-1">Year-on-year capital growth (2025–2026)</p>
+                <p className="text-sm text-slate-500 mt-1">Year-on-year capital growth (2025–2026)</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Schools Sidebar */}
-        <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
-          <h2 className="text-lg font-bold text-white">Nearby Schools</h2>
+        <div className="glass-panel p-6 rounded-2xl border border-slate-200 space-y-4">
+          <h2 className="text-lg font-bold text-slate-900">Nearby Schools</h2>
           <div className="space-y-3">
             {NEARBY_SCHOOLS.map((school, i) => (
-              <div key={i} className="flex items-start space-x-3 p-3 rounded-xl bg-slate-900 border border-slate-800">
+              <div key={i} className="flex items-start space-x-3 p-3 rounded-xl bg-white border border-slate-200">
                 <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center flex-shrink-0">
                   <Home className="w-4 h-4 text-amber-400" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-bold text-white">{school.name}</p>
-                  <p className="text-[11px] text-slate-400">{school.type} • {school.distance}</p>
+                  <p className="text-sm font-bold text-slate-900">{school.name}</p>
+                  <p className="text-[11px] text-slate-500">{school.type} • {school.distance}</p>
                   <div className="flex items-center space-x-1 mt-1">
                     {[1,2,3,4,5].map(s => (
-                      <div key={s} className={`w-2 h-2 rounded-full ${s <= Math.round(school.rating) ? 'bg-amber-400' : 'bg-slate-700'}`} />
+                      <div key={s} className={`w-2 h-2 rounded-full ${s <= Math.round(school.rating) ? 'bg-amber-400' : 'bg-slate-200'}`} />
                     ))}
-                    <span className="text-[10px] text-slate-400 ml-1">{school.rating}/5</span>
+                    <span className="text-[10px] text-slate-500 ml-1">{school.rating}/5</span>
                   </div>
                 </div>
               </div>
@@ -161,14 +161,14 @@ const SuburbProfilePage = () => {
         </button>
         <button
           onClick={() => navigate(`/properties?suburb=${suburb}&listingType=Rent`)}
-          className="px-6 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-sm hover:border-amber-500 transition-colors flex items-center space-x-2"
+          className="px-6 py-3 rounded-xl bg-white border border-slate-300 text-slate-900 font-bold text-sm hover:border-amber-500 transition-colors flex items-center space-x-2"
         >
           <Home className="w-4 h-4" />
           <span>Rentals in {suburb}</span>
         </button>
         <button
           onClick={() => navigate(`/sold?suburb=${suburb}`)}
-          className="px-6 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-sm hover:border-amber-500 transition-colors flex items-center space-x-2"
+          className="px-6 py-3 rounded-xl bg-white border border-slate-300 text-slate-900 font-bold text-sm hover:border-amber-500 transition-colors flex items-center space-x-2"
         >
           <DollarSign className="w-4 h-4" />
           <span>Sold in {suburb}</span>
@@ -176,9 +176,9 @@ const SuburbProfilePage = () => {
       </div>
 
       {/* Properties for Sale */}
-      <div className="space-y-6 border-t border-slate-800 pt-8">
+      <div className="space-y-6 border-t border-slate-200 pt-8">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-extrabold text-white">Properties for Sale in {suburb}</h2>
+          <h2 className="text-2xl font-extrabold text-slate-900">Properties for Sale in {suburb}</h2>
           <Link to={`/properties?suburb=${suburb}&listingType=Sale`} className="text-sm font-bold text-amber-400 hover:text-amber-300">
             View All →
           </Link>
@@ -186,11 +186,11 @@ const SuburbProfilePage = () => {
 
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[1,2,3].map(i => <div key={i} className="h-80 glass-panel rounded-2xl animate-pulse border border-slate-800" />)}
+            {[1,2,3].map(i => <div key={i} className="h-80 glass-panel rounded-2xl animate-pulse border border-slate-200" />)}
           </div>
         ) : properties.length === 0 ? (
-          <div className="py-12 text-center glass-panel rounded-2xl border border-slate-800">
-            <p className="text-slate-400 font-semibold">No active listings currently in {suburb}.</p>
+          <div className="py-12 text-center glass-panel rounded-2xl border border-slate-200">
+            <p className="text-slate-500 font-semibold">No active listings currently in {suburb}.</p>
             <Link to="/properties" className="mt-4 inline-block px-5 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs">
               Explore All Properties
             </Link>

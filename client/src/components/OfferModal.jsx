@@ -46,12 +46,12 @@ const OfferModal = ({ property, isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-      <div className="glass-panel w-full max-w-lg p-6 rounded-2xl border border-slate-800 shadow-2xl relative space-y-5">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-50/80 backdrop-blur-sm">
+      <div className="glass-panel w-full max-w-lg p-6 rounded-2xl border border-slate-200 shadow-2xl relative space-y-5">
         
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-white"
+          className="absolute top-4 right-4 text-slate-500 hover:text-slate-900"
         >
           <X className="w-5 h-5" />
         </button>
@@ -59,8 +59,8 @@ const OfferModal = ({ property, isOpen, onClose }) => {
         {success ? (
           <div className="text-center py-8 space-y-4">
             <CheckCircle className="w-16 h-16 text-emerald-400 mx-auto animate-bounce" />
-            <h3 className="text-xl font-bold text-white">Purchase Offer Submitted!</h3>
-            <p className="text-xs text-slate-300">
+            <h3 className="text-xl font-bold text-slate-900">Purchase Offer Submitted!</h3>
+            <p className="text-xs text-slate-600">
               Your binding offer of <span className="text-amber-400 font-bold">${Number(offerAmount).toLocaleString()}</span> has been securely transmitted to the listing agent and owner.
             </p>
             <button
@@ -72,24 +72,24 @@ const OfferModal = ({ property, isOpen, onClose }) => {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-white flex items-center space-x-2">
+            <div className="border-b border-slate-200 pb-3">
+              <h3 className="text-base font-bold text-slate-900 flex items-center space-x-2">
                 <span>Make a Formal Offer</span>
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
               </h3>
-              <p className="text-xs text-slate-400 truncate">{property.title}</p>
+              <p className="text-xs text-slate-500 truncate">{property.title}</p>
             </div>
 
             {/* Offer Price Input */}
             <div className="space-y-1 text-xs">
-              <label className="font-bold text-slate-300">Offer Amount (AUD)</label>
+              <label className="font-bold text-slate-600">Offer Amount (AUD)</label>
               <div className="relative">
                 <DollarSign className="w-4 h-4 text-amber-400 absolute left-3 top-3" />
                 <input
                   type="number"
                   value={offerAmount}
                   onChange={(e) => setOfferAmount(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm font-bold text-white focus:border-amber-500"
+                  className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-bold text-slate-900 focus:border-amber-500"
                   required
                 />
               </div>
@@ -98,28 +98,28 @@ const OfferModal = ({ property, isOpen, onClose }) => {
 
             {/* Deposit Amount */}
             <div className="space-y-1 text-xs">
-              <label className="font-bold text-slate-300">Proposed Initial Deposit (AUD)</label>
+              <label className="font-bold text-slate-600">Proposed Initial Deposit (AUD)</label>
               <input
                 type="number"
                 value={depositAmount}
                 onChange={(e) => setDepositAmount(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white focus:border-amber-500"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-amber-500"
               />
             </div>
 
             {/* Contract Special Conditions */}
             <div className="space-y-1 text-xs">
-              <label className="font-bold text-slate-300">Special Contract Conditions</label>
+              <label className="font-bold text-slate-600">Special Contract Conditions</label>
               <textarea
                 value={conditions}
                 onChange={(e) => setConditions(e.target.value)}
                 rows={3}
-                className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white focus:border-amber-500"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-amber-500"
               />
             </div>
 
             {/* Digital Agreement Terms */}
-            <div className="flex items-start space-x-2 text-xs text-slate-400 pt-1">
+            <div className="flex items-start space-x-2 text-xs text-slate-500 pt-1">
               <input
                 type="checkbox"
                 id="terms"

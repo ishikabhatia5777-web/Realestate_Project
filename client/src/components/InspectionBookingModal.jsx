@@ -52,12 +52,12 @@ const InspectionBookingModal = ({ property, isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-      <div className="glass-panel w-full max-w-md p-6 rounded-2xl border border-slate-800 shadow-2xl relative space-y-5">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-50/80 backdrop-blur-sm">
+      <div className="glass-panel w-full max-w-md p-6 rounded-2xl border border-slate-200 shadow-2xl relative space-y-5">
         
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-white"
+          className="absolute top-4 right-4 text-slate-500 hover:text-slate-900"
         >
           <X className="w-5 h-5" />
         </button>
@@ -65,8 +65,8 @@ const InspectionBookingModal = ({ property, isOpen, onClose }) => {
         {success ? (
           <div className="text-center py-6 space-y-4">
             <CheckCircle className="w-14 h-14 text-emerald-400 mx-auto animate-bounce" />
-            <h3 className="text-xl font-bold text-white">Inspection Confirmed!</h3>
-            <p className="text-xs text-slate-300">
+            <h3 className="text-xl font-bold text-slate-900">Inspection Confirmed!</h3>
+            <p className="text-xs text-slate-600">
               Your appointment for <span className="text-amber-400 font-bold">{property.title}</span> has been confirmed for {selectedDate} at {selectedTime}.
             </p>
             <button
@@ -78,9 +78,9 @@ const InspectionBookingModal = ({ property, isOpen, onClose }) => {
           </div>
         ) : (
           <form onSubmit={handleBooking} className="space-y-4">
-            <div className="border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-white">Schedule Private Inspection</h3>
-              <p className="text-xs text-slate-400 truncate">{property.title}</p>
+            <div className="border-b border-slate-200 pb-3">
+              <h3 className="text-base font-bold text-slate-900">Schedule Private Inspection</h3>
+              <p className="text-xs text-slate-500 truncate">{property.title}</p>
             </div>
 
             {error && (
@@ -91,7 +91,7 @@ const InspectionBookingModal = ({ property, isOpen, onClose }) => {
 
             {/* Type selector */}
             <div className="space-y-1 text-xs">
-              <label className="font-bold text-slate-300">Inspection Format</label>
+              <label className="font-bold text-slate-600">Inspection Format</label>
               <div className="grid grid-cols-2 gap-2">
                 {['In-Person', 'Video Tour'].map((t) => (
                   <button
@@ -101,7 +101,7 @@ const InspectionBookingModal = ({ property, isOpen, onClose }) => {
                     className={`py-2 rounded-lg font-bold border transition-all ${
                       inspectionType === t
                         ? 'bg-amber-500 text-slate-950 border-amber-500'
-                        : 'bg-slate-900 border-slate-800 text-slate-400'
+                        : 'bg-white border-slate-200 text-slate-500'
                     }`}
                   >
                     {t}
@@ -112,24 +112,24 @@ const InspectionBookingModal = ({ property, isOpen, onClose }) => {
 
             {/* Date Picker */}
             <div className="space-y-1 text-xs">
-              <label className="font-bold text-slate-300">Preferred Date</label>
+              <label className="font-bold text-slate-600">Preferred Date</label>
               <input
                 type="date"
                 min={getTodayString()}
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white focus:border-amber-500"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-amber-500"
                 required
               />
             </div>
 
             {/* Time Slot */}
             <div className="space-y-1 text-xs">
-              <label className="font-bold text-slate-300">Time Slot</label>
+              <label className="font-bold text-slate-600">Time Slot</label>
               <select
                 value={selectedTime}
                 onChange={(e) => setSelectedTime(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white focus:border-amber-500"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-amber-500"
               >
                 <option value="10:00 AM">10:00 AM - 10:30 AM</option>
                 <option value="11:00 AM">11:00 AM - 11:30 AM</option>
@@ -140,13 +140,13 @@ const InspectionBookingModal = ({ property, isOpen, onClose }) => {
 
             {/* Notes */}
             <div className="space-y-1 text-xs">
-              <label className="font-bold text-slate-300">Special Notes / Questions</label>
+              <label className="font-bold text-slate-600">Special Notes / Questions</label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="e.g. Interested in parking space measurements..."
                 rows={3}
-                className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white focus:border-amber-500"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-amber-500"
               />
             </div>
 

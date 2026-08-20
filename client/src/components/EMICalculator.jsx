@@ -22,14 +22,14 @@ const EMICalculator = ({ defaultPrice = 1200000 }) => {
   const totalInterest = totalPayment - principal;
 
   return (
-    <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-6">
-      <div className="flex items-center space-x-3 border-b border-slate-800 pb-4">
+    <div className="glass-panel p-6 rounded-2xl border border-slate-200 space-y-6">
+      <div className="flex items-center space-x-3 border-b border-slate-200 pb-4">
         <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
           <Calculator className="w-5 h-5 text-amber-400" />
         </div>
         <div>
-          <h3 className="text-base font-bold text-white">Mortgage & EMI Calculator</h3>
-          <p className="text-xs text-slate-400">Estimate your monthly property loan repayments</p>
+          <h3 className="text-base font-bold text-slate-900">Mortgage & EMI Calculator</h3>
+          <p className="text-xs text-slate-500">Estimate your monthly property loan repayments</p>
         </div>
       </div>
 
@@ -40,7 +40,7 @@ const EMICalculator = ({ defaultPrice = 1200000 }) => {
           
           {/* Property Price */}
           <div className="space-y-1.5">
-            <div className="flex justify-between font-semibold text-slate-300">
+            <div className="flex justify-between font-semibold text-slate-600">
               <span>Property Price</span>
               <span className="text-amber-400 font-bold">${propertyPrice.toLocaleString()}</span>
             </div>
@@ -57,7 +57,7 @@ const EMICalculator = ({ defaultPrice = 1200000 }) => {
 
           {/* Deposit Percent */}
           <div className="space-y-1.5">
-            <div className="flex justify-between font-semibold text-slate-300">
+            <div className="flex justify-between font-semibold text-slate-600">
               <span>Down Payment ({downPaymentPercent}%)</span>
               <span className="text-amber-400 font-bold">${downPayment.toLocaleString()}</span>
             </div>
@@ -74,7 +74,7 @@ const EMICalculator = ({ defaultPrice = 1200000 }) => {
 
           {/* Interest Rate */}
           <div className="space-y-1.5">
-            <div className="flex justify-between font-semibold text-slate-300">
+            <div className="flex justify-between font-semibold text-slate-600">
               <span>Interest Rate</span>
               <span className="text-amber-400 font-bold">{interestRate}%</span>
             </div>
@@ -91,7 +91,7 @@ const EMICalculator = ({ defaultPrice = 1200000 }) => {
 
           {/* Loan Term */}
           <div className="space-y-1.5">
-            <div className="flex justify-between font-semibold text-slate-300">
+            <div className="flex justify-between font-semibold text-slate-600">
               <span>Loan Term</span>
               <span className="text-amber-400 font-bold">{loanTermYears} Years</span>
             </div>
@@ -109,26 +109,26 @@ const EMICalculator = ({ defaultPrice = 1200000 }) => {
         </div>
 
         {/* Repayment Summary Box */}
-        <div className="bg-slate-900/80 rounded-2xl p-5 border border-slate-800 flex flex-col justify-between space-y-4">
+        <div className="bg-white/80 rounded-2xl p-5 border border-slate-200 flex flex-col justify-between space-y-4">
           <div>
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Estimated Repayment</span>
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Estimated Repayment</span>
             <p className="text-3xl font-extrabold gold-gradient-text tracking-tight mt-1">
-              ${Math.round(monthlyRepayment).toLocaleString()}<span className="text-sm font-normal text-slate-400"> / month</span>
+              ${Math.round(monthlyRepayment).toLocaleString()}<span className="text-sm font-normal text-slate-500"> / month</span>
             </p>
           </div>
 
-          <div className="space-y-2 text-xs border-t border-slate-800 pt-3">
-            <div className="flex justify-between text-slate-400">
+          <div className="space-y-2 text-xs border-t border-slate-200 pt-3">
+            <div className="flex justify-between text-slate-500">
               <span>Principal Amount:</span>
-              <span className="text-white font-semibold">${principal.toLocaleString()}</span>
+              <span className="text-slate-900 font-semibold">${principal.toLocaleString()}</span>
             </div>
-            <div className="flex justify-between text-slate-400">
+            <div className="flex justify-between text-slate-500">
               <span>Total Interest Payable:</span>
-              <span className="text-white font-semibold">${Math.round(totalInterest).toLocaleString()}</span>
+              <span className="text-slate-900 font-semibold">${Math.round(totalInterest).toLocaleString()}</span>
             </div>
-            <div className="flex justify-between text-slate-400">
+            <div className="flex justify-between text-slate-500">
               <span>Total Payment:</span>
-              <span className="text-white font-semibold">${Math.round(totalPayment).toLocaleString()}</span>
+              <span className="text-slate-900 font-semibold">${Math.round(totalPayment).toLocaleString()}</span>
             </div>
           </div>
         </div>

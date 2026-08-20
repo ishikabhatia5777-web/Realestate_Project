@@ -103,10 +103,10 @@ const SellerDashboard = () => {
 
   if (authLoading || !user || user.role !== 'seller') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-900">
         <div className="text-center space-y-4">
           <div className="w-12 h-12 rounded-full border-4 border-amber-500 border-t-transparent animate-spin mx-auto"></div>
-          <p className="text-sm font-bold text-slate-400">Verifying session...</p>
+          <p className="text-sm font-bold text-slate-500">Verifying session...</p>
         </div>
       </div>
     );
@@ -118,7 +118,7 @@ const SellerDashboard = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-bold text-amber-400 uppercase tracking-widest block">FSBO SELLER PORTAL</span>
-          <h1 className="text-3xl font-extrabold text-white">Direct Property Seller Dashboard</h1>
+          <h1 className="text-3xl font-extrabold text-slate-900">Direct Property Seller Dashboard</h1>
         </div>
         <div className="flex items-center space-x-3">
           <button
@@ -132,22 +132,22 @@ const SellerDashboard = () => {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex flex-wrap gap-2 bg-slate-900 p-1.5 rounded-2xl border border-slate-800 text-xs font-bold w-fit">
+      <div className="flex flex-wrap gap-2 bg-white p-1.5 rounded-2xl border border-slate-200 text-xs font-bold w-fit">
         <button
           onClick={() => setActiveTab('properties')}
-          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'properties' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
+          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'properties' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
         >
           Your Listed Properties ({properties.length})
         </button>
         <button
           onClick={() => setActiveTab('offers')}
-          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'offers' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
+          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'offers' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
         >
           Offers Received ({offers.length})
         </button>
         <button
           onClick={() => setActiveTab('payments')}
-          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'payments' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
+          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'payments' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
         >
           Payment & Transactions ({transactions.length})
         </button>
@@ -157,14 +157,14 @@ const SellerDashboard = () => {
       {activeTab === 'properties' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-white">Your Listed Properties in Database</h3>
-            <span className="text-xs text-slate-400">Total Listed: {properties.length}</span>
+            <h3 className="text-base font-bold text-slate-900">Your Listed Properties in Database</h3>
+            <span className="text-xs text-slate-500">Total Listed: {properties.length}</span>
           </div>
 
           {properties.length === 0 ? (
-            <div className="glass-panel p-10 rounded-3xl border border-slate-800 text-center space-y-3">
+            <div className="glass-panel p-10 rounded-3xl border border-slate-200 text-center space-y-3">
               <Building2 className="w-10 h-10 text-slate-600 mx-auto" />
-              <p className="text-slate-400 text-xs">No properties listed yet. Click "Add FSBO Property" to publish your first property.</p>
+              <p className="text-slate-500 text-xs">No properties listed yet. Click "Add FSBO Property" to publish your first property.</p>
               <button
                 onClick={() => setIsAddModalOpen(true)}
                 className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs"
@@ -175,15 +175,15 @@ const SellerDashboard = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {properties.map((p) => (
-                <div key={p._id} className="glass-panel rounded-2xl border border-slate-800 overflow-hidden flex flex-col justify-between">
+                <div key={p._id} className="glass-panel rounded-2xl border border-slate-200 overflow-hidden flex flex-col justify-between">
                   <div>
-                    <div className="relative h-44 bg-slate-900">
+                    <div className="relative h-44 bg-white">
                       <img
                         src={p.images?.[0] || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1200'}
                         alt={p.title}
                         className="w-full h-full object-cover"
                       />
-                      <span className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-slate-950/80 backdrop-blur-md text-[11px] font-extrabold text-amber-400 border border-amber-500/20">
+                      <span className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-slate-50/80 backdrop-blur-md text-[11px] font-extrabold text-amber-400 border border-amber-500/20">
                         For {p.listingType || 'Sale'}
                       </span>
                       <span className="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-emerald-500/90 text-[11px] font-extrabold text-slate-950">
@@ -192,30 +192,30 @@ const SellerDashboard = () => {
                     </div>
 
                     <div className="p-4 space-y-2">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{p.propertyType} • Tier: {p.tier || 'Standard'}</span>
-                      <h4 className="text-sm font-bold text-white line-clamp-1">{p.title}</h4>
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{p.propertyType} • Tier: {p.tier || 'Standard'}</span>
+                      <h4 className="text-sm font-bold text-slate-900 line-clamp-1">{p.title}</h4>
                       <p className="text-base font-extrabold text-amber-400">
                         ${p.price?.toLocaleString()} {p.listingType === 'Rent' ? '/ mo' : ''}
                       </p>
-                      <p className="text-xs text-slate-400 flex items-center space-x-1">
+                      <p className="text-xs text-slate-500 flex items-center space-x-1">
                         <MapPin className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
                         <span className="truncate">{p.address?.street}, {p.address?.suburb}</span>
                       </p>
                     </div>
                   </div>
 
-                  <div className="p-4 pt-2 border-t border-slate-800 space-y-2">
+                  <div className="p-4 pt-2 border-t border-slate-200 space-y-2">
                     <div className="flex space-x-2">
                       <Link
                         to={`/properties/${p._id}`}
-                        className="flex-1 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-slate-300 hover:text-white flex items-center justify-center space-x-1"
+                        className="flex-1 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-600 hover:text-slate-900 flex items-center justify-center space-x-1"
                       >
                         <Eye className="w-3.5 h-3.5" />
                         <span>View</span>
                       </Link>
                       <button
                         onClick={() => handleDeleteProperty(p._id)}
-                        className="px-3 py-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500 hover:text-white transition-all text-xs font-bold flex items-center justify-center"
+                        className="px-3 py-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500 hover:text-slate-900 transition-all text-xs font-bold flex items-center justify-center"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -224,7 +224,7 @@ const SellerDashboard = () => {
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         onClick={() => handleOpenPayment(p._id, 'Featured Listing', 99)}
-                        className="py-1.5 rounded-lg bg-indigo-600/80 text-white font-bold text-[11px] hover:bg-indigo-600"
+                        className="py-1.5 rounded-lg bg-indigo-600/80 text-slate-900 font-bold text-[11px] hover:bg-indigo-600"
                       >
                         Feature ($99)
                       </button>
@@ -247,23 +247,23 @@ const SellerDashboard = () => {
       {activeTab === 'offers' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-white">Purchase & Rental Offers Received</h3>
-            <span className="text-xs text-slate-400">Total: {offers.length}</span>
+            <h3 className="text-base font-bold text-slate-900">Purchase & Rental Offers Received</h3>
+            <span className="text-xs text-slate-500">Total: {offers.length}</span>
           </div>
 
           {offers.length === 0 ? (
-            <div className="glass-panel p-8 rounded-2xl border border-slate-800 text-center text-slate-400 text-xs">
+            <div className="glass-panel p-8 rounded-2xl border border-slate-200 text-center text-slate-500 text-xs">
               No buyer offers received yet on your listed properties.
             </div>
           ) : (
             offers.map((offer) => (
-              <div key={offer._id} className="glass-panel p-5 rounded-2xl border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div key={offer._id} className="glass-panel p-5 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                  <h4 className="text-sm font-bold text-white">{offer.propertyId?.title || 'Property Offer'}</h4>
+                  <h4 className="text-sm font-bold text-slate-900">{offer.propertyId?.title || 'Property Offer'}</h4>
                   <p className="text-xs text-amber-400 font-extrabold mt-0.5">${offer.offerAmount?.toLocaleString()}</p>
-                  <p className="text-[11px] text-slate-400">Offered by: {offer.buyerId?.name || 'Buyer'} ({offer.buyerId?.email || 'N/A'})</p>
+                  <p className="text-[11px] text-slate-500">Offered by: {offer.buyerId?.name || 'Buyer'} ({offer.buyerId?.email || 'N/A'})</p>
                   {offer.conditions && (
-                    <p className="text-[11px] text-slate-300 italic mt-1">"{offer.conditions}"</p>
+                    <p className="text-[11px] text-slate-600 italic mt-1">"{offer.conditions}"</p>
                   )}
                 </div>
                 <div className="flex items-center space-x-2">
@@ -284,7 +284,7 @@ const SellerDashboard = () => {
                       </button>
                       <button
                         onClick={() => handleOfferAction(offer._id, 'reject')}
-                        className="px-3 py-1.5 rounded-lg bg-rose-500 text-white font-bold text-xs"
+                        className="px-3 py-1.5 rounded-lg bg-rose-500 text-slate-900 font-bold text-xs"
                       >
                         Reject
                       </button>
@@ -301,7 +301,7 @@ const SellerDashboard = () => {
       {activeTab === 'payments' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-white">Payment & Billing History</h3>
+            <h3 className="text-base font-bold text-slate-900">Payment & Billing History</h3>
             <button
               onClick={() => handleOpenPayment(null, 'Featured Listing', 99)}
               className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs"
@@ -311,15 +311,15 @@ const SellerDashboard = () => {
           </div>
 
           {transactions.length === 0 ? (
-            <div className="glass-panel p-10 rounded-3xl border border-slate-800 text-center space-y-3">
+            <div className="glass-panel p-10 rounded-3xl border border-slate-200 text-center space-y-3">
               <CreditCard className="w-10 h-10 text-slate-600 mx-auto" />
-              <p className="text-slate-400 text-xs">No transactions recorded yet.</p>
+              <p className="text-slate-500 text-xs">No transactions recorded yet.</p>
             </div>
           ) : (
-            <div className="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
+            <div className="glass-panel rounded-2xl border border-slate-200 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-900 border-b border-slate-800 text-slate-400 font-bold uppercase tracking-wider">
+                  <thead className="bg-white border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
                     <tr>
                       <th className="p-4">Transaction ID</th>
                       <th className="p-4">Package Purpose</th>
@@ -329,11 +329,11 @@ const SellerDashboard = () => {
                       <th className="p-4">Date</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/60 text-slate-300">
+                  <tbody className="divide-y divide-slate-800/60 text-slate-600">
                     {transactions.map((tx) => (
-                      <tr key={tx._id} className="hover:bg-slate-900/40">
+                      <tr key={tx._id} className="hover:bg-white/40">
                         <td className="p-4 font-mono text-amber-400">{tx.stripePaymentIntentId || tx._id}</td>
-                        <td className="p-4 font-bold text-white">{tx.packageType}</td>
+                        <td className="p-4 font-bold text-slate-900">{tx.packageType}</td>
                         <td className="p-4 font-extrabold text-amber-400">AUD ${tx.amount}</td>
                         <td className="p-4">{tx.paymentMethod || 'Credit Card'}</td>
                         <td className="p-4">
@@ -341,7 +341,7 @@ const SellerDashboard = () => {
                             {tx.status || 'succeeded'}
                           </span>
                         </td>
-                        <td className="p-4 text-slate-400">
+                        <td className="p-4 text-slate-500">
                           {tx.createdAt ? new Date(tx.createdAt).toLocaleDateString() : 'Recent'}
                         </td>
                       </tr>

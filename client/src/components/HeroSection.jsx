@@ -36,7 +36,7 @@ const HeroSection = () => {
   ];
 
   return (
-    <div className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-slate-950 pt-8 pb-16">
+    <div className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-slate-50 pt-8 pb-16">
       <div className="absolute inset-0 z-0">
         <img
           src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=2000"
@@ -65,10 +65,10 @@ const HeroSection = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="max-w-4xl mx-auto glass-panel p-4 sm:p-6 rounded-3xl border border-slate-700/80 shadow-2xl space-y-4"
+          className="max-w-4xl mx-auto glass-panel p-4 sm:p-6 rounded-3xl border border-slate-300/80 shadow-2xl space-y-4"
         >
           {/* Tab buttons */}
-          <div className="flex items-center space-x-1 border-b border-slate-800 pb-3">
+          <div className="flex items-center space-x-1 border-b border-slate-200 pb-3">
             {tabs.map((t) => (
               <button
                 key={t.key}
@@ -76,9 +76,9 @@ const HeroSection = () => {
                 className={`px-6 py-2.5 rounded-xl font-extrabold text-xs tracking-wider uppercase transition-all ${
                   tab === t.key
                     ? t.key === 'Sold'
-                      ? 'bg-slate-600 text-white shadow-lg'
+                      ? 'bg-slate-600 text-slate-900 shadow-lg'
                       : 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-900'
+                    : 'text-slate-500 hover:text-slate-900 hover:bg-white'
                 }`}
               >
                 {t.label}
@@ -90,7 +90,7 @@ const HeroSection = () => {
             {/* Row 1: Location + Property Type + Search */}
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 text-left">
               <div className="sm:col-span-5 relative">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
                   Location or Suburb
                 </label>
                 <div className="relative">
@@ -100,20 +100,20 @@ const HeroSection = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="e.g. Point Piper, Barangaroo, South Yarra..."
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold text-white focus:outline-none focus:border-amber-500 transition-colors"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-none focus:border-amber-500 transition-colors"
                   />
                 </div>
               </div>
 
               {tab !== 'Sold' && (
                 <div className="sm:col-span-3">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
                     Property Type
                   </label>
                   <select
                     value={propertyType}
                     onChange={(e) => setPropertyType(e.target.value)}
-                    className="w-full px-3 py-3 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold text-white focus:outline-none focus:border-amber-500 transition-colors"
+                    className="w-full px-3 py-3 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-none focus:border-amber-500 transition-colors"
                   >
                     <option value="">All Types</option>
                     <option value="Villa">Luxury Villa</option>
@@ -141,9 +141,9 @@ const HeroSection = () => {
 
             {/* Row 2: Beds + Baths */}
             {tab !== 'Sold' && (
-              <div className="grid grid-cols-2 gap-3 pt-1 border-t border-slate-800/60">
+              <div className="grid grid-cols-2 gap-3 pt-1 border-t border-slate-200/60">
                 <div>
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1 mb-1.5">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1 mb-1.5">
                     <Bed className="w-3 h-3" /> Bedrooms
                   </label>
                   <div className="flex gap-1.5">
@@ -155,7 +155,7 @@ const HeroSection = () => {
                         className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold border transition-all ${
                           (bedrooms === '' && b === 'Any') || bedrooms === b.replace('+', '')
                             ? 'bg-amber-500 text-slate-950 border-amber-500'
-                            : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
+                            : 'bg-white border-slate-200 text-slate-500 hover:text-slate-900'
                         }`}
                       >
                         {b}
@@ -164,7 +164,7 @@ const HeroSection = () => {
                   </div>
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1 mb-1.5">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1 mb-1.5">
                     <Bath className="w-3 h-3" /> Bathrooms
                   </label>
                   <div className="flex gap-1.5">
@@ -176,7 +176,7 @@ const HeroSection = () => {
                         className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold border transition-all ${
                           (bathrooms === '' && b === 'Any') || bathrooms === b.replace('+', '')
                             ? 'bg-amber-500 text-slate-950 border-amber-500'
-                            : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
+                            : 'bg-white border-slate-200 text-slate-500 hover:text-slate-900'
                         }`}
                       >
                         {b}
@@ -189,7 +189,7 @@ const HeroSection = () => {
           </form>
 
           {/* Trending suburb pills */}
-          <div className="pt-2 flex flex-wrap items-center justify-center gap-2 text-xs text-slate-400">
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-2 text-xs text-slate-500">
             <span className="font-semibold text-slate-500">Trending:</span>
             {POPULAR_SUBURBS.map((suburb) => (
               <button
@@ -199,7 +199,7 @@ const HeroSection = () => {
                   if (tab === 'Sold') navigate(`/sold?suburb=${suburb}`);
                   else navigate(`/properties?suburb=${suburb}&listingType=${tab}`);
                 }}
-                className="px-3 py-1 rounded-full bg-slate-900/80 border border-slate-800 text-xs font-medium text-slate-300 hover:border-amber-500 hover:text-amber-400 transition-colors"
+                className="px-3 py-1 rounded-full bg-white/80 border border-slate-200 text-xs font-medium text-slate-600 hover:border-amber-500 hover:text-amber-400 transition-colors"
               >
                 {suburb}
               </button>
@@ -208,7 +208,7 @@ const HeroSection = () => {
         </motion.div>
 
         {/* Metrics */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 max-w-4xl mx-auto border-t border-slate-800/80">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 max-w-4xl mx-auto border-t border-slate-700/80">
           <div className="text-center">
             <h4 className="text-2xl sm:text-3xl font-extrabold text-white">$4.8B+</h4>
             <p className="text-xs text-slate-400 mt-0.5">Total Property Portfolio</p>

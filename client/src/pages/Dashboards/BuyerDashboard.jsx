@@ -70,10 +70,10 @@ const BuyerDashboard = () => {
 
   if (authLoading || !user || user.role !== 'buyer') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-900">
         <div className="text-center space-y-4">
           <div className="w-12 h-12 rounded-full border-4 border-amber-500 border-t-transparent animate-spin mx-auto"></div>
-          <p className="text-sm font-bold text-slate-400">Verifying session...</p>
+          <p className="text-sm font-bold text-slate-500">Verifying session...</p>
         </div>
       </div>
     );
@@ -85,12 +85,12 @@ const BuyerDashboard = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-bold text-amber-400 uppercase tracking-widest block">BUYER & RENTER PORTAL</span>
-          <h1 className="text-3xl font-extrabold text-white">My Property Portfolio & Applications</h1>
+          <h1 className="text-3xl font-extrabold text-slate-900">My Property Portfolio & Applications</h1>
         </div>
         <div className="flex items-center space-x-3">
           <button
             onClick={() => handleOpenPayment(null, 'Holding Deposit', 5000)}
-            className="px-4 py-3 rounded-2xl bg-slate-900 border border-slate-800 text-amber-400 font-extrabold text-xs flex items-center space-x-2 hover:border-amber-500/50 transition-all"
+            className="px-4 py-3 rounded-2xl bg-white border border-slate-200 text-amber-400 font-extrabold text-xs flex items-center space-x-2 hover:border-amber-500/50 transition-all"
           >
             <CreditCard className="w-4 h-4" />
             <span>Pay Property Holding Deposit</span>
@@ -106,35 +106,35 @@ const BuyerDashboard = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap gap-2 bg-slate-900 p-1.5 rounded-2xl border border-slate-800 text-xs font-bold w-fit">
+      <div className="flex flex-wrap gap-2 bg-white p-1.5 rounded-2xl border border-slate-200 text-xs font-bold w-fit">
         <button
           onClick={() => setActiveTab('offers')}
-          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'offers' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
+          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'offers' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
         >
           My Submitted Offers ({offers.length})
         </button>
         <button
           onClick={() => setActiveTab('messages')}
-          className={`px-4 py-2.5 rounded-xl transition-all flex items-center space-x-1.5 ${activeTab === 'messages' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
+          className={`px-4 py-2.5 rounded-xl transition-all flex items-center space-x-1.5 ${activeTab === 'messages' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
         >
           <MessageSquare className="w-3.5 h-3.5" />
           <span>Live Agent Chat</span>
         </button>
         <button
           onClick={() => setActiveTab('bookings')}
-          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'bookings' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
+          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'bookings' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
         >
           Inspection Bookings ({bookings.length})
         </button>
         <button
           onClick={() => setActiveTab('wishlist')}
-          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'wishlist' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
+          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'wishlist' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
         >
           Saved Wishlist ({savedProperties.length})
         </button>
         <button
           onClick={() => setActiveTab('payments')}
-          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'payments' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
+          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'payments' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
         >
           Payment History ({transactions.length})
         </button>
@@ -144,7 +144,7 @@ const BuyerDashboard = () => {
       {activeTab === 'messages' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-white">Live Agent & Seller Communications</h3>
+            <h3 className="text-base font-bold text-slate-900">Live Agent & Seller Communications</h3>
           </div>
           <InboxPanel />
         </div>
@@ -154,18 +154,18 @@ const BuyerDashboard = () => {
       {activeTab === 'offers' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-white">Submitted Purchase & Rental Offers</h3>
-            <span className="text-xs text-slate-400">Total: {offers.length}</span>
+            <h3 className="text-base font-bold text-slate-900">Submitted Purchase & Rental Offers</h3>
+            <span className="text-xs text-slate-500">Total: {offers.length}</span>
           </div>
 
           {offers.length === 0 ? (
-            <div className="glass-panel p-10 rounded-3xl border border-slate-800 text-center space-y-4 max-w-2xl mx-auto my-6">
+            <div className="glass-panel p-10 rounded-3xl border border-slate-200 text-center space-y-4 max-w-2xl mx-auto my-6">
               <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto text-amber-400">
                 <DollarSign className="w-7 h-7" />
               </div>
               <div className="space-y-1">
-                <h4 className="text-lg font-extrabold text-white">No Offers Submitted Yet</h4>
-                <p className="text-xs text-slate-400 max-w-md mx-auto">
+                <h4 className="text-lg font-extrabold text-slate-900">No Offers Submitted Yet</h4>
+                <p className="text-xs text-slate-500 max-w-md mx-auto">
                   When you browse property listings and click <span className="text-amber-400 font-bold">"Make an Offer"</span>, your price proposal and agent responses will show up here.
                 </p>
               </div>
@@ -180,27 +180,27 @@ const BuyerDashboard = () => {
           ) : (
             <div className="space-y-4">
               {offers.map((offer) => (
-                <div key={offer._id} className="glass-panel p-5 rounded-2xl border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div key={offer._id} className="glass-panel p-5 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div className="flex items-start space-x-4">
                     {offer.propertyId?.images?.[0] && (
                       <img
                         src={offer.propertyId.images[0]}
                         alt={offer.propertyId.title}
-                        className="w-20 h-20 rounded-xl object-cover border border-slate-800"
+                        className="w-20 h-20 rounded-xl object-cover border border-slate-200"
                       />
                     )}
                     <div className="space-y-1">
-                      <h4 className="text-sm font-bold text-white">{offer.propertyId?.title || 'Property Offer'}</h4>
+                      <h4 className="text-sm font-bold text-slate-900">{offer.propertyId?.title || 'Property Offer'}</h4>
                       <p className="text-xs text-amber-400 font-extrabold">
                         Offered Amount: ${offer.offerAmount?.toLocaleString()}
                       </p>
                       {offer.propertyId?.address && (
-                        <p className="text-[11px] text-slate-400 flex items-center space-x-1">
+                        <p className="text-[11px] text-slate-500 flex items-center space-x-1">
                           <MapPin className="w-3 h-3 text-slate-500" />
                           <span>{offer.propertyId.address.street}, {offer.propertyId.address.suburb}</span>
                         </p>
                       )}
-                      <p className="text-[11px] text-slate-400">Conditions: {offer.conditions}</p>
+                      <p className="text-[11px] text-slate-500">Conditions: {offer.conditions}</p>
                     </div>
                   </div>
 
@@ -233,18 +233,18 @@ const BuyerDashboard = () => {
       {activeTab === 'bookings' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-white">Scheduled Inspection Appointments</h3>
-            <span className="text-xs text-slate-400">Total: {bookings.length}</span>
+            <h3 className="text-base font-bold text-slate-900">Scheduled Inspection Appointments</h3>
+            <span className="text-xs text-slate-500">Total: {bookings.length}</span>
           </div>
 
           {bookings.length === 0 ? (
-            <div className="glass-panel p-10 rounded-3xl border border-slate-800 text-center space-y-4 max-w-2xl mx-auto my-6">
+            <div className="glass-panel p-10 rounded-3xl border border-slate-200 text-center space-y-4 max-w-2xl mx-auto my-6">
               <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mx-auto text-cyan-400">
                 <Calendar className="w-7 h-7" />
               </div>
               <div className="space-y-1">
-                <h4 className="text-lg font-extrabold text-white">No Inspections Scheduled</h4>
-                <p className="text-xs text-slate-400 max-w-md mx-auto">
+                <h4 className="text-lg font-extrabold text-slate-900">No Inspections Scheduled</h4>
+                <p className="text-xs text-slate-500 max-w-md mx-auto">
                   When you view a property listing and click <span className="text-cyan-400 font-bold">"Book Inspection"</span>, your confirmed inspection times and site visits will appear here.
                 </p>
               </div>
@@ -259,12 +259,12 @@ const BuyerDashboard = () => {
           ) : (
             <div className="space-y-4">
               {bookings.map((b) => (
-                <div key={b._id} className="glass-panel p-5 rounded-2xl border border-slate-800 flex items-center justify-between">
+                <div key={b._id} className="glass-panel p-5 rounded-2xl border border-slate-200 flex items-center justify-between">
                   <div>
-                    <h4 className="text-sm font-bold text-white">{b.propertyId?.title || 'Property Inspection'}</h4>
+                    <h4 className="text-sm font-bold text-slate-900">{b.propertyId?.title || 'Property Inspection'}</h4>
                     <p className="text-xs text-amber-400 font-semibold">{b.date} at {b.timeSlot} ({b.type})</p>
                     {b.propertyId?.address && (
-                      <p className="text-[11px] text-slate-400 mt-0.5">
+                      <p className="text-[11px] text-slate-500 mt-0.5">
                         Location: {b.propertyId.address.street}, {b.propertyId.address.suburb}
                       </p>
                     )}
@@ -283,18 +283,18 @@ const BuyerDashboard = () => {
       {activeTab === 'wishlist' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-white">Saved Properties</h3>
-            <span className="text-xs text-slate-400">Saved: {savedProperties.length}</span>
+            <h3 className="text-base font-bold text-slate-900">Saved Properties</h3>
+            <span className="text-xs text-slate-500">Saved: {savedProperties.length}</span>
           </div>
 
           {savedProperties.length === 0 ? (
-            <div className="glass-panel p-10 rounded-3xl border border-slate-800 text-center space-y-4 max-w-2xl mx-auto my-6">
+            <div className="glass-panel p-10 rounded-3xl border border-slate-200 text-center space-y-4 max-w-2xl mx-auto my-6">
               <div className="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mx-auto text-rose-400">
                 <Heart className="w-7 h-7" />
               </div>
               <div className="space-y-1">
-                <h4 className="text-lg font-extrabold text-white">Your Saved Wishlist is Empty</h4>
-                <p className="text-xs text-slate-400 max-w-md mx-auto">
+                <h4 className="text-lg font-extrabold text-slate-900">Your Saved Wishlist is Empty</h4>
+                <p className="text-xs text-slate-500 max-w-md mx-auto">
                   Click the heart icon on any property card to save your favorite luxury villas, apartments, and homes here.
                 </p>
               </div>
@@ -320,7 +320,7 @@ const BuyerDashboard = () => {
       {activeTab === 'payments' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-white">Your Payment Receipts & Deposits</h3>
+            <h3 className="text-base font-bold text-slate-900">Your Payment Receipts & Deposits</h3>
             <button
               onClick={() => handleOpenPayment(null, 'Holding Deposit', 5000)}
               className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs"
@@ -330,15 +330,15 @@ const BuyerDashboard = () => {
           </div>
 
           {transactions.length === 0 ? (
-            <div className="glass-panel p-10 rounded-3xl border border-slate-800 text-center space-y-3">
+            <div className="glass-panel p-10 rounded-3xl border border-slate-200 text-center space-y-3">
               <CreditCard className="w-10 h-10 text-slate-600 mx-auto" />
-              <p className="text-slate-400 text-xs">No payment history found.</p>
+              <p className="text-slate-500 text-xs">No payment history found.</p>
             </div>
           ) : (
-            <div className="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
+            <div className="glass-panel rounded-2xl border border-slate-200 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-900 border-b border-slate-800 text-slate-400 font-bold uppercase tracking-wider">
+                  <thead className="bg-white border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
                     <tr>
                       <th className="p-4">Receipt / Invoice ID</th>
                       <th className="p-4">Purpose</th>
@@ -348,11 +348,11 @@ const BuyerDashboard = () => {
                       <th className="p-4">Date</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/60 text-slate-300">
+                  <tbody className="divide-y divide-slate-800/60 text-slate-600">
                     {transactions.map((tx) => (
-                      <tr key={tx._id} className="hover:bg-slate-900/40">
+                      <tr key={tx._id} className="hover:bg-white/40">
                         <td className="p-4 font-mono text-amber-400">{tx.stripePaymentIntentId || tx._id}</td>
-                        <td className="p-4 font-bold text-white">{tx.packageType}</td>
+                        <td className="p-4 font-bold text-slate-900">{tx.packageType}</td>
                         <td className="p-4 font-extrabold text-amber-400">AUD ${tx.amount}</td>
                         <td className="p-4">{tx.paymentMethod || 'Credit Card'}</td>
                         <td className="p-4">
@@ -360,7 +360,7 @@ const BuyerDashboard = () => {
                             {tx.status || 'succeeded'}
                           </span>
                         </td>
-                        <td className="p-4 text-slate-400">
+                        <td className="p-4 text-slate-500">
                           {tx.createdAt ? new Date(tx.createdAt).toLocaleDateString() : 'Recent'}
                         </td>
                       </tr>

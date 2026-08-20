@@ -4,7 +4,7 @@ import { Building2, Mail, Phone, MapPin, ShieldCheck, Sparkles } from 'lucide-re
 
 const Footer = () => {
   return (
-    <footer className="bg-slate-950 border-t border-slate-900 pt-16 pb-12 text-slate-400">
+    <footer className="bg-slate-50 border-t border-slate-900 pt-16 pb-12 text-slate-500">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-slate-900">
           
@@ -14,18 +14,18 @@ const Footer = () => {
               <div className="w-10 h-10 rounded-xl gold-gradient-bg flex items-center justify-center shadow-lg shadow-amber-500/20">
                 <Building2 className="w-5 h-5 text-slate-950 font-bold" />
               </div>
-              <span className="text-xl font-extrabold tracking-tight text-white">
+              <span className="text-xl font-extrabold tracking-tight text-slate-900">
                 AURA<span className="gold-gradient-text">ESTATES</span>
               </span>
             </Link>
-            <p className="text-sm text-slate-400 leading-relaxed max-w-sm">
+            <p className="text-sm text-slate-500 leading-relaxed max-w-sm">
               Australia's premier luxury real estate marketplace powered by next-generation AI property valuation, interactive 3D maps, and instant buyer-agent connectivity.
             </p>
           </div>
 
           {/* Col 2: Popular Suburbs */}
           <div>
-            <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Top Suburbs</h4>
+            <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">Top Suburbs</h4>
             <ul className="space-y-2.5 text-sm">
               <li><Link to="/properties?suburb=Point Piper" className="hover:text-amber-400 transition-colors">Point Piper, NSW</Link></li>
               <li><Link to="/properties?suburb=Barangaroo" className="hover:text-amber-400 transition-colors">Barangaroo, Sydney</Link></li>
@@ -37,7 +37,7 @@ const Footer = () => {
 
           {/* Col 3: Property Types */}
           <div>
-            <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Property Categories</h4>
+            <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">Property Categories</h4>
             <ul className="space-y-2.5 text-sm">
               <li><Link to="/properties?propertyType=Villa" className="hover:text-amber-400 transition-colors">Luxury Waterfront Villas</Link></li>
               <li><Link to="/properties?propertyType=Apartment" className="hover:text-amber-400 transition-colors">Sky Penthouses</Link></li>
@@ -49,7 +49,7 @@ const Footer = () => {
 
           {/* Col 4: Platform Contact */}
           <div>
-            <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Headquarters</h4>
+            <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">Headquarters</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start space-x-2.5">
                 <MapPin className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />

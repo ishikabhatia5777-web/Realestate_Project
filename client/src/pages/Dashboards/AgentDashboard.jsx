@@ -159,10 +159,10 @@ const AgentDashboard = () => {
 
   if (authLoading || !user || user.role !== 'agent') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-900">
         <div className="text-center space-y-4">
           <div className="w-12 h-12 rounded-full border-4 border-amber-500 border-t-transparent animate-spin mx-auto"></div>
-          <p className="text-sm font-bold text-slate-400">Verifying session...</p>
+          <p className="text-sm font-bold text-slate-500">Verifying session...</p>
         </div>
       </div>
     );
@@ -174,7 +174,7 @@ const AgentDashboard = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-bold text-amber-400 uppercase tracking-widest block">REAL ESTATE AGENT PORTAL</span>
-          <h1 className="text-3xl font-extrabold text-white">Agent Property & Pipeline Management</h1>
+          <h1 className="text-3xl font-extrabold text-slate-900">Agent Property & Pipeline Management</h1>
         </div>
         <div className="flex items-center space-x-3">
           <button
@@ -188,16 +188,16 @@ const AgentDashboard = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap gap-2 bg-slate-900 p-1.5 rounded-2xl border border-slate-800 text-xs font-bold w-fit">
+      <div className="flex flex-wrap gap-2 bg-white p-1.5 rounded-2xl border border-slate-200 text-xs font-bold w-fit">
         <button
           onClick={() => setActiveTab('properties')}
-          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'properties' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
+          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'properties' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
         >
           Listed Properties ({properties.length})
         </button>
         <button
           onClick={() => setActiveTab('messages')}
-          className={`px-4 py-2.5 rounded-xl transition-all flex items-center space-x-1.5 ${activeTab === 'messages' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
+          className={`px-4 py-2.5 rounded-xl transition-all flex items-center space-x-1.5 ${activeTab === 'messages' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
         >
           <MessageSquare className="w-3.5 h-3.5" />
           <span>Live Chat Inbox</span>
@@ -205,37 +205,37 @@ const AgentDashboard = () => {
 
         <button
           onClick={() => setActiveTab('offers')}
-          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'offers' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
+          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'offers' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
         >
           Customer Offers ({offers.length})
         </button>
         <button
           onClick={() => setActiveTab('bookings')}
-          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'bookings' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
+          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'bookings' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
         >
           Inspection Schedule ({bookings.length})
         </button>
         <button
           onClick={() => setActiveTab('payments')}
-          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'payments' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
+          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'payments' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
         >
           Payments & Receipts ({transactions.length})
         </button>
         <button
           onClick={() => { setActiveTab('requests'); setExpertUnreadCount(0); }}
-          className={`px-4 py-2.5 rounded-xl transition-all flex items-center space-x-1.5 relative ${activeTab === 'requests' ? 'bg-rose-500 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}
+          className={`px-4 py-2.5 rounded-xl transition-all flex items-center space-x-1.5 relative ${activeTab === 'requests' ? 'bg-rose-500 text-slate-900 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
         >
           <Bell className="w-3.5 h-3.5" />
           <span>Connection Requests</span>
           {expertUnreadCount > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center animate-pulse">
+            <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-rose-500 text-slate-900 text-[9px] font-black rounded-full flex items-center justify-center animate-pulse">
               {expertUnreadCount}
             </span>
           )}
         </button>
         <button
           onClick={() => setActiveTab('profile')}
-          className={`px-4 py-2.5 rounded-xl transition-all flex items-center space-x-1.5 ${activeTab === 'profile' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}
+          className={`px-4 py-2.5 rounded-xl transition-all flex items-center space-x-1.5 ${activeTab === 'profile' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
         >
           <User className="w-3.5 h-3.5" />
           <span>Profile Settings</span>
@@ -246,7 +246,7 @@ const AgentDashboard = () => {
       {activeTab === 'profile' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-white">Agent Profile Settings</h3>
+            <h3 className="text-base font-bold text-slate-900">Agent Profile Settings</h3>
             <button
               onClick={() => setIsEditProfileOpen(true)}
               className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs flex items-center space-x-1.5 hover:bg-amber-400 transition-all"
@@ -256,23 +256,23 @@ const AgentDashboard = () => {
             </button>
           </div>
           
-          <div className="glass-panel p-6 rounded-2xl border border-slate-800 flex flex-col md:flex-row gap-6 items-start">
-            <div className="w-24 h-24 rounded-full bg-slate-800 overflow-hidden border-2 border-slate-700 shrink-0">
+          <div className="glass-panel p-6 rounded-2xl border border-slate-200 flex flex-col md:flex-row gap-6 items-start">
+            <div className="w-24 h-24 rounded-full bg-slate-100 overflow-hidden border-2 border-slate-300 shrink-0">
               <img src={user.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400'} alt="Profile" className="w-full h-full object-cover" />
             </div>
             <div className="space-y-4 flex-1">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Full Name</p>
-                  <p className="text-sm font-bold text-white">{user.name}</p>
+                  <p className="text-sm font-bold text-slate-900">{user.name}</p>
                 </div>
                 <div>
                   <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Email Address</p>
-                  <p className="text-sm font-bold text-white">{user.email}</p>
+                  <p className="text-sm font-bold text-slate-900">{user.email}</p>
                 </div>
                 <div>
                   <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Phone Number</p>
-                  <p className="text-sm font-bold text-white">{user.phone || 'Not provided'}</p>
+                  <p className="text-sm font-bold text-slate-900">{user.phone || 'Not provided'}</p>
                 </div>
                 <div>
                   <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Role</p>
@@ -291,9 +291,9 @@ const AgentDashboard = () => {
         <div className="space-y-4">
 
           {properties.length === 0 ? (
-            <div className="glass-panel p-10 rounded-3xl border border-slate-800 text-center space-y-3">
+            <div className="glass-panel p-10 rounded-3xl border border-slate-200 text-center space-y-3">
               <Building2 className="w-10 h-10 text-slate-600 mx-auto" />
-              <p className="text-slate-400 text-xs">No properties listed yet.</p>
+              <p className="text-slate-500 text-xs">No properties listed yet.</p>
               <button
                 onClick={() => setIsAddModalOpen(true)}
                 className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs"
@@ -304,15 +304,15 @@ const AgentDashboard = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {properties.map((p) => (
-                <div key={p._id} className="glass-panel rounded-2xl border border-slate-800 overflow-hidden flex flex-col justify-between">
+                <div key={p._id} className="glass-panel rounded-2xl border border-slate-200 overflow-hidden flex flex-col justify-between">
                   <div>
-                    <div className="relative h-44 bg-slate-900">
+                    <div className="relative h-44 bg-white">
                       <img
                         src={p.images?.[0] || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1200'}
                         alt={p.title}
                         className="w-full h-full object-cover"
                       />
-                      <span className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-slate-950/80 backdrop-blur-md text-[11px] font-extrabold text-amber-400 border border-amber-500/20">
+                      <span className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-slate-50/80 backdrop-blur-md text-[11px] font-extrabold text-amber-400 border border-amber-500/20">
                         For {p.listingType}
                       </span>
                       <span className="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-emerald-500/90 text-[11px] font-extrabold text-slate-950">
@@ -321,30 +321,30 @@ const AgentDashboard = () => {
                     </div>
 
                     <div className="p-4 space-y-2">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{p.propertyType} • Tier: {p.tier || 'Standard'}</span>
-                      <h4 className="text-sm font-bold text-white line-clamp-1">{p.title}</h4>
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{p.propertyType} • Tier: {p.tier || 'Standard'}</span>
+                      <h4 className="text-sm font-bold text-slate-900 line-clamp-1">{p.title}</h4>
                       <p className="text-base font-extrabold text-amber-400">
                         ${p.price?.toLocaleString()} {p.listingType === 'Rent' ? '/ mo' : ''}
                       </p>
-                      <p className="text-xs text-slate-400 flex items-center space-x-1">
+                      <p className="text-xs text-slate-500 flex items-center space-x-1">
                         <MapPin className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
                         <span className="truncate">{p.address?.street}, {p.address?.suburb}</span>
                       </p>
                     </div>
                   </div>
 
-                  <div className="p-4 pt-2 border-t border-slate-800 space-y-2">
+                  <div className="p-4 pt-2 border-t border-slate-200 space-y-2">
                     <div className="flex space-x-2">
                       <Link
                         to={`/properties/${p._id}`}
-                        className="flex-1 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-slate-300 hover:text-white flex items-center justify-center space-x-1"
+                        className="flex-1 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-600 hover:text-slate-900 flex items-center justify-center space-x-1"
                       >
                         <Eye className="w-3.5 h-3.5" />
                         <span>View</span>
                       </Link>
                       <button
                         onClick={() => handleDeleteProperty(p._id)}
-                        className="px-3 py-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500 hover:text-white transition-all text-xs font-bold flex items-center justify-center"
+                        className="px-3 py-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500 hover:text-slate-900 transition-all text-xs font-bold flex items-center justify-center"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -353,7 +353,7 @@ const AgentDashboard = () => {
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         onClick={() => handleOpenPayment(p._id, 'Featured Listing', 99)}
-                        className="py-1.5 rounded-lg bg-indigo-600/80 text-white font-bold text-[11px]"
+                        className="py-1.5 rounded-lg bg-indigo-600/80 text-slate-900 font-bold text-[11px]"
                       >
                         Feature ($99)
                       </button>
@@ -376,19 +376,19 @@ const AgentDashboard = () => {
       {activeTab === 'offers' && (
         <div className="space-y-4">
           {offers.length === 0 ? (
-            <div className="glass-panel p-8 rounded-2xl border border-slate-800 text-center text-slate-400 text-xs">
+            <div className="glass-panel p-8 rounded-2xl border border-slate-200 text-center text-slate-500 text-xs">
               No buyer offers received yet.
             </div>
           ) : (
             offers.map((offer) => (
-              <div key={offer._id} className="glass-panel p-5 rounded-2xl border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div key={offer._id} className="glass-panel p-5 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                  <h4 className="text-sm font-bold text-white">{offer.propertyId?.title || 'Property Offer'}</h4>
+                  <h4 className="text-sm font-bold text-slate-900">{offer.propertyId?.title || 'Property Offer'}</h4>
                   <p className="text-xs text-amber-400 font-extrabold mt-0.5">${offer.offerAmount?.toLocaleString()}</p>
-                  <p className="text-[11px] text-slate-400">Offered by: {offer.buyerId?.name} ({offer.buyerId?.email})</p>
+                  <p className="text-[11px] text-slate-500">Offered by: {offer.buyerId?.name} ({offer.buyerId?.email})</p>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-xs font-bold text-slate-300">
+                  <span className="px-2.5 py-1 rounded bg-white border border-slate-200 text-xs font-bold text-slate-600">
                     {offer.status}
                   </span>
                   {offer.status === 'Pending' && (
@@ -401,7 +401,7 @@ const AgentDashboard = () => {
                       </button>
                       <button
                         onClick={() => handleOfferAction(offer._id, 'reject')}
-                        className="px-3 py-1.5 rounded-lg bg-rose-500 text-white font-bold text-xs"
+                        className="px-3 py-1.5 rounded-lg bg-rose-500 text-slate-900 font-bold text-xs"
                       >
                         Reject
                       </button>
@@ -418,19 +418,19 @@ const AgentDashboard = () => {
       {activeTab === 'bookings' && (
         <div className="space-y-4">
           {bookings.length === 0 ? (
-            <div className="glass-panel p-8 rounded-2xl border border-slate-800 text-center text-slate-400 text-xs">
+            <div className="glass-panel p-8 rounded-2xl border border-slate-200 text-center text-slate-500 text-xs">
               No inspection bookings scheduled yet.
             </div>
           ) : (
             bookings.map((b) => (
-              <div key={b._id} className="glass-panel p-5 rounded-2xl border border-slate-800 flex items-center justify-between">
+              <div key={b._id} className="glass-panel p-5 rounded-2xl border border-slate-200 flex items-center justify-between">
                 <div>
-                  <h4 className="text-sm font-bold text-white">{b.propertyId?.title || 'Property Inspection'}</h4>
+                  <h4 className="text-sm font-bold text-slate-900">{b.propertyId?.title || 'Property Inspection'}</h4>
                   <p className="text-xs text-amber-400 font-semibold">{b.date} at {b.timeSlot} ({b.type})</p>
-                  <p className="text-[11px] text-slate-400">Client: {b.userId?.name} • {b.userId?.phone}</p>
+                  <p className="text-[11px] text-slate-500">Client: {b.userId?.name} • {b.userId?.phone}</p>
                 </div>
                 <div className="flex items-center space-x-2 mt-2 sm:mt-0">
-                  <span className="px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-xs font-bold text-slate-300">
+                  <span className="px-2.5 py-1 rounded bg-white border border-slate-200 text-xs font-bold text-slate-600">
                     {b.status}
                   </span>
                   {b.status === 'Pending' && (
@@ -443,7 +443,7 @@ const AgentDashboard = () => {
                       </button>
                       <button
                         onClick={() => handleBookingAction(b._id, 'Rejected')}
-                        className="px-3 py-1.5 rounded-lg bg-rose-500 text-white font-bold text-xs"
+                        className="px-3 py-1.5 rounded-lg bg-rose-500 text-slate-900 font-bold text-xs"
                       >
                         Reject
                       </button>
@@ -460,19 +460,19 @@ const AgentDashboard = () => {
       {activeTab === 'payments' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-white">Agency & Agent Payment Receipts</h3>
+            <h3 className="text-base font-bold text-slate-900">Agency & Agent Payment Receipts</h3>
           </div>
 
           {transactions.length === 0 ? (
-            <div className="glass-panel p-10 rounded-3xl border border-slate-800 text-center space-y-3">
+            <div className="glass-panel p-10 rounded-3xl border border-slate-200 text-center space-y-3">
               <CreditCard className="w-10 h-10 text-slate-600 mx-auto" />
-              <p className="text-slate-400 text-xs">No payment receipts recorded yet.</p>
+              <p className="text-slate-500 text-xs">No payment receipts recorded yet.</p>
             </div>
           ) : (
-            <div className="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
+            <div className="glass-panel rounded-2xl border border-slate-200 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-900 border-b border-slate-800 text-slate-400 font-bold uppercase tracking-wider">
+                  <thead className="bg-white border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
                     <tr>
                       <th className="p-4">Invoice ID</th>
                       <th className="p-4">Package</th>
@@ -482,11 +482,11 @@ const AgentDashboard = () => {
                       <th className="p-4">Date</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/60 text-slate-300">
+                  <tbody className="divide-y divide-slate-800/60 text-slate-600">
                     {transactions.map((tx) => (
-                      <tr key={tx._id} className="hover:bg-slate-900/40">
+                      <tr key={tx._id} className="hover:bg-white/40">
                         <td className="p-4 font-mono text-amber-400">{tx.stripePaymentIntentId || tx._id}</td>
-                        <td className="p-4 font-bold text-white">{tx.packageType}</td>
+                        <td className="p-4 font-bold text-slate-900">{tx.packageType}</td>
                         <td className="p-4 font-extrabold text-amber-400">AUD ${tx.amount}</td>
                         <td className="p-4">{tx.paymentMethod || 'Credit Card'}</td>
                         <td className="p-4">
@@ -494,7 +494,7 @@ const AgentDashboard = () => {
                             {tx.status || 'succeeded'}
                           </span>
                         </td>
-                        <td className="p-4 text-slate-400">
+                        <td className="p-4 text-slate-500">
                           {tx.createdAt ? new Date(tx.createdAt).toLocaleDateString() : 'Recent'}
                         </td>
                       </tr>
@@ -511,7 +511,7 @@ const AgentDashboard = () => {
       {activeTab === 'messages' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-white">Buyer Direct Messages & Inquiries</h3>
+            <h3 className="text-base font-bold text-slate-900">Buyer Direct Messages & Inquiries</h3>
           </div>
           <InboxPanel activeChatRequest={activeChatRequest} />
         </div>
@@ -524,11 +524,11 @@ const AgentDashboard = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
+              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
                 <Bell className="w-4 h-4 text-rose-400" />
                 Buyer Connection Requests
               </h3>
-              <p className="text-xs text-slate-400 mt-0.5">Buyers who asked to connect with you through the 24/7 Live Chat</p>
+              <p className="text-xs text-slate-500 mt-0.5">Buyers who asked to connect with you through the 24/7 Live Chat</p>
             </div>
             <span className="text-xs bg-rose-500/20 text-rose-400 border border-rose-500/30 px-3 py-1 rounded-full font-bold">
               {expertRequests.filter(r => !r.isRead).length} Unread
@@ -536,9 +536,9 @@ const AgentDashboard = () => {
           </div>
 
           {expertRequests.length === 0 ? (
-            <div className="glass-panel p-12 rounded-3xl border border-slate-800 text-center space-y-3">
+            <div className="glass-panel p-12 rounded-3xl border border-slate-200 text-center space-y-3">
               <Bell className="w-10 h-10 text-slate-600 mx-auto" />
-              <p className="text-slate-400 text-sm font-medium">No connection requests yet</p>
+              <p className="text-slate-500 text-sm font-medium">No connection requests yet</p>
               <p className="text-slate-500 text-xs">When a buyer clicks "Connect to Expert" in the live chat, their request will appear here.</p>
             </div>
           ) : (
@@ -546,19 +546,19 @@ const AgentDashboard = () => {
               {expertRequests.map((req) => (
                 <div
                   key={req._id}
-                  className={`rounded-2xl border p-5 transition-all ${req.isRead ? 'bg-slate-900/50 border-slate-800' : 'bg-rose-950/20 border-rose-500/40 shadow-lg shadow-rose-500/5'}`}
+                  className={`rounded-2xl border p-5 transition-all ${req.isRead ? 'bg-white/50 border-slate-200' : 'bg-rose-950/20 border-rose-500/40 shadow-lg shadow-rose-500/5'}`}
                 >
                   <div className="flex items-start justify-between gap-4 flex-wrap">
                     {/* Left: Buyer info */}
                     <div className="flex items-start gap-3 flex-1 min-w-0">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-base font-black shrink-0 ${req.isRead ? 'bg-slate-700 text-slate-300' : 'bg-rose-500/20 text-rose-400'}`}>
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-base font-black shrink-0 ${req.isRead ? 'bg-slate-200 text-slate-600' : 'bg-rose-500/20 text-rose-400'}`}>
                         {(req.buyerName || 'B')[0].toUpperCase()}
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-sm font-bold text-white">{req.buyerName}</span>
+                          <span className="text-sm font-bold text-slate-900">{req.buyerName}</span>
                           {!req.isRead && (
-                            <span className="text-[10px] font-black bg-rose-500 text-white px-2 py-0.5 rounded-full uppercase tracking-wide animate-pulse">NEW</span>
+                            <span className="text-[10px] font-black bg-rose-500 text-slate-900 px-2 py-0.5 rounded-full uppercase tracking-wide animate-pulse">NEW</span>
                           )}
                           {req.status === 'contacted' && (
                             <span className="text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full uppercase">Contacted</span>
@@ -580,7 +580,7 @@ const AgentDashboard = () => {
 
                         {/* Message */}
                         {req.buyerMessage && (
-                          <div className="mt-2 text-xs text-slate-400 italic bg-slate-800/60 rounded-lg px-3 py-2 border border-slate-700/50">
+                          <div className="mt-2 text-xs text-slate-500 italic bg-slate-100/60 rounded-lg px-3 py-2 border border-slate-300/50">
                             "{req.buyerMessage}"
                           </div>
                         )}

@@ -164,10 +164,10 @@ const BlogsPage = () => {
           <Sparkles className="w-3 h-3" />
           <span>Real Estate Intelligence</span>
         </div>
-        <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
           Property Market <span className="gold-gradient-text">Insights</span>
         </h1>
-        <p className="text-sm text-slate-400 leading-relaxed">
+        <p className="text-sm text-slate-500 leading-relaxed">
           Stay ahead of the market with expert analysis on suburb trends, investment strategies, architectural innovations, and high-end residential data.
         </p>
       </div>
@@ -185,7 +185,7 @@ const BlogsPage = () => {
               className={`px-5 py-2.5 rounded-full whitespace-nowrap text-xs font-bold transition-all flex-shrink-0 ${
                 selectedCategory === category
                   ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20'
-                  : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-600'
+                  : 'bg-white border border-slate-200 text-slate-500 hover:text-slate-900 hover:border-slate-600'
               }`}
             >
               {category}
@@ -196,10 +196,10 @@ const BlogsPage = () => {
 
       {/* Articles Grid */}
       {filteredBlogs.length === 0 ? (
-        <div className="text-center py-16 glass-panel rounded-3xl border border-slate-800 space-y-4">
+        <div className="text-center py-16 glass-panel rounded-3xl border border-slate-200 space-y-4">
           <BookOpen className="w-12 h-12 text-slate-600 mx-auto" />
-          <p className="text-lg font-bold text-white">No insights found</p>
-          <p className="text-xs text-slate-400">Try adjusting your search query or switching categories.</p>
+          <p className="text-lg font-bold text-slate-900">No insights found</p>
+          <p className="text-xs text-slate-500">Try adjusting your search query or switching categories.</p>
           <button 
             onClick={() => { setSelectedCategory('All'); setSearchQuery(''); }}
             className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs"
@@ -213,7 +213,7 @@ const BlogsPage = () => {
             <div 
               key={blog._id} 
               onClick={() => setActiveBlogModal(blog)}
-              className="group cursor-pointer glass-panel rounded-2xl overflow-hidden border border-slate-800 hover:border-amber-500/40 transition-all duration-300 flex flex-col justify-between hover:-translate-y-1 shadow-lg hover:shadow-amber-500/10"
+              className="group cursor-pointer glass-panel rounded-2xl overflow-hidden border border-slate-200 hover:border-amber-500/40 transition-all duration-300 flex flex-col justify-between hover:-translate-y-1 shadow-lg hover:shadow-amber-500/10"
             >
               <div className="space-y-4">
                 <div className="relative h-52 overflow-hidden">
@@ -222,30 +222,30 @@ const BlogsPage = () => {
                     alt={blog.title} 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                   />
-                  <div className="absolute top-3 left-3 px-3 py-1 rounded-lg bg-slate-950/80 backdrop-blur-md border border-slate-800 text-[11px] font-bold text-amber-400">
+                  <div className="absolute top-3 left-3 px-3 py-1 rounded-lg bg-slate-50/80 backdrop-blur-md border border-slate-200 text-[11px] font-bold text-amber-400">
                     {blog.category}
                   </div>
                 </div>
 
                 <div className="p-6 space-y-3">
-                  <div className="flex items-center space-x-3 text-[11px] font-semibold text-slate-400">
+                  <div className="flex items-center space-x-3 text-[11px] font-semibold text-slate-500">
                     <span className="flex items-center"><Clock className="w-3 h-3 mr-1" /> {blog.readTime || '5 min read'}</span>
                     <span>•</span>
                     <span className="flex items-center"><Calendar className="w-3 h-3 mr-1" /> {new Date(blog.createdAt || Date.now()).toLocaleDateString('en-AU', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                   </div>
 
-                  <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition-colors line-clamp-2 leading-snug">
+                  <h3 className="text-lg font-bold text-slate-900 group-hover:text-amber-400 transition-colors line-clamp-2 leading-snug">
                     {blog.title}
                   </h3>
 
-                  <p className="text-xs text-slate-400 leading-relaxed line-clamp-3">
+                  <p className="text-xs text-slate-500 leading-relaxed line-clamp-3">
                     {blog.excerpt || blog.content}
                   </p>
                 </div>
               </div>
 
-              <div className="px-6 pb-6 pt-2 flex items-center justify-between border-t border-slate-800/60 mt-auto">
-                <div className="flex items-center space-x-2 text-xs text-slate-300 font-medium">
+              <div className="px-6 pb-6 pt-2 flex items-center justify-between border-t border-slate-200/60 mt-auto">
+                <div className="flex items-center space-x-2 text-xs text-slate-600 font-medium">
                   <User className="w-3.5 h-3.5 text-amber-400" />
                   <span className="truncate max-w-[120px]">{blog.author || 'Aura Editorial'}</span>
                 </div>
@@ -260,11 +260,11 @@ const BlogsPage = () => {
 
       {/* Article Detail Modal */}
       {activeBlogModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
-          <div className="relative w-full max-w-3xl glass-panel rounded-3xl border border-slate-800 bg-slate-900 overflow-hidden my-8 shadow-2xl space-y-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-50/80 backdrop-blur-md overflow-y-auto">
+          <div className="relative w-full max-w-3xl glass-panel rounded-3xl border border-slate-200 bg-white overflow-hidden my-8 shadow-2xl space-y-6">
             <button 
               onClick={() => setActiveBlogModal(null)}
-              className="absolute top-4 right-4 z-10 p-2.5 rounded-full bg-slate-950/80 border border-slate-800 text-slate-300 hover:text-white transition-colors"
+              className="absolute top-4 right-4 z-10 p-2.5 rounded-full bg-slate-50/80 border border-slate-200 text-slate-600 hover:text-slate-900 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -280,17 +280,17 @@ const BlogsPage = () => {
                 <span className="inline-block px-3 py-1 rounded-lg bg-amber-500 text-slate-950 font-black text-xs uppercase tracking-wider">
                   {activeBlogModal.category}
                 </span>
-                <h2 className="text-2xl md:text-3xl font-extrabold text-white leading-tight">
+                <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight">
                   {activeBlogModal.title}
                 </h2>
               </div>
             </div>
 
             <div className="p-6 md:p-8 space-y-6">
-              <div className="flex flex-wrap items-center justify-between text-xs text-slate-400 pb-4 border-b border-slate-800 gap-2">
+              <div className="flex flex-wrap items-center justify-between text-xs text-slate-500 pb-4 border-b border-slate-200 gap-2">
                 <div className="flex items-center space-x-3">
                   <User className="w-4 h-4 text-amber-400" />
-                  <span className="font-bold text-slate-200">{activeBlogModal.author || 'Aura Editorial'}</span>
+                  <span className="font-bold text-slate-700">{activeBlogModal.author || 'Aura Editorial'}</span>
                 </div>
                 <div className="flex items-center space-x-4">
                   <span className="flex items-center"><Clock className="w-3.5 h-3.5 mr-1 text-amber-400" /> {activeBlogModal.readTime || '5 min read'}</span>
@@ -298,7 +298,7 @@ const BlogsPage = () => {
                 </div>
               </div>
 
-              <div className="prose prose-invert max-w-none text-slate-300 text-sm md:text-base leading-relaxed space-y-4">
+              <div className="prose prose-invert max-w-none text-slate-600 text-sm md:text-base leading-relaxed space-y-4">
                 <p className="font-semibold text-amber-300/90 text-base md:text-lg leading-snug">
                   {activeBlogModal.excerpt}
                 </p>
@@ -310,15 +310,15 @@ const BlogsPage = () => {
                 </p>
               </div>
 
-              <div className="pt-6 border-t border-slate-800 flex items-center justify-between gap-4">
-                <span className="text-xs text-slate-400">Published by {activeBlogModal.author || 'AuraEstates Research Division'}</span>
+              <div className="pt-6 border-t border-slate-200 flex items-center justify-between gap-4">
+                <span className="text-xs text-slate-500">Published by {activeBlogModal.author || 'AuraEstates Research Division'}</span>
                 <div className="flex items-center space-x-2">
                   {activeBlogModal.link && (
                     <a
                       href={activeBlogModal.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-amber-400 font-bold text-xs hover:bg-slate-700 transition-colors"
+                      className="px-4 py-2.5 rounded-xl bg-slate-100 border border-slate-300 text-amber-400 font-bold text-xs hover:bg-slate-200 transition-colors"
                     >
                       Read Full Media Source ↗
                     </a>

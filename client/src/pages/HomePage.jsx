@@ -91,7 +91,7 @@ const HomePage = () => {
               <Sparkles className="w-4 h-4" />
               <span>HANDPICKED EXCLUSIVES</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
               Featured Luxury Listings
             </h2>
           </div>
@@ -121,13 +121,13 @@ const HomePage = () => {
 
       {/* Interactive Map Showcase Banner */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="glass-panel p-8 rounded-3xl border border-slate-800 space-y-6">
+        <div className="glass-panel p-8 rounded-3xl border border-slate-200 space-y-6">
           <div>
             <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest block">INTERACTIVE GEOSPATIAL MAP</span>
-            <h3 className="text-2xl font-extrabold text-white mt-1">Explore All Properties by Geolocation & Radius</h3>
-            <p className="text-xs text-slate-400 mt-1">Viewing all database properties on Google Maps with live prices and details.</p>
+            <h3 className="text-2xl font-extrabold text-slate-900 mt-1">Explore All Properties by Geolocation & Radius</h3>
+            <p className="text-xs text-slate-500 mt-1">Viewing all database properties on Google Maps with live prices and details.</p>
           </div>
-          <div className="h-[480px] rounded-2xl overflow-hidden border border-slate-800">
+          <div className="h-[480px] rounded-2xl overflow-hidden border border-slate-200">
             <PropertyMap properties={allProperties.length > 0 ? allProperties : featuredProperties} />
           </div>
         </div>
@@ -137,28 +137,28 @@ const HomePage = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         <div className="text-center space-y-2">
           <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">TRUSTED PARTNERS</span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white">Premier Real Estate Agencies</h2>
-          <p className="text-slate-400 text-sm max-w-xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900">Premier Real Estate Agencies</h2>
+          <p className="text-slate-500 text-sm max-w-xl mx-auto">
             Partnered with Australia's most reputable brokerages delivering transparent transactions and unmatched expertise.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {agencies.map((agency) => (
-            <div key={agency._id} className="glass-panel p-6 rounded-2xl border border-slate-800 flex items-start space-x-5 hover:border-amber-500/40 transition-colors">
+            <div key={agency._id} className="glass-panel p-6 rounded-2xl border border-slate-200 flex items-start space-x-5 hover:border-amber-500/40 transition-colors">
               <img
                 src={agency.logo}
                 alt={agency.name}
-                className="w-20 h-20 rounded-xl object-contain bg-white p-2 border border-slate-700 flex-shrink-0"
+                className="w-20 h-20 rounded-xl object-contain bg-white p-2 border border-slate-300 flex-shrink-0"
               />
               <div className="space-y-2 flex-1">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-bold text-white">{agency.name}</h3>
+                  <h3 className="text-lg font-bold text-slate-900">{agency.name}</h3>
                   <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
                     ⭐ {agency.rating || 4.9}
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 line-clamp-2">{agency.description}</p>
+                <p className="text-xs text-slate-500 line-clamp-2">{agency.description}</p>
                 <div className="pt-2 flex items-center justify-between text-xs">
                   <span className="text-slate-500">{agency.totalSales || 45} Sales Closed</span>
                   <Link to={`/agencies/${agency._id}`} className="font-bold text-amber-400 hover:text-amber-300">
@@ -176,7 +176,7 @@ const HomePage = () => {
         <div className="flex items-center justify-between">
           <div>
             <span className="text-xs font-bold text-amber-400 uppercase tracking-widest block">DISCOVER</span>
-            <h2 className="text-3xl font-extrabold text-white">Explore Top Suburbs</h2>
+            <h2 className="text-3xl font-extrabold text-slate-900">Explore Top Suburbs</h2>
           </div>
           <Link to="/properties" className="text-sm font-bold text-amber-400 hover:text-amber-300">View All →</Link>
         </div>
@@ -192,14 +192,14 @@ const HomePage = () => {
             <Link
               key={suburb.name}
               to={`/suburbs/${encodeURIComponent(suburb.name)}`}
-              className="group relative overflow-hidden rounded-2xl border border-slate-800 hover:border-amber-500/50 transition-all hover:-translate-y-1 shadow-lg hover:shadow-amber-500/10"
+              className="group relative overflow-hidden rounded-2xl border border-slate-200 hover:border-amber-500/50 transition-all hover:-translate-y-1 shadow-lg hover:shadow-amber-500/10"
             >
               <div className="aspect-square relative">
                 <img src={suburb.img} alt={suburb.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent" />
               </div>
               <div className="absolute bottom-0 left-0 right-0 p-3">
-                <p className="text-sm font-extrabold text-white leading-tight">{suburb.name}</p>
+                <p className="text-sm font-extrabold text-slate-900 leading-tight">{suburb.name}</p>
                 <p className="text-[10px] text-amber-400 font-bold">{suburb.median} median</p>
               </div>
             </Link>
@@ -212,7 +212,7 @@ const HomePage = () => {
         <div className="flex items-center justify-between">
           <div>
             <span className="text-xs font-bold text-amber-400 uppercase tracking-widest block">RECENT RESULTS</span>
-            <h2 className="text-3xl font-extrabold text-white">Recently Sold Properties</h2>
+            <h2 className="text-3xl font-extrabold text-slate-900">Recently Sold Properties</h2>
           </div>
           <Link to="/sold" className="text-sm font-bold text-amber-400 hover:text-amber-300">View All Sold →</Link>
         </div>
@@ -222,19 +222,19 @@ const HomePage = () => {
             { title: 'Toorak European Villa', suburb: 'Toorak VIC', price: '$16,500,000', date: '30 Jun 2026', beds: 5, baths: 6, img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=600' },
             { title: 'Vaucluse Cliffside Mansion', suburb: 'Vaucluse NSW', price: '$19,800,000', date: '15 Jun 2026', beds: 5, baths: 6, img: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&q=80&w=600' },
           ].map((sale, i) => (
-            <Link to="/sold" key={i} className="group glass-panel rounded-2xl border border-slate-800 overflow-hidden hover:border-amber-500/40 transition-all hover:-translate-y-1 shadow-lg hover:shadow-amber-500/10">
+            <Link to="/sold" key={i} className="group glass-panel rounded-2xl border border-slate-200 overflow-hidden hover:border-amber-500/40 transition-all hover:-translate-y-1 shadow-lg hover:shadow-amber-500/10">
               <div className="relative h-48 overflow-hidden">
                 <img src={sale.img} alt={sale.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute top-3 left-3">
-                  <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-slate-900/90 text-slate-300 border border-slate-700 uppercase tracking-wider">SOLD</span>
+                  <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-white/90 text-slate-600 border border-slate-300 uppercase tracking-wider">SOLD</span>
                 </div>
               </div>
               <div className="p-4 space-y-2">
-                <h3 className="text-sm font-bold text-white group-hover:text-amber-400 transition-colors">{sale.title}</h3>
-                <p className="text-xs text-slate-400 flex items-center gap-1"><MapPin className="w-3 h-3 text-amber-400" />{sale.suburb}</p>
-                <div className="flex items-center justify-between pt-2 border-t border-slate-800">
-                  <span className="text-base font-extrabold text-white">{sale.price}</span>
-                  <span className="text-[11px] text-slate-400">{sale.date}</span>
+                <h3 className="text-sm font-bold text-slate-900 group-hover:text-amber-400 transition-colors">{sale.title}</h3>
+                <p className="text-xs text-slate-500 flex items-center gap-1"><MapPin className="w-3 h-3 text-amber-400" />{sale.suburb}</p>
+                <div className="flex items-center justify-between pt-2 border-t border-slate-200">
+                  <span className="text-base font-extrabold text-slate-900">{sale.price}</span>
+                  <span className="text-[11px] text-slate-500">{sale.date}</span>
                 </div>
                 <p className="text-[11px] text-slate-500">{sale.beds} bed • {sale.baths} bath</p>
               </div>
@@ -252,15 +252,15 @@ const HomePage = () => {
               <Search className="w-4 h-4 text-amber-400" />
               <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">CONNECT WITH EXPERTS</span>
             </div>
-            <h2 className="text-3xl md:text-5xl font-extrabold text-white">Find Your Perfect <span className="gold-gradient-text">Real Estate Agent</span></h2>
-            <p className="text-slate-300 max-w-xl mx-auto text-sm sm:text-base leading-relaxed">
+            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900">Find Your Perfect <span className="gold-gradient-text">Real Estate Agent</span></h2>
+            <p className="text-slate-600 max-w-xl mx-auto text-sm sm:text-base leading-relaxed">
               Our network of 1,250+ certified agents across Australia specialise in luxury residential, commercial, and development properties. Get matched with the right expert for your goals.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/agents" className="px-8 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold text-sm hover:from-amber-400 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/30">
                 Find an Agent
               </Link>
-              <Link to="/properties" className="px-8 py-3.5 rounded-xl border border-slate-600 text-white font-extrabold text-sm hover:border-amber-500 hover:text-amber-400 transition-colors">
+              <Link to="/properties" className="px-8 py-3.5 rounded-xl border border-slate-600 text-slate-900 font-extrabold text-sm hover:border-amber-500 hover:text-amber-400 transition-colors">
                 Browse Properties
               </Link>
             </div>
@@ -273,7 +273,7 @@ const HomePage = () => {
         <div className="flex items-center justify-between">
           <div>
             <span className="text-xs font-bold text-amber-400 uppercase tracking-widest block">REPORTS & ANALYTICS</span>
-            <h2 className="text-3xl font-extrabold text-white">Property Market Insights</h2>
+            <h2 className="text-3xl font-extrabold text-slate-900">Property Market Insights</h2>
           </div>
           <Link to="/blogs" className="text-sm font-bold text-amber-400 hover:text-amber-300">
             View All News →
@@ -282,15 +282,15 @@ const HomePage = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {blogs.map((blog) => (
-            <div key={blog._id} className="glass-panel rounded-2xl overflow-hidden border border-slate-800 flex flex-col md:flex-row">
+            <div key={blog._id} className="glass-panel rounded-2xl overflow-hidden border border-slate-200 flex flex-col md:flex-row">
               <img src={blog.image} alt={blog.title} className="w-full md:w-48 h-48 object-cover flex-shrink-0" />
               <div className="p-5 space-y-2 flex flex-col justify-between">
                 <div>
                   <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block mb-1">
                     {blog.category} • {blog.readTime}
                   </span>
-                  <h3 className="text-base font-bold text-white line-clamp-2">{blog.title}</h3>
-                  <p className="text-xs text-slate-400 line-clamp-2 mt-1">{blog.excerpt}</p>
+                  <h3 className="text-base font-bold text-slate-900 line-clamp-2">{blog.title}</h3>
+                  <p className="text-xs text-slate-500 line-clamp-2 mt-1">{blog.excerpt}</p>
                 </div>
                 <Link to="/blogs" className="text-xs font-bold text-amber-400 hover:text-amber-300">
                   Read Full Article →

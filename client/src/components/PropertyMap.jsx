@@ -47,15 +47,15 @@ const PropertyMap = ({ properties = [], center = [-33.8688, 151.2093], zoom = 11
   const googleTileUrl = `https://{s}.google.com/vt/lyrs=${mapType}&x={x}&y={y}&z={z}&key=${GOOGLE_MAPS_KEY}`;
 
   return (
-    <div className="w-full h-full rounded-2xl overflow-hidden border border-slate-800 shadow-2xl relative">
+    <div className="w-full h-full rounded-2xl overflow-hidden border border-slate-200 shadow-2xl relative">
       
       {/* Google Maps Layer Selector Switcher */}
-      <div className="absolute top-3 right-3 z-[400] glass-panel p-1 rounded-xl border border-slate-800 flex items-center space-x-1 text-xs font-bold shadow-lg">
+      <div className="absolute top-3 right-3 z-[400] glass-panel p-1 rounded-xl border border-slate-200 flex items-center space-x-1 text-xs font-bold shadow-lg">
         <button
           type="button"
           onClick={() => setMapType('m')}
           className={`px-3 py-1 rounded-lg transition-all ${
-            mapType === 'm' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-300 hover:text-white'
+            mapType === 'm' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           Google Map
@@ -64,7 +64,7 @@ const PropertyMap = ({ properties = [], center = [-33.8688, 151.2093], zoom = 11
           type="button"
           onClick={() => setMapType('y')}
           className={`px-3 py-1 rounded-lg transition-all ${
-            mapType === 'y' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-300 hover:text-white'
+            mapType === 'y' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           Satellite
