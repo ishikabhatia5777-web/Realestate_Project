@@ -18,7 +18,9 @@ import {
   Home,
   MessageSquare,
   Bell,
-  Settings
+  Settings,
+  BarChart2,
+  Users
 } from 'lucide-react';
 
 const Navbar = ({ onOpenAIChat }) => {
@@ -154,8 +156,8 @@ const Navbar = ({ onOpenAIChat }) => {
               </button>
             )}
 
-            {/* Settings Dropdown - shown ONLY for agents */}
-            {user && user.role === 'agent' && (
+            {/* Settings Dropdown - shown for agents and admins */}
+            {user && (user.role === 'agent' || user.role === 'admin' || user.role === 'super_admin') && (
               <div className="relative" ref={settingsRef}>
                 <button
                   onClick={() => setSettingsNavOpen(!settingsNavOpen)}
@@ -167,28 +169,56 @@ const Navbar = ({ onOpenAIChat }) => {
 
                 {settingsNavOpen && (
                   <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl border border-slate-200 shadow-xl z-50 py-1 overflow-hidden">
-                    <button
-                      onClick={() => { navigate('/dashboard/agent?tab=messages'); setSettingsNavOpen(false); }}
-                      className="w-full px-4 py-2.5 text-left flex items-center space-x-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-xs font-semibold transition-colors"
-                    >
-                      <MessageSquare className="w-3.5 h-3.5" />
-                      <span>Live Chat Inbox</span>
-                    </button>
-                    <button
-                      onClick={() => { navigate('/dashboard/agent?tab=requests'); setSettingsNavOpen(false); }}
-                      className="w-full px-4 py-2.5 text-left flex items-center space-x-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-xs font-semibold transition-colors"
-                    >
-                      <Bell className="w-3.5 h-3.5" />
-                      <span>Connection Requests</span>
-                    </button>
-                    <button
-                      onClick={() => { navigate('/dashboard/agent?tab=profile'); setSettingsNavOpen(false); }}
-                      className="w-full px-4 py-2.5 text-left flex items-center space-x-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-xs font-semibold transition-colors"
-                    >
-                      <User className="w-3.5 h-3.5" />
-                      <span>Profile Settings</span>
-                    </button>
-
+                    {user.role === 'agent' && (
+                      <>
+                        <button
+                          onClick={() => { navigate('/dashboard/agent?tab=messages'); setSettingsNavOpen(false); }}
+                          className="w-full px-4 py-2.5 text-left flex items-center space-x-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-xs font-semibold transition-colors"
+                        >
+                          <MessageSquare className="w-3.5 h-3.5" />
+                          <span>Live Chat Inbox</span>
+                        </button>
+                        <button
+                          onClick={() => { navigate('/dashboard/agent?tab=requests'); setSettingsNavOpen(false); }}
+                          className="w-full px-4 py-2.5 text-left flex items-center space-x-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-xs font-semibold transition-colors"
+                        >
+                          <Bell className="w-3.5 h-3.5" />
+                          <span>Connection Requests</span>
+                        </button>
+                        <button
+                          onClick={() => { navigate('/dashboard/agent?tab=profile'); setSettingsNavOpen(false); }}
+                          className="w-full px-4 py-2.5 text-left flex items-center space-x-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-xs font-semibold transition-colors"
+                        >
+                          <User className="w-3.5 h-3.5" />
+                          <span>Profile Settings</span>
+                        </button>
+                      </>
+                    )}
+                    {(user.role === 'admin' || user.role === 'super_admin') && (
+                      <>
+                        <button
+                          onClick={() => { navigate('/dashboard/admin?tab=metrics'); setSettingsNavOpen(false); }}
+                          className="w-full px-4 py-2.5 text-left flex items-center space-x-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-xs font-semibold transition-colors"
+                        >
+                          <BarChart2 className="w-3.5 h-3.5" />
+                          <span>Overview Metrics</span>
+                        </button>
+                        <button
+                          onClick={() => { navigate('/dashboard/admin?tab=users'); setSettingsNavOpen(false); }}
+                          className="w-full px-4 py-2.5 text-left flex items-center space-x-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-xs font-semibold transition-colors"
+                        >
+                          <Users className="w-3.5 h-3.5" />
+                          <span>Users & RBAC</span>
+                        </button>
+                        <button
+                          onClick={() => { navigate('/dashboard/admin?tab=agents'); setSettingsNavOpen(false); }}
+                          className="w-full px-4 py-2.5 text-left flex items-center space-x-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-xs font-semibold transition-colors"
+                        >
+                          <Building2 className="w-3.5 h-3.5" />
+                          <span>Agents</span>
+                        </button>
+                      </>
+                    )}
                   </div>
                 )}
               </div>

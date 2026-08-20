@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { fetchAdminMetrics, fetchAdminUsers, updateUserRole, fetchProperties, updatePropertyStatus, approveProperty, rejectProperty, fetchAdminProperties } from '../../services/api';
 import { ShieldCheck, Users, Building2, DollarSign, Activity, Check, X, FileText } from 'lucide-react';
@@ -13,7 +13,13 @@ const AdminDashboard = () => {
   const [logs, setLogs] = useState([]);
   const [adminProperties, setAdminProperties] = useState([]);
   const [selectedAdminAgentId, setSelectedAdminAgentId] = useState(null);
-  const [activeTab, setActiveTab] = useState('metrics');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabFromUrl = searchParams.get('tab') || 'metrics';
+  const activeTab = ['metrics', 'users', 'agents'].includes(tabFromUrl) ? tabFromUrl : 'metrics';
+  
+  const setActiveTab = (tab) => {
+    setSearchParams({ tab });
+  };
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -112,28 +118,6 @@ const AdminDashboard = () => {
           <h1 className="text-3xl font-extrabold text-slate-900">Administrator Panel</h1>
         </div>
 
-        {/* Tab switcher */}
-        <div className="flex space-x-2 bg-white p-1 rounded-xl border border-slate-200 text-xs font-bold">
-          <button
-            onClick={() => setActiveTab('metrics')}
-            className={`px-4 py-2 rounded-lg transition-all ${activeTab === 'metrics' ? 'bg-sky-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
-          >
-            Overview Metrics
-          </button>
-          <button
-            onClick={() => setActiveTab('users')}
-            className={`px-4 py-2 rounded-lg transition-all ${activeTab === 'users' ? 'bg-sky-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
-          >
-            Users & RBAC ({users.length})
-          </button>
-
-          <button
-            onClick={() => setActiveTab('agents')}
-            className={`px-4 py-2 rounded-lg transition-all ${activeTab === 'agents' ? 'bg-sky-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
-          >
-            Agents ({users.filter(u => u.role === 'agent').length})
-          </button>
-        </div>
       </div>
 
       {activeTab === 'metrics' && metrics && (
