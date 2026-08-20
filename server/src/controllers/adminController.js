@@ -505,9 +505,7 @@ const getAdminInquiries = async (req, res, next) => {
   }
 };
 
-const fs = require('fs');
 const csv = require('csv-parser');
-const Property = require('../models/Property');
 
 // @desc    Upload properties via CSV
 // @route   POST /api/admin/properties/upload-csv
