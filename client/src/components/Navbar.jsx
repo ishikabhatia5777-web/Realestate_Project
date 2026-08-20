@@ -99,8 +99,8 @@ const Navbar = ({ onOpenAIChat }) => {
               </>
             )}
 
-            {/* Market Insights visible to Buyer, Seller, Agent, Guest (hidden for Admin) */}
-            {(!user || user.role !== 'admin') && (
+            {/* Market Insights visible to Buyer, Seller, Guest (hidden for Admin, Agent) */}
+            {(!user || (user.role !== 'admin' && user.role !== 'agent')) && (
               <Link to="/blogs" className={linkClass('/blogs')}>
                 Market Insights
               </Link>
@@ -305,7 +305,7 @@ const Navbar = ({ onOpenAIChat }) => {
             </>
           )}
 
-          {(!user || user.role !== 'admin') && (
+          {(!user || (user.role !== 'admin' && user.role !== 'agent')) && (
             <Link
               to="/blogs"
               onClick={() => setMobileMenuOpen(false)}
