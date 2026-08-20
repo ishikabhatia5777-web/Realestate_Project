@@ -43,7 +43,7 @@ const AppLayout = ({ isAIChatOpen, setIsAIChatOpen }) => {
     location.pathname.startsWith('/reset-password');
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-slate-950 text-slate-100">
+    <div className="min-h-screen flex flex-col justify-between bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200">
       {!isAuthPage && <Navbar onOpenAIChat={() => setIsAIChatOpen(true)} />}
       
       <main className="flex-1">
