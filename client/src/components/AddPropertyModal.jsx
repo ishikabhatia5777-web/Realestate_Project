@@ -173,7 +173,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200 pb-4">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl gold-gradient-bg flex items-center justify-center shadow-lg shadow-amber-500/20">
+            <div className="w-10 h-10 rounded-xl brand-gradient-bg flex items-center justify-center shadow-lg shadow-sky-500/20">
               <Building2 className="w-5 h-5 text-slate-950 font-bold" />
             </div>
             <div>
@@ -218,7 +218,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
                     onClick={() => setListingType(type)}
                     className={`py-2 rounded-xl font-bold border transition-all text-xs ${
                       listingType === type
-                        ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-md'
+                        ? 'bg-sky-500 text-slate-950 border-sky-500 shadow-md'
                         : 'bg-white border-slate-200 text-slate-500 hover:text-slate-900'
                     }`}
                   >
@@ -233,7 +233,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
               <select
                 value={propertyType}
                 onChange={(e) => setPropertyType(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-sky-500"
               >
                 {['Residential', 'Apartment', 'Villa', 'Townhouse', 'Commercial', 'Land', 'Office', 'Warehouse', 'Farm'].map((pt) => (
                   <option key={pt} value={pt}>{pt}</option>
@@ -251,7 +251,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Modern Ocean View Villa"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-sky-500"
                 required
               />
             </div>
@@ -265,7 +265,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                   placeholder="1250000"
-                  className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
+                  className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-sky-500"
                   required
                 />
               </div>
@@ -275,7 +275,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
           {/* Location / Address */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-slate-600 flex items-center space-x-1.5">
-              <MapPin className="w-3.5 h-3.5 text-amber-400" />
+              <MapPin className="w-3.5 h-3.5 text-sky-500" />
               <span>Property Address Details</span>
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
@@ -284,7 +284,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
                 value={street}
                 onChange={(e) => setStreet(e.target.value)}
                 placeholder="Street Address (e.g. 42 George St)"
-                className="sm:col-span-2 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
+                className="sm:col-span-2 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-sky-500"
                 required
               />
               <input
@@ -292,7 +292,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
                 value={suburb}
                 onChange={(e) => setSuburb(e.target.value)}
                 placeholder="Suburb (e.g. Bondi Beach)"
-                className="px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
+                className="px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-sky-500"
                 required
               />
               <input
@@ -300,7 +300,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 placeholder="City (e.g. Sydney)"
-                className="px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
+                className="px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-sky-500"
                 required
               />
               <input
@@ -308,14 +308,14 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
                 value={state}
                 onChange={(e) => setState(e.target.value)}
                 placeholder="State (e.g. NSW)"
-                className="px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
+                className="px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-sky-500"
               />
               <input
                 type="text"
                 value={postcode}
                 onChange={(e) => setPostcode(e.target.value)}
                 placeholder="Postcode (e.g. 2026)"
-                className="px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
+                className="px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-sky-500"
               />
             </div>
           </div>
@@ -406,7 +406,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe property highlight features, interior design, backyard, location proximity, view, etc..."
-              className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-sky-500"
               required
             />
           </div>
@@ -449,7 +449,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
           <div className="space-y-3 text-xs">
             <div className="flex items-center justify-between">
               <label className="font-bold text-slate-600 flex items-center space-x-1.5">
-                <ImageIcon className="w-4 h-4 text-amber-400" />
+                <ImageIcon className="w-4 h-4 text-sky-500" />
                 <span>Property Photos & Images</span>
               </label>
               <span className="text-[11px] text-slate-500">({images.length} images added)</span>
@@ -470,7 +470,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="px-4 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/40 text-amber-400 font-bold text-xs hover:bg-amber-500/20 transition-all flex items-center justify-center space-x-2"
+                className="px-4 py-2.5 rounded-xl bg-sky-500/10 border border-sky-500/40 text-sky-500 font-bold text-xs hover:bg-sky-500/20 transition-all flex items-center justify-center space-x-2"
               >
                 <Upload className="w-4 h-4" />
                 <span>Choose Image File from PC</span>
@@ -483,7 +483,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
                   value={imageUrl}
                   onChange={(e) => setImageUrl(e.target.value)}
                   placeholder="Or paste web image URL (https://...)"
-                  className="flex-1 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 placeholder-slate-500 focus:border-amber-500"
+                  className="flex-1 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 placeholder-slate-500 focus:border-sky-500"
                 />
                 <button
                   type="button"
@@ -519,7 +519,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
                     </button>
                   )}
                   {idx === 0 && (
-                    <span className="absolute bottom-1 left-1 px-2 py-0.5 rounded bg-slate-50/80 backdrop-blur-md text-[10px] font-bold text-amber-400 border border-amber-500/30">
+                    <span className="absolute bottom-1 left-1 px-2 py-0.5 rounded bg-slate-50/80 backdrop-blur-md text-[10px] font-bold text-sky-500 border border-sky-500/30">
                       Main Cover
                     </span>
                   )}
@@ -532,7 +532,7 @@ const AddPropertyModal = ({ isOpen, onClose, onPropertyAdded }) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold text-sm hover:from-amber-400 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/20"
+            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 text-slate-950 font-extrabold text-sm hover:from-sky-400 hover:to-sky-500 transition-all shadow-lg shadow-sky-500/20"
           >
             {loading ? 'Publishing to Database...' : 'Save & Publish Property Listing'}
           </button>

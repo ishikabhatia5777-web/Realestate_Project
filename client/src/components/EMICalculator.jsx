@@ -24,8 +24,8 @@ const EMICalculator = ({ defaultPrice = 1200000 }) => {
   return (
     <div className="glass-panel p-6 rounded-2xl border border-slate-200 space-y-6">
       <div className="flex items-center space-x-3 border-b border-slate-200 pb-4">
-        <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
-          <Calculator className="w-5 h-5 text-amber-400" />
+        <div className="w-10 h-10 rounded-xl bg-sky-500/20 border border-sky-500/30 flex items-center justify-center">
+          <Calculator className="w-5 h-5 text-sky-500" />
         </div>
         <div>
           <h3 className="text-base font-bold text-slate-900">Mortgage & EMI Calculator</h3>
@@ -42,7 +42,7 @@ const EMICalculator = ({ defaultPrice = 1200000 }) => {
           <div className="space-y-1.5">
             <div className="flex justify-between font-semibold text-slate-600">
               <span>Property Price</span>
-              <span className="text-amber-400 font-bold">${propertyPrice.toLocaleString()}</span>
+              <span className="text-sky-500 font-bold">${propertyPrice.toLocaleString()}</span>
             </div>
             <input
               type="range"
@@ -59,7 +59,7 @@ const EMICalculator = ({ defaultPrice = 1200000 }) => {
           <div className="space-y-1.5">
             <div className="flex justify-between font-semibold text-slate-600">
               <span>Down Payment ({downPaymentPercent}%)</span>
-              <span className="text-amber-400 font-bold">${downPayment.toLocaleString()}</span>
+              <span className="text-sky-500 font-bold">${downPayment.toLocaleString()}</span>
             </div>
             <input
               type="range"
@@ -76,7 +76,7 @@ const EMICalculator = ({ defaultPrice = 1200000 }) => {
           <div className="space-y-1.5">
             <div className="flex justify-between font-semibold text-slate-600">
               <span>Interest Rate</span>
-              <span className="text-amber-400 font-bold">{interestRate}%</span>
+              <span className="text-sky-500 font-bold">{interestRate}%</span>
             </div>
             <input
               type="range"
@@ -93,7 +93,7 @@ const EMICalculator = ({ defaultPrice = 1200000 }) => {
           <div className="space-y-1.5">
             <div className="flex justify-between font-semibold text-slate-600">
               <span>Loan Term</span>
-              <span className="text-amber-400 font-bold">{loanTermYears} Years</span>
+              <span className="text-sky-500 font-bold">{loanTermYears} Years</span>
             </div>
             <input
               type="range"
@@ -112,7 +112,7 @@ const EMICalculator = ({ defaultPrice = 1200000 }) => {
         <div className="bg-white/80 rounded-2xl p-5 border border-slate-200 flex flex-col justify-between space-y-4">
           <div>
             <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Estimated Repayment</span>
-            <p className="text-3xl font-extrabold gold-gradient-text tracking-tight mt-1">
+            <p className="text-3xl font-extrabold brand-gradient-text tracking-tight mt-1">
               ${Math.round(monthlyRepayment).toLocaleString()}<span className="text-sm font-normal text-slate-500"> / month</span>
             </p>
           </div>

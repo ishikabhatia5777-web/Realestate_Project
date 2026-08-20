@@ -61,11 +61,11 @@ const OfferModal = ({ property, isOpen, onClose }) => {
             <CheckCircle className="w-16 h-16 text-emerald-400 mx-auto animate-bounce" />
             <h3 className="text-xl font-bold text-slate-900">Purchase Offer Submitted!</h3>
             <p className="text-xs text-slate-600">
-              Your binding offer of <span className="text-amber-400 font-bold">${Number(offerAmount).toLocaleString()}</span> has been securely transmitted to the listing agent and owner.
+              Your binding offer of <span className="text-sky-500 font-bold">${Number(offerAmount).toLocaleString()}</span> has been securely transmitted to the listing agent and owner.
             </p>
             <button
               onClick={onClose}
-              className="w-full py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs"
+              className="w-full py-2.5 rounded-xl bg-sky-500 text-slate-950 font-bold text-xs"
             >
               Close Window
             </button>
@@ -84,12 +84,12 @@ const OfferModal = ({ property, isOpen, onClose }) => {
             <div className="space-y-1 text-xs">
               <label className="font-bold text-slate-600">Offer Amount (AUD)</label>
               <div className="relative">
-                <DollarSign className="w-4 h-4 text-amber-400 absolute left-3 top-3" />
+                <DollarSign className="w-4 h-4 text-sky-500 absolute left-3 top-3" />
                 <input
                   type="number"
                   value={offerAmount}
                   onChange={(e) => setOfferAmount(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-bold text-slate-900 focus:border-amber-500"
+                  className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-bold text-slate-900 focus:border-sky-500"
                   required
                 />
               </div>
@@ -103,7 +103,7 @@ const OfferModal = ({ property, isOpen, onClose }) => {
                 type="number"
                 value={depositAmount}
                 onChange={(e) => setDepositAmount(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-amber-500"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-sky-500"
               />
             </div>
 
@@ -114,7 +114,7 @@ const OfferModal = ({ property, isOpen, onClose }) => {
                 value={conditions}
                 onChange={(e) => setConditions(e.target.value)}
                 rows={3}
-                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-amber-500"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-sky-500"
               />
             </div>
 
@@ -136,7 +136,7 @@ const OfferModal = ({ property, isOpen, onClose }) => {
             <button
               type="submit"
               disabled={loading || !acceptedTerms}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold text-sm hover:from-amber-400 hover:to-amber-500 transition-all disabled:opacity-50"
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 text-slate-950 font-bold text-sm hover:from-sky-400 hover:to-sky-500 transition-all disabled:opacity-50"
             >
               {loading ? 'Submitting Offer...' : 'Submit Digital Offer'}
             </button>

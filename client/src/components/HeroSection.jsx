@@ -54,7 +54,7 @@ const HeroSection = () => {
           className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-tight"
         >
           Discover Exceptional <br />
-          <span className="gold-gradient-text">Real Estate Masterpieces</span>
+          <span className="brand-gradient-text">Real Estate Masterpieces</span>
         </motion.h1>
 
         <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
@@ -77,7 +77,7 @@ const HeroSection = () => {
                   tab === t.key
                     ? t.key === 'Sold'
                       ? 'bg-slate-600 text-slate-900 shadow-lg'
-                      : 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20'
+                      : 'bg-sky-500 text-slate-950 shadow-lg shadow-sky-500/20'
                     : 'text-slate-500 hover:text-slate-900 hover:bg-white'
                 }`}
               >
@@ -94,13 +94,13 @@ const HeroSection = () => {
                   Location or Suburb
                 </label>
                 <div className="relative">
-                  <MapPin className="w-4 h-4 text-amber-400 absolute left-3.5 top-3.5" />
+                  <MapPin className="w-4 h-4 text-sky-500 absolute left-3.5 top-3.5" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="e.g. Point Piper, Barangaroo, South Yarra..."
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-none focus:border-amber-500 transition-colors"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-none focus:border-sky-500 transition-colors"
                   />
                 </div>
               </div>
@@ -113,7 +113,7 @@ const HeroSection = () => {
                   <select
                     value={propertyType}
                     onChange={(e) => setPropertyType(e.target.value)}
-                    className="w-full px-3 py-3 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-none focus:border-amber-500 transition-colors"
+                    className="w-full px-3 py-3 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-none focus:border-sky-500 transition-colors"
                   >
                     <option value="">All Types</option>
                     <option value="Villa">Luxury Villa</option>
@@ -129,7 +129,7 @@ const HeroSection = () => {
               <div className={`${tab !== 'Sold' ? 'sm:col-span-4' : 'sm:col-span-7'} flex items-end`}>
                 <button
                   type="submit"
-                  className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold text-xs uppercase tracking-wider hover:from-amber-400 hover:to-amber-500 transition-all flex items-center justify-center space-x-2 shadow-lg shadow-amber-500/20"
+                  className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 text-slate-950 font-extrabold text-xs uppercase tracking-wider hover:from-sky-400 hover:to-sky-500 transition-all flex items-center justify-center space-x-2 shadow-lg shadow-sky-500/20"
                 >
                   <Search className="w-4 h-4" />
                   <span>
@@ -154,7 +154,7 @@ const HeroSection = () => {
                         onClick={() => setBedrooms(b === 'Any' ? '' : b.replace('+', ''))}
                         className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold border transition-all ${
                           (bedrooms === '' && b === 'Any') || bedrooms === b.replace('+', '')
-                            ? 'bg-amber-500 text-slate-950 border-amber-500'
+                            ? 'bg-sky-500 text-slate-950 border-sky-500'
                             : 'bg-white border-slate-200 text-slate-500 hover:text-slate-900'
                         }`}
                       >
@@ -175,7 +175,7 @@ const HeroSection = () => {
                         onClick={() => setBathrooms(b === 'Any' ? '' : b.replace('+', ''))}
                         className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold border transition-all ${
                           (bathrooms === '' && b === 'Any') || bathrooms === b.replace('+', '')
-                            ? 'bg-amber-500 text-slate-950 border-amber-500'
+                            ? 'bg-sky-500 text-slate-950 border-sky-500'
                             : 'bg-white border-slate-200 text-slate-500 hover:text-slate-900'
                         }`}
                       >
@@ -199,7 +199,7 @@ const HeroSection = () => {
                   if (tab === 'Sold') navigate(`/sold?suburb=${suburb}`);
                   else navigate(`/properties?suburb=${suburb}&listingType=${tab}`);
                 }}
-                className="px-3 py-1 rounded-full bg-white/80 border border-slate-200 text-xs font-medium text-slate-600 hover:border-amber-500 hover:text-amber-400 transition-colors"
+                className="px-3 py-1 rounded-full bg-white/80 border border-slate-200 text-xs font-medium text-slate-600 hover:border-sky-500 hover:text-sky-500 transition-colors"
               >
                 {suburb}
               </button>

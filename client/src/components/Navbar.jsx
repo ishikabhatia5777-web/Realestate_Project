@@ -33,10 +33,10 @@ const Navbar = ({ onOpenAIChat }) => {
   };
 
   const linkClass = (path) => 
-    `transition-colors ${isActive(path) ? 'text-amber-400 font-extrabold shadow-amber-500/50 drop-shadow-md' : 'text-slate-600 hover:text-amber-400 font-medium'}`;
+    `transition-colors ${isActive(path) ? 'text-sky-500 font-extrabold shadow-sky-500/50 drop-shadow-md' : 'text-slate-600 hover:text-sky-500 font-medium'}`;
     
   const mobileLinkClass = (path) =>
-    `block py-2 ${isActive(path) ? 'text-amber-400 font-extrabold bg-slate-100/40 px-3 -ml-3 rounded-lg' : 'text-slate-600 font-medium hover:text-amber-400'}`;
+    `block py-2 ${isActive(path) ? 'text-sky-500 font-extrabold bg-slate-100/40 px-3 -ml-3 rounded-lg' : 'text-slate-600 font-medium hover:text-sky-500'}`;
 
   const getDashboardRoute = () => {
     if (!user) return '/login';
@@ -62,12 +62,12 @@ const Navbar = ({ onOpenAIChat }) => {
           
           {/* Brand Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
-            <div className="w-11 h-11 rounded-xl gold-gradient-bg flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform duration-300">
+            <div className="w-11 h-11 rounded-xl brand-gradient-bg flex items-center justify-center shadow-lg shadow-sky-500/20 group-hover:scale-105 transition-transform duration-300">
               <Building2 className="w-6 h-6 text-slate-950 font-bold" />
             </div>
             <div>
               <span className="text-xl font-extrabold tracking-tight text-slate-900 block">
-                AURA<span className="gold-gradient-text">ESTATES</span>
+                AURA<span className="brand-gradient-text">ESTATES</span>
               </span>
               <span className="text-[10px] tracking-widest uppercase text-slate-500 font-semibold block">
                 Luxury Real Estate
@@ -112,8 +112,8 @@ const Navbar = ({ onOpenAIChat }) => {
                 to={getDashboardRoute()} 
                 className={`px-3.5 py-1.5 rounded-xl border font-bold text-xs flex items-center space-x-1.5 transition-all shadow-sm ${
                   location.pathname.startsWith('/dashboard') 
-                    ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-amber-500/30' 
-                    : 'bg-amber-500/10 border-amber-500/30 text-amber-400 hover:bg-amber-500/20'
+                    ? 'bg-sky-500 text-slate-950 border-sky-500 shadow-sky-500/30' 
+                    : 'bg-sky-500/10 border-sky-500/30 text-sky-500 hover:bg-sky-500/20'
                 }`}
               >
                 <LayoutDashboard className="w-4 h-4" />
@@ -138,10 +138,10 @@ const Navbar = ({ onOpenAIChat }) => {
             {/* Theme Toggle Button */}
             <button
               onClick={toggleTheme}
-              className="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 hover:text-amber-500 dark:border-slate-200 dark:bg-white/60 dark:text-slate-600 dark:hover:text-amber-400 dark:hover:border-amber-500/30 transition-all"
+              className="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 hover:text-sky-600 dark:border-slate-200 dark:bg-white/60 dark:text-slate-600 dark:hover:text-sky-500 dark:hover:border-sky-500/30 transition-all"
               title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
             >
-              {isDark ? <Sun className="w-4.5 h-4.5 text-amber-400" /> : <Moon className="w-4.5 h-4.5 text-slate-500" />}
+              {isDark ? <Sun className="w-4.5 h-4.5 text-sky-500" /> : <Moon className="w-4.5 h-4.5 text-slate-500" />}
             </button>
 
             {/* Saved Wishlist (Shown ONLY to Buyer and Guest users) */}
@@ -173,7 +173,7 @@ const Navbar = ({ onOpenAIChat }) => {
               <div className="relative">
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="flex items-center space-x-3 p-1.5 rounded-xl border border-slate-200 bg-white hover:border-amber-500/50 transition-all"
+                  className="flex items-center space-x-3 p-1.5 rounded-xl border border-slate-200 bg-white hover:border-sky-500/50 transition-all"
                 >
                   <img
                     src={user.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400'}
@@ -182,7 +182,7 @@ const Navbar = ({ onOpenAIChat }) => {
                   />
                   <div className="text-left hidden lg:block pr-1">
                     <span className="text-xs font-bold text-slate-900 block leading-tight">{user.name}</span>
-                    <span className="text-[10px] text-amber-400 font-semibold uppercase tracking-wider block">
+                    <span className="text-[10px] text-sky-500 font-semibold uppercase tracking-wider block">
                       {user.role.replace('_', ' ')}
                     </span>
                   </div>
@@ -199,18 +199,18 @@ const Navbar = ({ onOpenAIChat }) => {
                     <Link
                       to="/"
                       onClick={() => setUserDropdownOpen(false)}
-                      className="flex items-center space-x-2.5 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-100/60 hover:text-amber-400 transition-colors"
+                      className="flex items-center space-x-2.5 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-100/60 hover:text-sky-500 transition-colors"
                     >
-                      <Home className="w-4 h-4 text-amber-400" />
+                      <Home className="w-4 h-4 text-sky-500" />
                       <span>Home Page</span>
                     </Link>
                     
                     <Link
                       to={getDashboardRoute()}
                       onClick={() => setUserDropdownOpen(false)}
-                      className="flex items-center space-x-2.5 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-100/60 hover:text-amber-400 transition-colors"
+                      className="flex items-center space-x-2.5 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-100/60 hover:text-sky-500 transition-colors"
                     >
-                      <LayoutDashboard className="w-4 h-4 text-amber-400" />
+                      <LayoutDashboard className="w-4 h-4 text-sky-500" />
                       <span>My Dashboard</span>
                     </Link>
 
@@ -238,7 +238,7 @@ const Navbar = ({ onOpenAIChat }) => {
                 </Link>
                 <Link
                   to="/register"
-                  className="px-4 py-2 rounded-lg text-sm font-bold bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 hover:from-amber-400 hover:to-amber-500 transition-all shadow-md shadow-amber-500/20"
+                  className="px-4 py-2 rounded-lg text-sm font-bold bg-gradient-to-r from-sky-500 to-sky-600 text-slate-950 hover:from-sky-400 hover:to-sky-500 transition-all shadow-md shadow-sky-500/20"
                 >
                   Get Started
                 </Link>
@@ -254,7 +254,7 @@ const Navbar = ({ onOpenAIChat }) => {
               className="p-2 rounded-lg border border-slate-200 bg-white text-slate-600 dark:border-slate-200 dark:bg-white/60 dark:text-slate-600"
               title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
             >
-              {isDark ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-slate-500" />}
+              {isDark ? <Sun className="w-5 h-5 text-sky-500" /> : <Moon className="w-5 h-5 text-slate-500" />}
             </button>
 
             <button
@@ -336,8 +336,8 @@ const Navbar = ({ onOpenAIChat }) => {
                 onClick={() => setMobileMenuOpen(false)}
                 className={`w-full flex items-center justify-center space-x-2 py-2.5 rounded-lg font-bold text-sm ${
                   location.pathname.startsWith('/dashboard')
-                    ? 'bg-amber-600 text-slate-900'
-                    : 'bg-amber-500 text-slate-950'
+                    ? 'bg-sky-600 text-slate-900'
+                    : 'bg-sky-500 text-slate-950'
                 }`}
               >
                 <LayoutDashboard className="w-4 h-4" />
@@ -365,7 +365,7 @@ const Navbar = ({ onOpenAIChat }) => {
               <Link
                 to="/register"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center py-2.5 rounded-lg bg-amber-500 text-slate-950 font-bold text-sm"
+                className="w-full text-center py-2.5 rounded-lg bg-sky-500 text-slate-950 font-bold text-sm"
               >
                 Create Account
               </Link>

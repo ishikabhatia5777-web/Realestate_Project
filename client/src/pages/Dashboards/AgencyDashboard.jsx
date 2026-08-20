@@ -84,7 +84,7 @@ const AgencyDashboard = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-900">
         <div className="text-center space-y-4">
-          <div className="w-12 h-12 rounded-full border-4 border-amber-500 border-t-transparent animate-spin mx-auto"></div>
+          <div className="w-12 h-12 rounded-full border-4 border-sky-500 border-t-transparent animate-spin mx-auto"></div>
           <p className="text-sm font-bold text-slate-500">Verifying session...</p>
         </div>
       </div>
@@ -94,7 +94,7 @@ const AgencyDashboard = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       <div>
-        <span className="text-xs font-bold text-amber-400 uppercase tracking-widest block">AGENCY PORTAL</span>
+        <span className="text-xs font-bold text-sky-500 uppercase tracking-widest block">AGENCY PORTAL</span>
         <h1 className="text-3xl font-extrabold text-slate-900">Brokerage Performance Dashboard</h1>
       </div>
 
@@ -115,7 +115,7 @@ const AgencyDashboard = () => {
           <h3 className="text-base font-bold text-slate-900">Agency Agents & Licensees</h3>
           <button 
             onClick={handleInviteAgent}
-            className="px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold text-xs hover:bg-amber-400 transition-colors"
+            className="px-3 py-1.5 rounded-lg bg-sky-500 text-slate-950 font-bold text-xs hover:bg-sky-400 transition-colors"
           >
             + Invite Agent
           </button>
@@ -125,7 +125,7 @@ const AgencyDashboard = () => {
             <div 
               key={agent._id} 
               onClick={() => setSelectedAgentId(selectedAgentId === agent._id ? null : agent._id)}
-              className={`p-4 rounded-xl border flex items-center space-x-3 cursor-pointer transition-colors ${selectedAgentId === agent._id ? 'bg-slate-100 border-amber-500 ring-1 ring-amber-500' : 'bg-white border-slate-200 hover:bg-slate-100 hover:border-slate-300'}`}
+              className={`p-4 rounded-xl border flex items-center space-x-3 cursor-pointer transition-colors ${selectedAgentId === agent._id ? 'bg-slate-100 border-sky-500 ring-1 ring-amber-500' : 'bg-white border-slate-200 hover:bg-slate-100 hover:border-slate-300'}`}
             >
               <img src={agent.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400'} alt={agent.name} className="w-10 h-10 rounded-full object-cover border border-slate-200" />
               <div>
@@ -141,7 +141,7 @@ const AgencyDashboard = () => {
       {selectedAgentId && (
         <div className="glass-panel p-6 rounded-2xl border border-slate-200 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="flex items-center space-x-2 border-b border-slate-200 pb-4">
-            <FileText className="w-5 h-5 text-amber-500" />
+            <FileText className="w-5 h-5 text-sky-600" />
             <h3 className="text-base font-bold text-slate-900">
               Properties Managed by {agents.find(a => a._id === selectedAgentId)?.name}
             </h3>
@@ -155,7 +155,7 @@ const AgencyDashboard = () => {
                   </div>
                   <div className="flex-1 flex flex-col justify-center">
                     <h4 className="text-sm font-bold text-slate-900 line-clamp-1">{property.title}</h4>
-                    <p className="text-xs text-amber-400 font-semibold mt-1">${property.price?.toLocaleString()}</p>
+                    <p className="text-xs text-sky-500 font-semibold mt-1">${property.price?.toLocaleString()}</p>
                     <p className="text-[10px] text-slate-500 mt-1 line-clamp-1">{property.address?.suburb}, {property.address?.state}</p>
                   </div>
                 </div>

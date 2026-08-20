@@ -227,10 +227,10 @@ const LiveChatModal = ({ agent, property, isOpen, onClose }) => {
                 key={`line-${lineIdx}-link-${matchIndex}`}
                 type="button"
                 onClick={() => handleLinkClick(targetUrl)}
-                className="inline-flex items-center space-x-1 font-bold text-amber-300 hover:text-amber-200 underline bg-amber-500/10 hover:bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/30 transition-all cursor-pointer mx-1 my-0.5 shadow-sm"
+                className="inline-flex items-center space-x-1 font-bold text-amber-300 hover:text-amber-200 underline bg-sky-500/10 hover:bg-sky-500/20 px-1.5 py-0.5 rounded border border-sky-500/30 transition-all cursor-pointer mx-1 my-0.5 shadow-sm"
               >
                 <span>🏡 {titleText}</span>
-                <ExternalLink className="w-3 h-3 text-amber-400 shrink-0" />
+                <ExternalLink className="w-3 h-3 text-sky-500 shrink-0" />
               </button>
             );
 
@@ -287,7 +287,7 @@ const LiveChatModal = ({ agent, property, isOpen, onClose }) => {
               <img
                 src={recipient.avatar || 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400'}
                 alt={recipient.name}
-                className="w-10 h-10 rounded-full object-cover border border-amber-500/40"
+                className="w-10 h-10 rounded-full object-cover border border-sky-500/40"
               />
             </div>
             <div>
@@ -297,7 +297,7 @@ const LiveChatModal = ({ agent, property, isOpen, onClose }) => {
                   24/7 SUPPORT ACTIVE
                 </span>
               </h3>
-              <div className="flex items-center space-x-1.5 text-[11px] font-semibold text-amber-400">
+              <div className="flex items-center space-x-1.5 text-[11px] font-semibold text-sky-500">
                 <span>{recipient.role === 'seller' || recipient.role === 'owner' ? 'Property Owner' : 'Real Estate Specialist'}</span>
               </div>
             </div>
@@ -312,7 +312,7 @@ const LiveChatModal = ({ agent, property, isOpen, onClose }) => {
           {messages.length === 0 ? (
             <div className="text-center py-8 space-y-3">
               <div className="w-12 h-12 rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mx-auto text-cyan-400">
-                <Sparkles className="w-6 h-6 animate-pulse text-amber-400" />
+                <Sparkles className="w-6 h-6 animate-pulse text-sky-500" />
               </div>
               <p className="text-slate-600 font-semibold">Start chat with {recipient.name}</p>
               <p className="text-[11px] text-slate-500 max-w-xs mx-auto">
@@ -341,7 +341,7 @@ const LiveChatModal = ({ agent, property, isOpen, onClose }) => {
                 <div key={msg._id || idx} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                   <div className={`p-3 rounded-2xl max-w-[85%] leading-relaxed shadow-lg ${
                     isMe
-                      ? 'bg-amber-500 text-slate-950 font-medium rounded-tr-none shadow-amber-500/10'
+                      ? 'bg-sky-500 text-slate-950 font-medium rounded-tr-none shadow-sky-500/10'
                       : 'bg-white border border-cyan-500/30 text-slate-700 rounded-tl-none'
                   }`}>
                     <div className="flex items-center justify-between space-x-2 mb-1 pb-1 border-b border-black/10 text-[9px] font-black tracking-wider">
@@ -405,9 +405,9 @@ const LiveChatModal = ({ agent, property, isOpen, onClose }) => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={`Ask ${recipient.name}...`}
-            className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-amber-500"
+            className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-sky-500"
           />
-          <button type="submit" className="p-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold hover:bg-amber-400">
+          <button type="submit" className="p-2.5 rounded-xl bg-sky-500 text-slate-950 font-bold hover:bg-sky-400">
             <Send className="w-4 h-4" />
           </button>
         </form>

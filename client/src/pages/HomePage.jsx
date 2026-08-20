@@ -87,7 +87,7 @@ const HomePage = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <div className="flex items-center space-x-2 text-amber-400 font-bold text-xs uppercase tracking-widest mb-1">
+            <div className="flex items-center space-x-2 text-sky-500 font-bold text-xs uppercase tracking-widest mb-1">
               <Sparkles className="w-4 h-4" />
               <span>HANDPICKED EXCLUSIVES</span>
             </div>
@@ -97,7 +97,7 @@ const HomePage = () => {
           </div>
           <Link
             to="/properties"
-            className="inline-flex items-center space-x-2 text-sm font-bold text-amber-400 hover:text-amber-300 transition-colors"
+            className="inline-flex items-center space-x-2 text-sm font-bold text-sky-500 hover:text-amber-300 transition-colors"
           >
             <span>Explore All Properties</span>
             <ArrowRight className="w-4 h-4" />
@@ -136,7 +136,7 @@ const HomePage = () => {
       {/* Top Agencies Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         <div className="text-center space-y-2">
-          <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">TRUSTED PARTNERS</span>
+          <span className="text-xs font-bold text-sky-500 uppercase tracking-widest">TRUSTED PARTNERS</span>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900">Premier Real Estate Agencies</h2>
           <p className="text-slate-500 text-sm max-w-xl mx-auto">
             Partnered with Australia's most reputable brokerages delivering transparent transactions and unmatched expertise.
@@ -145,7 +145,7 @@ const HomePage = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {agencies.map((agency) => (
-            <div key={agency._id} className="glass-panel p-6 rounded-2xl border border-slate-200 flex items-start space-x-5 hover:border-amber-500/40 transition-colors">
+            <div key={agency._id} className="glass-panel p-6 rounded-2xl border border-slate-200 flex items-start space-x-5 hover:border-sky-500/40 transition-colors">
               <img
                 src={agency.logo}
                 alt={agency.name}
@@ -154,14 +154,14 @@ const HomePage = () => {
               <div className="space-y-2 flex-1">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-bold text-slate-900">{agency.name}</h3>
-                  <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                  <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-sky-500/10 text-sky-500 border border-sky-500/30">
                     ⭐ {agency.rating || 4.9}
                   </span>
                 </div>
                 <p className="text-xs text-slate-500 line-clamp-2">{agency.description}</p>
                 <div className="pt-2 flex items-center justify-between text-xs">
                   <span className="text-slate-500">{agency.totalSales || 45} Sales Closed</span>
-                  <Link to={`/agencies/${agency._id}`} className="font-bold text-amber-400 hover:text-amber-300">
+                  <Link to={`/agencies/${agency._id}`} className="font-bold text-sky-500 hover:text-amber-300">
                     View Portfolio →
                   </Link>
                 </div>
@@ -175,10 +175,10 @@ const HomePage = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-xs font-bold text-amber-400 uppercase tracking-widest block">DISCOVER</span>
+            <span className="text-xs font-bold text-sky-500 uppercase tracking-widest block">DISCOVER</span>
             <h2 className="text-3xl font-extrabold text-slate-900">Explore Top Suburbs</h2>
           </div>
-          <Link to="/properties" className="text-sm font-bold text-amber-400 hover:text-amber-300">View All →</Link>
+          <Link to="/properties" className="text-sm font-bold text-sky-500 hover:text-amber-300">View All →</Link>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           {[
@@ -192,7 +192,7 @@ const HomePage = () => {
             <Link
               key={suburb.name}
               to={`/suburbs/${encodeURIComponent(suburb.name)}`}
-              className="group relative overflow-hidden rounded-2xl border border-slate-200 hover:border-amber-500/50 transition-all hover:-translate-y-1 shadow-lg hover:shadow-amber-500/10"
+              className="group relative overflow-hidden rounded-2xl border border-slate-200 hover:border-sky-500/50 transition-all hover:-translate-y-1 shadow-lg hover:shadow-sky-500/10"
             >
               <div className="aspect-square relative">
                 <img src={suburb.img} alt={suburb.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
@@ -200,7 +200,7 @@ const HomePage = () => {
               </div>
               <div className="absolute bottom-0 left-0 right-0 p-3">
                 <p className="text-sm font-extrabold text-slate-900 leading-tight">{suburb.name}</p>
-                <p className="text-[10px] text-amber-400 font-bold">{suburb.median} median</p>
+                <p className="text-[10px] text-sky-500 font-bold">{suburb.median} median</p>
               </div>
             </Link>
           ))}
@@ -211,10 +211,10 @@ const HomePage = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-xs font-bold text-amber-400 uppercase tracking-widest block">RECENT RESULTS</span>
+            <span className="text-xs font-bold text-sky-500 uppercase tracking-widest block">RECENT RESULTS</span>
             <h2 className="text-3xl font-extrabold text-slate-900">Recently Sold Properties</h2>
           </div>
-          <Link to="/sold" className="text-sm font-bold text-amber-400 hover:text-amber-300">View All Sold →</Link>
+          <Link to="/sold" className="text-sm font-bold text-sky-500 hover:text-amber-300">View All Sold →</Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
@@ -222,7 +222,7 @@ const HomePage = () => {
             { title: 'Toorak European Villa', suburb: 'Toorak VIC', price: '$16,500,000', date: '30 Jun 2026', beds: 5, baths: 6, img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=600' },
             { title: 'Vaucluse Cliffside Mansion', suburb: 'Vaucluse NSW', price: '$19,800,000', date: '15 Jun 2026', beds: 5, baths: 6, img: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&q=80&w=600' },
           ].map((sale, i) => (
-            <Link to="/sold" key={i} className="group glass-panel rounded-2xl border border-slate-200 overflow-hidden hover:border-amber-500/40 transition-all hover:-translate-y-1 shadow-lg hover:shadow-amber-500/10">
+            <Link to="/sold" key={i} className="group glass-panel rounded-2xl border border-slate-200 overflow-hidden hover:border-sky-500/40 transition-all hover:-translate-y-1 shadow-lg hover:shadow-sky-500/10">
               <div className="relative h-48 overflow-hidden">
                 <img src={sale.img} alt={sale.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute top-3 left-3">
@@ -230,8 +230,8 @@ const HomePage = () => {
                 </div>
               </div>
               <div className="p-4 space-y-2">
-                <h3 className="text-sm font-bold text-slate-900 group-hover:text-amber-400 transition-colors">{sale.title}</h3>
-                <p className="text-xs text-slate-500 flex items-center gap-1"><MapPin className="w-3 h-3 text-amber-400" />{sale.suburb}</p>
+                <h3 className="text-sm font-bold text-slate-900 group-hover:text-sky-500 transition-colors">{sale.title}</h3>
+                <p className="text-xs text-slate-500 flex items-center gap-1"><MapPin className="w-3 h-3 text-sky-500" />{sale.suburb}</p>
                 <div className="flex items-center justify-between pt-2 border-t border-slate-200">
                   <span className="text-base font-extrabold text-slate-900">{sale.price}</span>
                   <span className="text-[11px] text-slate-500">{sale.date}</span>
@@ -245,22 +245,22 @@ const HomePage = () => {
 
       {/* Find an Agent CTA */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden glass-panel rounded-3xl border border-amber-500/20 p-10 md:p-16 text-center space-y-6">
+        <div className="relative overflow-hidden glass-panel rounded-3xl border border-sky-500/20 p-10 md:p-16 text-center space-y-6">
           <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1600)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
           <div className="relative z-10 space-y-6">
-            <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full border border-amber-500/30 bg-amber-500/10">
-              <Search className="w-4 h-4 text-amber-400" />
-              <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">CONNECT WITH EXPERTS</span>
+            <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full border border-sky-500/30 bg-sky-500/10">
+              <Search className="w-4 h-4 text-sky-500" />
+              <span className="text-xs font-bold text-sky-500 uppercase tracking-widest">CONNECT WITH EXPERTS</span>
             </div>
-            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900">Find Your Perfect <span className="gold-gradient-text">Real Estate Agent</span></h2>
+            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900">Find Your Perfect <span className="brand-gradient-text">Real Estate Agent</span></h2>
             <p className="text-slate-600 max-w-xl mx-auto text-sm sm:text-base leading-relaxed">
               Our network of 1,250+ certified agents across Australia specialise in luxury residential, commercial, and development properties. Get matched with the right expert for your goals.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/agents" className="px-8 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold text-sm hover:from-amber-400 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/30">
+              <Link to="/agents" className="px-8 py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 text-slate-950 font-extrabold text-sm hover:from-sky-400 hover:to-sky-500 transition-all shadow-lg shadow-sky-500/30">
                 Find an Agent
               </Link>
-              <Link to="/properties" className="px-8 py-3.5 rounded-xl border border-slate-600 text-slate-900 font-extrabold text-sm hover:border-amber-500 hover:text-amber-400 transition-colors">
+              <Link to="/properties" className="px-8 py-3.5 rounded-xl border border-slate-600 text-slate-900 font-extrabold text-sm hover:border-sky-500 hover:text-sky-500 transition-colors">
                 Browse Properties
               </Link>
             </div>
@@ -272,10 +272,10 @@ const HomePage = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-xs font-bold text-amber-400 uppercase tracking-widest block">REPORTS & ANALYTICS</span>
+            <span className="text-xs font-bold text-sky-500 uppercase tracking-widest block">REPORTS & ANALYTICS</span>
             <h2 className="text-3xl font-extrabold text-slate-900">Property Market Insights</h2>
           </div>
-          <Link to="/blogs" className="text-sm font-bold text-amber-400 hover:text-amber-300">
+          <Link to="/blogs" className="text-sm font-bold text-sky-500 hover:text-amber-300">
             View All News →
           </Link>
         </div>
@@ -286,13 +286,13 @@ const HomePage = () => {
               <img src={blog.image} alt={blog.title} className="w-full md:w-48 h-48 object-cover flex-shrink-0" />
               <div className="p-5 space-y-2 flex flex-col justify-between">
                 <div>
-                  <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block mb-1">
+                  <span className="text-[10px] font-bold text-sky-500 uppercase tracking-wider block mb-1">
                     {blog.category} • {blog.readTime}
                   </span>
                   <h3 className="text-base font-bold text-slate-900 line-clamp-2">{blog.title}</h3>
                   <p className="text-xs text-slate-500 line-clamp-2 mt-1">{blog.excerpt}</p>
                 </div>
-                <Link to="/blogs" className="text-xs font-bold text-amber-400 hover:text-amber-300">
+                <Link to="/blogs" className="text-xs font-bold text-sky-500 hover:text-amber-300">
                   Read Full Article →
                 </Link>
               </div>

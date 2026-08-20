@@ -112,7 +112,7 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200 pb-4">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl gold-gradient-bg flex items-center justify-center shadow-lg shadow-amber-500/20">
+            <div className="w-10 h-10 rounded-xl brand-gradient-bg flex items-center justify-center shadow-lg shadow-sky-500/20">
               <CreditCard className="w-5 h-5 text-slate-950 font-bold" />
             </div>
             <div>
@@ -144,7 +144,7 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
             </div>
             <div className="space-y-1">
               <h3 className="text-xl font-extrabold text-slate-900">Payment Successful!</h3>
-              <p className="text-xs text-slate-500">Transaction ID: <span className="font-mono text-amber-400">{successData.stripePaymentIntentId || successData._id}</span></p>
+              <p className="text-xs text-slate-500">Transaction ID: <span className="font-mono text-sky-500">{successData.stripePaymentIntentId || successData._id}</span></p>
               <p className="text-sm font-bold text-emerald-400 mt-2">AUD ${successData.amount} • {successData.packageType}</p>
             </div>
             <p className="text-xs text-slate-500">Your account and database record have been updated.</p>
@@ -163,12 +163,12 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
                     onClick={() => handlePackageChange(item.title, item.price)}
                     className={`p-3 rounded-xl text-left border transition-all ${
                       packageType === item.title
-                        ? 'bg-amber-500/10 border-amber-500 text-amber-400'
+                        ? 'bg-sky-500/10 border-sky-500 text-sky-500'
                         : 'bg-white border-slate-200 text-slate-500 hover:text-slate-900'
                     }`}
                   >
                     <div className="font-bold text-slate-900 text-xs">{item.title}</div>
-                    <div className="text-[11px] text-amber-400 font-extrabold mt-0.5">AUD ${item.price}</div>
+                    <div className="text-[11px] text-sky-500 font-extrabold mt-0.5">AUD ${item.price}</div>
                   </button>
                 ))}
               </div>
@@ -183,7 +183,7 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
                   onClick={() => setPaymentMethod('Credit Card')}
                   className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all flex items-center justify-center space-x-2 ${
                     paymentMethod === 'Credit Card'
-                      ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-md'
+                      ? 'bg-sky-500 text-slate-950 border-sky-500 shadow-md'
                       : 'bg-white border-slate-200 text-slate-500 hover:text-slate-900'
                   }`}
                 >
@@ -195,7 +195,7 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
                   onClick={() => setPaymentMethod('Online NetBanking / UPI')}
                   className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all flex items-center justify-center space-x-2 ${
                     paymentMethod === 'Online NetBanking / UPI'
-                      ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-md'
+                      ? 'bg-sky-500 text-slate-950 border-sky-500 shadow-md'
                       : 'bg-white border-slate-200 text-slate-500 hover:text-slate-900'
                   }`}
                 >
@@ -256,7 +256,7 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
               <div className="space-y-4 p-4 rounded-2xl bg-white border border-slate-200 text-xs text-center">
                 <div className="space-y-1">
                   <span className="font-extrabold text-slate-900 text-sm flex items-center justify-center space-x-1.5">
-                    <Smartphone className="w-4 h-4 text-amber-400" />
+                    <Smartphone className="w-4 h-4 text-sky-500" />
                     <span>Scan QR Code to Pay</span>
                   </span>
                   <p className="text-slate-500 text-[11px]">
@@ -282,7 +282,7 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
                 {/* UPI VPA ID */}
                 <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-600">
                   <span className="text-slate-500 font-medium">UPI VPA ID:</span>
-                  <span className="font-mono text-amber-400 font-bold">auraestates@icici</span>
+                  <span className="font-mono text-sky-500 font-bold">auraestates@icici</span>
                   <button
                     type="button"
                     onClick={handleCopyUPI}
@@ -311,13 +311,13 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
             <div className="pt-2">
               <div className="flex items-center justify-between py-2 border-t border-slate-200 text-xs mb-3">
                 <span className="font-bold text-slate-500">Total Payable:</span>
-                <span className="text-lg font-extrabold text-amber-400">AUD ${amount}</span>
+                <span className="text-lg font-extrabold text-sky-500">AUD ${amount}</span>
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold text-xs hover:from-amber-400 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center space-x-2"
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 text-slate-950 font-extrabold text-xs hover:from-sky-400 hover:to-sky-500 transition-all shadow-lg shadow-sky-500/20 flex items-center justify-center space-x-2"
               >
                 <Lock className="w-4 h-4" />
                 <span>{loading ? 'Processing Transaction...' : `Confirm & Pay AUD $${amount} Now`}</span>

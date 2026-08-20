@@ -67,11 +67,11 @@ const InspectionBookingModal = ({ property, isOpen, onClose }) => {
             <CheckCircle className="w-14 h-14 text-emerald-400 mx-auto animate-bounce" />
             <h3 className="text-xl font-bold text-slate-900">Inspection Confirmed!</h3>
             <p className="text-xs text-slate-600">
-              Your appointment for <span className="text-amber-400 font-bold">{property.title}</span> has been confirmed for {selectedDate} at {selectedTime}.
+              Your appointment for <span className="text-sky-500 font-bold">{property.title}</span> has been confirmed for {selectedDate} at {selectedTime}.
             </p>
             <button
               onClick={onClose}
-              className="w-full py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs"
+              className="w-full py-2.5 rounded-xl bg-sky-500 text-slate-950 font-bold text-xs"
             >
               Done
             </button>
@@ -100,7 +100,7 @@ const InspectionBookingModal = ({ property, isOpen, onClose }) => {
                     onClick={() => setInspectionType(t)}
                     className={`py-2 rounded-lg font-bold border transition-all ${
                       inspectionType === t
-                        ? 'bg-amber-500 text-slate-950 border-amber-500'
+                        ? 'bg-sky-500 text-slate-950 border-sky-500'
                         : 'bg-white border-slate-200 text-slate-500'
                     }`}
                   >
@@ -118,7 +118,7 @@ const InspectionBookingModal = ({ property, isOpen, onClose }) => {
                 min={getTodayString()}
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-amber-500"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-sky-500"
                 required
               />
             </div>
@@ -129,7 +129,7 @@ const InspectionBookingModal = ({ property, isOpen, onClose }) => {
               <select
                 value={selectedTime}
                 onChange={(e) => setSelectedTime(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-amber-500"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-sky-500"
               >
                 <option value="10:00 AM">10:00 AM - 10:30 AM</option>
                 <option value="11:00 AM">11:00 AM - 11:30 AM</option>
@@ -146,14 +146,14 @@ const InspectionBookingModal = ({ property, isOpen, onClose }) => {
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="e.g. Interested in parking space measurements..."
                 rows={3}
-                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-amber-500"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-sky-500"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-amber-500 text-slate-950 font-bold text-sm hover:bg-amber-400 transition-colors"
+              className="w-full py-3 rounded-xl bg-sky-500 text-slate-950 font-bold text-sm hover:bg-sky-400 transition-colors"
             >
               {loading ? 'Booking...' : 'Confirm Appointment'}
             </button>

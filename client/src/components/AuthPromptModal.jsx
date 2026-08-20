@@ -75,20 +75,20 @@ const AuthPromptModal = ({ isOpen, onClose, message = 'Please sign in to continu
             className="relative w-full max-w-md glass-panel rounded-3xl border border-slate-300 shadow-2xl overflow-hidden"
           >
             {/* Gold top border */}
-            <div className="h-1 w-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400" />
+            <div className="h-1 w-full bg-gradient-to-r from-sky-400 via-amber-500 to-amber-400" />
 
             <div className="p-8 space-y-6">
               {/* Header */}
               <div className="flex items-start justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-xl gold-gradient-bg flex items-center justify-center shadow-lg shadow-amber-500/20">
+                  <div className="w-10 h-10 rounded-xl brand-gradient-bg flex items-center justify-center shadow-lg shadow-sky-500/20">
                     <Building2 className="w-5 h-5 text-slate-950" />
                   </div>
                   <div>
                     <h2 className="text-lg font-extrabold text-slate-900">
                       {mode === 'login' ? 'Welcome Back' : 'Create Account'}
                     </h2>
-                    <p className="text-xs text-amber-400">{message}</p>
+                    <p className="text-xs text-sky-500">{message}</p>
                   </div>
                 </div>
                 <button
@@ -103,14 +103,14 @@ const AuthPromptModal = ({ isOpen, onClose, message = 'Please sign in to continu
               <div className="flex bg-white rounded-xl p-1 border border-slate-200">
                 <button
                   onClick={() => { setMode('login'); setError(''); }}
-                  className={`flex-1 flex items-center justify-center space-x-2 py-2 rounded-lg text-xs font-bold transition-all ${mode === 'login' ? 'bg-amber-500 text-slate-950' : 'text-slate-500 hover:text-slate-900'}`}
+                  className={`flex-1 flex items-center justify-center space-x-2 py-2 rounded-lg text-xs font-bold transition-all ${mode === 'login' ? 'bg-sky-500 text-slate-950' : 'text-slate-500 hover:text-slate-900'}`}
                 >
                   <LogIn className="w-3.5 h-3.5" />
                   <span>Sign In</span>
                 </button>
                 <button
                   onClick={() => { setMode('register'); setError(''); }}
-                  className={`flex-1 flex items-center justify-center space-x-2 py-2 rounded-lg text-xs font-bold transition-all ${mode === 'register' ? 'bg-amber-500 text-slate-950' : 'text-slate-500 hover:text-slate-900'}`}
+                  className={`flex-1 flex items-center justify-center space-x-2 py-2 rounded-lg text-xs font-bold transition-all ${mode === 'register' ? 'bg-sky-500 text-slate-950' : 'text-slate-500 hover:text-slate-900'}`}
                 >
                   <UserPlus className="w-3.5 h-3.5" />
                   <span>Register</span>
@@ -135,7 +135,7 @@ const AuthPromptModal = ({ isOpen, onClose, message = 'Please sign in to continu
                           key={r.id}
                           type="button"
                           onClick={() => setRole(r.id)}
-                          className={`p-2.5 rounded-xl text-left transition-all border ${role === r.id ? 'bg-amber-500 border-amber-500 text-slate-950' : 'bg-white border-slate-200 text-slate-500 hover:border-amber-500/40 hover:text-slate-900'}`}
+                          className={`p-2.5 rounded-xl text-left transition-all border ${role === r.id ? 'bg-sky-500 border-sky-500 text-slate-950' : 'bg-white border-slate-200 text-slate-500 hover:border-sky-500/40 hover:text-slate-900'}`}
                         >
                           <div className="text-xs font-bold">{r.label}</div>
                           <div className="text-[10px] opacity-70 mt-0.5">{r.desc}</div>
@@ -156,7 +156,7 @@ const AuthPromptModal = ({ isOpen, onClose, message = 'Please sign in to continu
                       value={form.name}
                       onChange={handleChange}
                       required
-                      className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-amber-500 transition-colors"
+                      className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-sky-500 transition-colors"
                     />
                   </div>
                 )}
@@ -171,7 +171,7 @@ const AuthPromptModal = ({ isOpen, onClose, message = 'Please sign in to continu
                     value={form.email}
                     onChange={handleChange}
                     required
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-amber-500 transition-colors"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-sky-500 transition-colors"
                   />
                 </div>
 
@@ -185,7 +185,7 @@ const AuthPromptModal = ({ isOpen, onClose, message = 'Please sign in to continu
                       placeholder="Phone Number (optional)"
                       value={form.phone}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-amber-500 transition-colors"
+                      className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-sky-500 transition-colors"
                     />
                   </div>
                 )}
@@ -201,7 +201,7 @@ const AuthPromptModal = ({ isOpen, onClose, message = 'Please sign in to continu
                     onChange={handleChange}
                     required
                     minLength={6}
-                    className="w-full pl-10 pr-10 py-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-amber-500 transition-colors"
+                    className="w-full pl-10 pr-10 py-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-sky-500 transition-colors"
                   />
                   <button
                     type="button"
@@ -215,7 +215,7 @@ const AuthPromptModal = ({ isOpen, onClose, message = 'Please sign in to continu
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold text-sm hover:from-amber-400 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center space-x-2 disabled:opacity-60"
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 text-slate-950 font-bold text-sm hover:from-sky-400 hover:to-sky-500 transition-all shadow-lg shadow-sky-500/20 flex items-center justify-center space-x-2 disabled:opacity-60"
                 >
                   <span>{loading ? 'Please wait...' : mode === 'login' ? 'Sign In' : 'Create Account'}</span>
                   {!loading && <ArrowRight className="w-4 h-4" />}
@@ -225,7 +225,7 @@ const AuthPromptModal = ({ isOpen, onClose, message = 'Please sign in to continu
               {/* Demo Credentials */}
               {mode === 'login' && (
                 <div className="text-center">
-                  <p className="text-[10px] text-slate-500">Demo: any role — use password <span className="text-amber-400 font-bold">password123</span></p>
+                  <p className="text-[10px] text-slate-500">Demo: any role — use password <span className="text-sky-500 font-bold">password123</span></p>
                 </div>
               )}
             </div>

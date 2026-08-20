@@ -65,7 +65,7 @@ const EditProfileModal = ({ isOpen, onClose }) => {
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200 pb-4">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl gold-gradient-bg flex items-center justify-center shadow-lg shadow-amber-500/20">
+            <div className="w-10 h-10 rounded-xl brand-gradient-bg flex items-center justify-center shadow-lg shadow-sky-500/20">
               <User className="w-5 h-5 text-slate-950 font-bold" />
             </div>
             <div>
@@ -106,7 +106,7 @@ const EditProfileModal = ({ isOpen, onClose }) => {
                   type="text"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-amber-500"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-sky-500"
                   required
                 />
               </div>
@@ -121,7 +121,7 @@ const EditProfileModal = ({ isOpen, onClose }) => {
                   type="text"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-amber-500"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-sky-500"
                 />
               </div>
             </div>
@@ -136,7 +136,7 @@ const EditProfileModal = ({ isOpen, onClose }) => {
                   value={formData.avatar}
                   onChange={handleChange}
                   placeholder="https://example.com/image.jpg"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-amber-500"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-sky-500"
                 />
               </div>
             </div>
@@ -150,7 +150,7 @@ const EditProfileModal = ({ isOpen, onClose }) => {
                   value={formData.bio}
                   onChange={handleChange}
                   rows="3"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-amber-500"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 focus:border-sky-500"
                   placeholder="Tell us about yourself..."
                 ></textarea>
               </div>
@@ -159,7 +159,7 @@ const EditProfileModal = ({ isOpen, onClose }) => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold text-xs hover:from-amber-400 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/20"
+              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 text-slate-950 font-extrabold text-xs hover:from-sky-400 hover:to-sky-500 transition-all shadow-lg shadow-sky-500/20"
             >
               {loading ? 'Saving...' : 'Save Changes'}
             </button>

@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 
 const SPECIALTY_COLORS = {
-  'Luxury Homes': 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+  'Luxury Homes': 'bg-sky-500/20 text-sky-500 border-sky-500/30',
   'Waterfront': 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
   'Investments': 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
   'First Home Buyers': 'bg-violet-500/20 text-violet-400 border-violet-500/30',
@@ -19,7 +19,7 @@ const SPECIALTY_COLORS = {
   'Land': 'bg-lime-500/20 text-lime-400 border-lime-500/30',
   'Family Homes': 'bg-fuchsia-500/20 text-fuchsia-400 border-fuchsia-500/30',
   'Western Suburbs': 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30',
-  'Luxury': 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+  'Luxury': 'bg-sky-500/20 text-sky-500 border-sky-500/30',
   'Acreage': 'bg-green-500/20 text-green-400 border-green-500/30',
   'Rural': 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
   'Wine Country': 'bg-red-500/20 text-red-400 border-red-500/30',
@@ -37,14 +37,14 @@ const StarRating = ({ rating }) => {
           key={i}
           className={`w-3.5 h-3.5 ${
             i < full
-              ? 'text-amber-400 fill-amber-400'
+              ? 'text-sky-500 fill-amber-400'
               : i === full && decimal >= 0.5
-              ? 'text-amber-400 fill-amber-400/50'
+              ? 'text-sky-500 fill-amber-400/50'
               : 'text-slate-600'
           }`}
         />
       ))}
-      <span className="ml-1.5 text-xs font-bold text-amber-400">{rating.toFixed(1)}</span>
+      <span className="ml-1.5 text-xs font-bold text-sky-500">{rating.toFixed(1)}</span>
     </div>
   );
 };
@@ -54,10 +54,10 @@ const AgentCard = ({ agent }) => {
   const agencyLabel = agent.agencyId?.name || agent.agencyName || null;
 
   return (
-    <div className="glass-panel rounded-3xl border border-slate-200 hover:border-amber-500/50 transition-all duration-300 group flex flex-col bg-gradient-to-b from-slate-900/80 to-slate-950/80 hover:shadow-xl hover:shadow-amber-500/10 overflow-hidden">
+    <div className="glass-panel rounded-3xl border border-slate-200 hover:border-sky-500/50 transition-all duration-300 group flex flex-col bg-gradient-to-b from-slate-900/80 to-slate-950/80 hover:shadow-xl hover:shadow-sky-500/10 overflow-hidden">
 
       {/* Top accent bar */}
-      <div className="h-1 w-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <div className="h-1 w-full bg-gradient-to-r from-sky-500 via-amber-400 to-sky-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
       <div className="p-6 flex flex-col flex-1">
         {/* Header: Avatar + Name + Rating */}
@@ -66,7 +66,7 @@ const AgentCard = ({ agent }) => {
             <img
               src={agent.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400'}
               alt={agent.name}
-              className="w-18 h-18 w-[72px] h-[72px] rounded-2xl object-cover border-2 border-slate-300 group-hover:border-amber-500/60 transition-all shadow-lg"
+              className="w-18 h-18 w-[72px] h-[72px] rounded-2xl object-cover border-2 border-slate-300 group-hover:border-sky-500/60 transition-all shadow-lg"
             />
             {/* Online badge */}
             <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-slate-900 rounded-full shadow" title="Active" />
@@ -74,10 +74,10 @@ const AgentCard = ({ agent }) => {
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center space-x-1.5 mb-0.5">
-              <h3 className="text-base font-extrabold text-slate-900 group-hover:text-amber-400 transition-colors truncate">{agent.name}</h3>
+              <h3 className="text-base font-extrabold text-slate-900 group-hover:text-sky-500 transition-colors truncate">{agent.name}</h3>
               <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0" title="Verified Agent" />
             </div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-amber-500 mb-1.5">Licensed Real Estate Agent</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-sky-600 mb-1.5">Licensed Real Estate Agent</p>
             <StarRating rating={agent.rating || 4.8} />
           </div>
         </div>
@@ -121,7 +121,7 @@ const AgentCard = ({ agent }) => {
           {agent.location || agent.address?.city ? (
             <div className="flex items-center space-x-2.5 text-xs text-slate-500">
               <div className="p-1.5 rounded-lg bg-slate-100">
-                <MapPin className="w-3.5 h-3.5 text-amber-500" />
+                <MapPin className="w-3.5 h-3.5 text-sky-600" />
               </div>
               <span>{agent.location || `${agent.address?.city}, ${agent.address?.state}`}</span>
             </div>
@@ -129,7 +129,7 @@ const AgentCard = ({ agent }) => {
           {agencyLabel && (
             <div className="flex items-center space-x-2.5 text-xs text-slate-500">
               <div className="p-1.5 rounded-lg bg-slate-100">
-                <Building2 className="w-3.5 h-3.5 text-amber-500" />
+                <Building2 className="w-3.5 h-3.5 text-sky-600" />
               </div>
               <span className="truncate">{agencyLabel}</span>
             </div>
@@ -137,7 +137,7 @@ const AgentCard = ({ agent }) => {
           {agent.phone && (
             <div className="flex items-center space-x-2.5 text-xs text-slate-500">
               <div className="p-1.5 rounded-lg bg-slate-100">
-                <Phone className="w-3.5 h-3.5 text-amber-500" />
+                <Phone className="w-3.5 h-3.5 text-sky-600" />
               </div>
               <span>{agent.phone}</span>
             </div>
@@ -145,7 +145,7 @@ const AgentCard = ({ agent }) => {
           {agent.email && (
             <div className="flex items-center space-x-2.5 text-xs text-slate-500 group/email">
               <div className="p-1.5 rounded-lg bg-slate-100">
-                <Mail className="w-3.5 h-3.5 text-amber-500" />
+                <Mail className="w-3.5 h-3.5 text-sky-600" />
               </div>
               <span className="truncate">{agent.email}</span>
             </div>
@@ -155,7 +155,7 @@ const AgentCard = ({ agent }) => {
         {/* CTA */}
         <a
           href={`mailto:${agent.email}`}
-          className="block w-full text-center py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold hover:bg-amber-500 hover:text-slate-950 hover:border-amber-500 transition-all duration-200 flex items-center justify-center space-x-2 group/btn"
+          className="block w-full text-center py-2.5 rounded-xl bg-sky-500/10 border border-sky-500/30 text-sky-500 text-xs font-bold hover:bg-sky-500 hover:text-slate-950 hover:border-sky-500 transition-all duration-200 flex items-center justify-center space-x-2 group/btn"
         >
           <Mail className="w-3.5 h-3.5" />
           <span>Contact Agent</span>
@@ -301,10 +301,10 @@ const FindAgentsPage = () => {
       {/* Header */}
       <div className="space-y-3">
         <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 rounded-lg gold-gradient-bg flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg brand-gradient-bg flex items-center justify-center">
             <Users className="w-4 h-4 text-slate-950" />
           </div>
-          <span className="text-xs font-bold uppercase tracking-widest text-amber-400">Verified Professionals</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-sky-500">Verified Professionals</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900">Find Your Perfect Agent</h1>
         <p className="text-slate-500 text-sm max-w-xl">
@@ -322,7 +322,7 @@ const FindAgentsPage = () => {
             placeholder="Search by name, specialty, location or agency..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm placeholder-slate-500 focus:outline-none focus:border-amber-500/50 transition-colors"
+            className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm placeholder-slate-500 focus:outline-none focus:border-sky-500/50 transition-colors"
           />
         </div>
         <div className="flex flex-wrap gap-2 items-center">
@@ -332,8 +332,8 @@ const FindAgentsPage = () => {
               onClick={() => setLocationFilter(loc)}
               className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all ${
                 locationFilter === loc
-                  ? 'bg-amber-500 text-slate-950 border-amber-500'
-                  : 'bg-white border-slate-200 text-slate-500 hover:border-amber-500/50 hover:text-amber-400'
+                  ? 'bg-sky-500 text-slate-950 border-sky-500'
+                  : 'bg-white border-slate-200 text-slate-500 hover:border-sky-500/50 hover:text-sky-500'
               }`}
             >
               {loc}
@@ -345,7 +345,7 @@ const FindAgentsPage = () => {
       {/* Results count */}
       {!loading && (
         <p className="text-xs text-slate-500">
-          Showing <span className="text-amber-400 font-bold">{filtered.length}</span> agent{filtered.length !== 1 ? 's' : ''}
+          Showing <span className="text-sky-500 font-bold">{filtered.length}</span> agent{filtered.length !== 1 ? 's' : ''}
           {search && <> matching "<span className="text-slate-900">{search}</span>"</>}
         </p>
       )}
@@ -379,7 +379,7 @@ const FindAgentsPage = () => {
           </div>
           <p className="text-slate-900 font-bold">No agents found</p>
           <p className="text-slate-500 text-sm">Try adjusting your search or filter criteria</p>
-          <button onClick={() => { setSearch(''); setLocationFilter('All'); }} className="px-4 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold hover:bg-amber-500/20 transition-colors">
+          <button onClick={() => { setSearch(''); setLocationFilter('All'); }} className="px-4 py-2 rounded-lg bg-sky-500/10 border border-sky-500/30 text-sky-500 text-xs font-bold hover:bg-sky-500/20 transition-colors">
             Clear Filters
           </button>
         </div>

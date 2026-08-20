@@ -18,12 +18,12 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
       {/* Header */}
       <div className="col-span-full flex items-center justify-between border-b border-slate-200 pb-2 mb-2">
         <div className="flex items-center space-x-2 text-slate-900 font-bold">
-          <SlidersHorizontal className="w-5 h-5 text-amber-400" />
+          <SlidersHorizontal className="w-5 h-5 text-sky-500" />
           <span>Search & Filter</span>
         </div>
         <button
           onClick={onReset}
-          className="text-xs font-semibold text-slate-500 hover:text-amber-400 flex items-center space-x-1 transition-colors"
+          className="text-xs font-semibold text-slate-500 hover:text-sky-500 flex items-center space-x-1 transition-colors"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           <span>Reset All</span>
@@ -41,7 +41,7 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
               onClick={() => setFilter('listingType', type === 'All' ? '' : type)}
               className={`py-2 rounded-lg text-xs font-bold transition-all ${
                 (filters.listingType === type || (type === 'All' && !filters.listingType))
-                  ? 'bg-amber-500 text-slate-950 shadow-md'
+                  ? 'bg-sky-500 text-slate-950 shadow-md'
                   : 'text-slate-500 hover:text-slate-900'
               }`}
             >
@@ -62,7 +62,7 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
             value={filters.search || ''}
             onChange={handleChange}
             placeholder="e.g. pool, garden, penthouse..."
-            className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-200 text-sm text-slate-900 focus:outline-none focus:border-amber-500 transition-colors placeholder-slate-600"
+            className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-200 text-sm text-slate-900 focus:outline-none focus:border-sky-500 transition-colors placeholder-slate-600"
           />
         </div>
       </div>
@@ -78,7 +78,7 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
             value={filters.suburb || ''}
             onChange={handleChange}
             placeholder="e.g. Point Piper, Barangaroo..."
-            className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-200 text-sm text-slate-900 focus:outline-none focus:border-amber-500 transition-colors placeholder-slate-600"
+            className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-200 text-sm text-slate-900 focus:outline-none focus:border-sky-500 transition-colors placeholder-slate-600"
           />
         </div>
       </div>
@@ -96,7 +96,7 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
                 onClick={() => setFilter('propertyType', type === 'All' ? '' : type)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
                   isSelected
-                    ? 'bg-amber-500/20 text-amber-400 border-amber-500/60'
+                    ? 'bg-sky-500/20 text-sky-500 border-sky-500/60'
                     : 'bg-white/60 text-slate-500 border-slate-200 hover:border-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -117,7 +117,7 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
             value={filters.minPrice || ''}
             onChange={handleChange}
             placeholder="Min Price"
-            className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-amber-500 transition-colors placeholder-slate-600"
+            className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-sky-500 transition-colors placeholder-slate-600"
           />
           <input
             type="number"
@@ -125,7 +125,7 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
             value={filters.maxPrice || ''}
             onChange={handleChange}
             placeholder="Max Price"
-            className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-amber-500 transition-colors placeholder-slate-600"
+            className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-sky-500 transition-colors placeholder-slate-600"
           />
         </div>
       </div>
@@ -141,7 +141,7 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
               onClick={() => setFilter('bedrooms', num)}
               className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-all ${
                 filters.bedrooms === num
-                  ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-md'
+                  ? 'bg-sky-500 text-slate-950 border-sky-500 shadow-md'
                   : 'bg-white border-slate-200 text-slate-500 hover:text-slate-900 hover:border-slate-600'
               }`}
             >
@@ -162,7 +162,7 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
               onClick={() => setFilter('bathrooms', num)}
               className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-all ${
                 filters.bathrooms === num
-                  ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-md'
+                  ? 'bg-sky-500 text-slate-950 border-sky-500 shadow-md'
                   : 'bg-white border-slate-200 text-slate-500 hover:text-slate-900 hover:border-slate-600'
               }`}
             >
@@ -183,7 +183,7 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
               onClick={() => setFilter('parking', num)}
               className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-all ${
                 filters.parking === num
-                  ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-md'
+                  ? 'bg-sky-500 text-slate-950 border-sky-500 shadow-md'
                   : 'bg-white border-slate-200 text-slate-500 hover:text-slate-900 hover:border-slate-600'
               }`}
             >
@@ -203,7 +203,7 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
             value={filters.minLandArea || ''}
             onChange={handleChange}
             placeholder="Min m²"
-            className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-amber-500 transition-colors placeholder-slate-600"
+            className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-sky-500 transition-colors placeholder-slate-600"
           />
           <input
             type="number"
@@ -211,7 +211,7 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
             value={filters.maxLandArea || ''}
             onChange={handleChange}
             placeholder="Max m²"
-            className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-amber-500 transition-colors placeholder-slate-600"
+            className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-sky-500 transition-colors placeholder-slate-600"
           />
         </div>
       </div>
@@ -241,7 +241,7 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
           name="sortBy"
           value={filters.sortBy || 'newest'}
           onChange={handleChange}
-          className="w-full px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-amber-500 transition-colors"
+          className="w-full px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-sky-500 transition-colors"
         >
           <option value="newest">Newest Listed</option>
           <option value="price_asc">Price: Low to High</option>
@@ -253,7 +253,7 @@ const PropertyFilters = ({ filters, setFilters, onReset }) => {
       {/* Active filter summary */}
       {(filters.listingType || filters.propertyType || filters.bedrooms || filters.bathrooms || filters.parking || filters.search || filters.suburb || filters.minPrice || filters.maxPrice || filters.openForInspection || filters.minLandArea || filters.maxLandArea) && (
         <div className="col-span-full flex items-center justify-between pt-4 mt-2 border-t border-slate-200">
-          <span className="text-[11px] text-amber-400 font-semibold">Filters active</span>
+          <span className="text-[11px] text-sky-500 font-semibold">Filters active</span>
           <button
             onClick={onReset}
             className="text-[11px] text-slate-500 hover:text-slate-900 underline underline-offset-2 transition-colors"

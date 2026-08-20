@@ -123,7 +123,7 @@ const PropertiesPage = () => {
         <div>
           <h1 className="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
             {filters.listingType ? (filters.listingType === 'Sale' ? 'Real Estate & Properties to Buy' : 'Real Estate & Properties for Rent') : 'All Properties'}
-            {filters.suburb && <span className="text-amber-400">in {filters.suburb}</span>}
+            {filters.suburb && <span className="text-sky-500">in {filters.suburb}</span>}
           </h1>
           <p className="text-sm text-slate-500 mt-1 flex items-center gap-2">
             {loading ? (
@@ -138,20 +138,20 @@ const PropertiesPage = () => {
           <div className="flex items-center space-x-1 bg-white p-1 rounded-xl border border-slate-200">
             <button
               onClick={() => setViewMode('grid')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition-all ${viewMode === 'grid' ? 'bg-amber-500 text-slate-950' : 'text-slate-500 hover:text-slate-900'}`}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition-all ${viewMode === 'grid' ? 'bg-sky-500 text-slate-950' : 'text-slate-500 hover:text-slate-900'}`}
             >
               <Grid className="w-3.5 h-3.5" /> <span className="hidden sm:inline">List</span>
             </button>
             <button
               onClick={() => setViewMode('split')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition-all ${viewMode === 'split' ? 'bg-amber-500 text-slate-950' : 'text-slate-500 hover:text-slate-900'}`}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition-all ${viewMode === 'split' ? 'bg-sky-500 text-slate-950' : 'text-slate-500 hover:text-slate-900'}`}
             >
               <Map className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Map</span>
             </button>
           </div>
           <button 
             onClick={() => setShowFilters(!showFilters)}
-            className={`px-4 py-2 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all ${showFilters ? 'bg-amber-500 text-slate-950 border-amber-500' : 'bg-white border-slate-300 text-slate-900 hover:border-amber-500'}`}
+            className={`px-4 py-2 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all ${showFilters ? 'bg-sky-500 text-slate-950 border-sky-500' : 'bg-white border-slate-300 text-slate-900 hover:border-sky-500'}`}
           >
             <Search className="w-3.5 h-3.5" />
             <span>{showFilters ? 'Hide Filters' : 'Show Filters'}</span>
@@ -213,7 +213,7 @@ const PropertiesPage = () => {
                 <div className="py-16 text-center glass-panel rounded-2xl border border-slate-200 space-y-4">
                    <Search className="w-12 h-12 mx-auto text-slate-600" />
                    <h3 className="text-lg font-bold text-slate-900">No properties match your current criteria</h3>
-                   <button onClick={handleResetFilters} className="px-6 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs">Reset All Filters</button>
+                   <button onClick={handleResetFilters} className="px-6 py-2.5 rounded-xl bg-sky-500 text-slate-950 font-bold text-xs">Reset All Filters</button>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -224,15 +224,15 @@ const PropertiesPage = () => {
               {/* Grid view pagination */}
               {!loading && totalPages > 1 && (
                 <div className="flex items-center justify-between pt-6 border-t border-slate-200/60 mt-4">
-                  <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-white/60 border border-slate-200 text-xs font-extrabold text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-100 hover:border-amber-500/50 hover:text-slate-900 transition-all">
+                  <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-white/60 border border-slate-200 text-xs font-extrabold text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-100 hover:border-sky-500/50 hover:text-slate-900 transition-all">
                     <ChevronLeft className="w-4 h-4" /><span>Previous</span>
                   </button>
                   <div className="flex items-center space-x-1">
                     <span className="text-xs font-bold text-slate-500">Page</span>
-                    <span className="text-xs font-extrabold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">{page}</span>
+                    <span className="text-xs font-extrabold text-sky-500 bg-sky-500/10 px-2 py-0.5 rounded-md border border-sky-500/20">{page}</span>
                     <span className="text-xs font-bold text-slate-500">of {totalPages}</span>
                   </div>
-                  <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-white/60 border border-slate-200 text-xs font-extrabold text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-100 hover:border-amber-500/50 hover:text-slate-900 transition-all">
+                  <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-white/60 border border-slate-200 text-xs font-extrabold text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-100 hover:border-sky-500/50 hover:text-slate-900 transition-all">
                     <span>Next</span><ChevronRight className="w-4 h-4" />
                   </button>
                 </div>

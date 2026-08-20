@@ -154,7 +154,7 @@ const AIChatbot = ({ isOpen, onClose }) => {
               if (onClose) onClose();
               navigate(targetUrl);
             }}
-            className="inline-flex items-center gap-1 font-extrabold text-slate-950 bg-amber-400 hover:bg-amber-300 px-2 py-1 rounded-md text-xs transition-all shadow-md shadow-amber-400/20 cursor-pointer border border-amber-300 active:scale-95 text-left"
+            className="inline-flex items-center gap-1 font-extrabold text-slate-950 bg-sky-400 hover:bg-amber-300 px-2 py-1 rounded-md text-xs transition-all shadow-md shadow-amber-400/20 cursor-pointer border border-amber-300 active:scale-95 text-left"
           >
             <span>{rawLabel}</span>
             <ExternalLink className="w-3 h-3 text-slate-950 shrink-0" />
@@ -167,7 +167,7 @@ const AIChatbot = ({ isOpen, onClose }) => {
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-bold text-amber-400 underline hover:text-amber-300"
+            className="font-bold text-sky-500 underline hover:text-amber-300"
           >
             {rawLabel}
           </a>
@@ -240,9 +240,9 @@ const AIChatbot = ({ isOpen, onClose }) => {
             const dataRows = rows.slice(1).map(r => r.split('|').slice(1, -1).map(c => c.trim()));
 
             blocks.push(
-              <div key={`table-${blocks.length}`} className="my-2.5 overflow-x-auto rounded-xl border border-amber-500/30 bg-slate-50/90 shadow-xl max-w-full">
+              <div key={`table-${blocks.length}`} className="my-2.5 overflow-x-auto rounded-xl border border-sky-500/30 bg-slate-50/90 shadow-xl max-w-full">
                 <table className="w-full text-left text-[11px] border-collapse">
-                  <thead className="bg-white border-b border-amber-500/30 text-amber-400 font-extrabold uppercase tracking-wider">
+                  <thead className="bg-white border-b border-sky-500/30 text-sky-500 font-extrabold uppercase tracking-wider">
                     <tr>
                       {headerCells.map((h, hIdx) => (
                         <th key={hIdx} className="px-2.5 py-1.5 border-r border-slate-200/80 last:border-0 whitespace-nowrap">
@@ -353,7 +353,7 @@ const AIChatbot = ({ isOpen, onClose }) => {
                 {/* Avatar */}
                 <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
                   msg.sender === 'user'
-                    ? 'bg-amber-500 text-slate-950'
+                    ? 'bg-sky-500 text-slate-950'
                     : 'bg-cyan-900/60 text-cyan-300 border border-cyan-500/30'
                 }`}>
                   {msg.sender === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
@@ -362,7 +362,7 @@ const AIChatbot = ({ isOpen, onClose }) => {
                 {/* Bubble */}
                 <div className={`p-3 rounded-2xl max-w-[82%] leading-relaxed ${
                   msg.sender === 'user'
-                    ? 'bg-amber-500 text-slate-950 font-semibold rounded-tr-none'
+                    ? 'bg-sky-500 text-slate-950 font-semibold rounded-tr-none'
                     : 'bg-white border border-slate-200 text-slate-700 rounded-tl-none'
                 }`}>
                   {renderText(msg.text)}

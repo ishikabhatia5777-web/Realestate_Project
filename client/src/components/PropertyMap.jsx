@@ -55,7 +55,7 @@ const PropertyMap = ({ properties = [], center = [-33.8688, 151.2093], zoom = 11
           type="button"
           onClick={() => setMapType('m')}
           className={`px-3 py-1 rounded-lg transition-all ${
-            mapType === 'm' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-600 hover:text-slate-900'
+            mapType === 'm' ? 'bg-sky-500 text-slate-950 shadow-md' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           Google Map
@@ -64,7 +64,7 @@ const PropertyMap = ({ properties = [], center = [-33.8688, 151.2093], zoom = 11
           type="button"
           onClick={() => setMapType('y')}
           className={`px-3 py-1 rounded-lg transition-all ${
-            mapType === 'y' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-600 hover:text-slate-900'
+            mapType === 'y' ? 'bg-sky-500 text-slate-950 shadow-md' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           Satellite
@@ -109,11 +109,11 @@ const PropertyMap = ({ properties = [], center = [-33.8688, 151.2093], zoom = 11
                     }}
                   />
                   <div>
-                    <span className="text-[10px] font-bold text-amber-500 uppercase tracking-wider block">
+                    <span className="text-[10px] font-bold text-sky-600 uppercase tracking-wider block">
                       {prop.propertyType || 'Residential'} • {prop.address?.suburb || 'Australia'}
                     </span>
                     <h4 className="text-xs font-bold text-slate-900 line-clamp-1">{prop.title}</h4>
-                    <p className="text-sm font-extrabold text-amber-600 mt-0.5">
+                    <p className="text-sm font-extrabold text-sky-700 mt-0.5">
                       ${prop.price ? prop.price.toLocaleString() : 'Contact Agent'}
                     </p>
                   </div>
@@ -124,7 +124,7 @@ const PropertyMap = ({ properties = [], center = [-33.8688, 151.2093], zoom = 11
                       e.stopPropagation();
                       navigate(`/properties/${prop._id}`);
                     }}
-                    className="block w-full text-center py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold text-xs hover:from-amber-400 hover:to-amber-500 transition-all shadow-md shadow-amber-500/20 cursor-pointer"
+                    className="block w-full text-center py-2 rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 text-slate-950 font-extrabold text-xs hover:from-sky-400 hover:to-sky-500 transition-all shadow-md shadow-sky-500/20 cursor-pointer"
                   >
                     View Property →
                   </a>

@@ -43,18 +43,18 @@ const RegisterPage = () => {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="inline-flex items-center space-x-1.5 text-xs font-bold text-slate-500 hover:text-amber-400 transition-colors"
+            className="inline-flex items-center space-x-1.5 text-xs font-bold text-slate-500 hover:text-sky-500 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back</span>
           </button>
-          <Link to="/" className="text-xs font-bold text-slate-500 hover:text-amber-400 transition-colors">
+          <Link to="/" className="text-xs font-bold text-slate-500 hover:text-sky-500 transition-colors">
             Back to Home
           </Link>
         </div>
 
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl gold-gradient-bg flex items-center justify-center mx-auto shadow-lg shadow-amber-500/20">
+          <div className="w-12 h-12 rounded-2xl brand-gradient-bg flex items-center justify-center mx-auto shadow-lg shadow-sky-500/20">
             <Building2 className="w-6 h-6 text-slate-950 font-bold" />
           </div>
           <h2 className="text-2xl font-extrabold text-slate-900">Create Account</h2>
@@ -86,7 +86,7 @@ const RegisterPage = () => {
                   onClick={() => setRole(r.id)}
                   className={`p-2.5 rounded-xl text-xs font-bold border transition-all text-left ${
                     role === r.id
-                      ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-md'
+                      ? 'bg-sky-500 text-slate-950 border-sky-500 shadow-md'
                       : 'bg-white border-slate-200 text-slate-500 hover:text-slate-900'
                   }`}
                 >
@@ -103,7 +103,7 @@ const RegisterPage = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Julian Thorne"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-sky-500"
               required
             />
           </div>
@@ -115,7 +115,7 @@ const RegisterPage = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="julian@prestigerealty.com.au"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-sky-500"
               required
             />
           </div>
@@ -127,7 +127,7 @@ const RegisterPage = () => {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+61 400 000 000"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-sky-500"
             />
           </div>
 
@@ -139,7 +139,7 @@ const RegisterPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-3.5 pr-10 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-amber-500"
+                className="w-full pl-3.5 pr-10 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-sky-500"
                 required
               />
               <button
@@ -155,7 +155,7 @@ const RegisterPage = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold text-sm hover:from-amber-400 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/20"
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 text-slate-950 font-bold text-sm hover:from-sky-400 hover:to-sky-500 transition-all shadow-lg shadow-sky-500/20"
           >
             {loading ? 'Creating Account...' : 'Register Account'}
           </button>
@@ -163,7 +163,7 @@ const RegisterPage = () => {
 
         <p className="text-center text-xs text-slate-500">
           Already have an account?{' '}
-          <Link to="/login" className="text-amber-400 font-bold hover:underline">
+          <Link to="/login" className="text-sky-500 font-bold hover:underline">
             Sign In
           </Link>
         </p>

@@ -160,12 +160,12 @@ const BlogsPage = () => {
       
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto space-y-4">
-        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[10px] font-bold uppercase tracking-widest">
+        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-500 text-[10px] font-bold uppercase tracking-widest">
           <Sparkles className="w-3 h-3" />
           <span>Real Estate Intelligence</span>
         </div>
         <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
-          Property Market <span className="gold-gradient-text">Insights</span>
+          Property Market <span className="brand-gradient-text">Insights</span>
         </h1>
         <p className="text-sm text-slate-500 leading-relaxed">
           Stay ahead of the market with expert analysis on suburb trends, investment strategies, architectural innovations, and high-end residential data.
@@ -184,7 +184,7 @@ const BlogsPage = () => {
               onClick={() => setSelectedCategory(category)}
               className={`px-5 py-2.5 rounded-full whitespace-nowrap text-xs font-bold transition-all flex-shrink-0 ${
                 selectedCategory === category
-                  ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20'
+                  ? 'bg-sky-500 text-slate-950 shadow-lg shadow-sky-500/20'
                   : 'bg-white border border-slate-200 text-slate-500 hover:text-slate-900 hover:border-slate-600'
               }`}
             >
@@ -202,7 +202,7 @@ const BlogsPage = () => {
           <p className="text-xs text-slate-500">Try adjusting your search query or switching categories.</p>
           <button 
             onClick={() => { setSelectedCategory('All'); setSearchQuery(''); }}
-            className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs"
+            className="px-4 py-2 rounded-xl bg-sky-500 text-slate-950 font-bold text-xs"
           >
             Reset Filters
           </button>
@@ -213,7 +213,7 @@ const BlogsPage = () => {
             <div 
               key={blog._id} 
               onClick={() => setActiveBlogModal(blog)}
-              className="group cursor-pointer glass-panel rounded-2xl overflow-hidden border border-slate-200 hover:border-amber-500/40 transition-all duration-300 flex flex-col justify-between hover:-translate-y-1 shadow-lg hover:shadow-amber-500/10"
+              className="group cursor-pointer glass-panel rounded-2xl overflow-hidden border border-slate-200 hover:border-sky-500/40 transition-all duration-300 flex flex-col justify-between hover:-translate-y-1 shadow-lg hover:shadow-sky-500/10"
             >
               <div className="space-y-4">
                 <div className="relative h-52 overflow-hidden">
@@ -222,7 +222,7 @@ const BlogsPage = () => {
                     alt={blog.title} 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                   />
-                  <div className="absolute top-3 left-3 px-3 py-1 rounded-lg bg-slate-50/80 backdrop-blur-md border border-slate-200 text-[11px] font-bold text-amber-400">
+                  <div className="absolute top-3 left-3 px-3 py-1 rounded-lg bg-slate-50/80 backdrop-blur-md border border-slate-200 text-[11px] font-bold text-sky-500">
                     {blog.category}
                   </div>
                 </div>
@@ -234,7 +234,7 @@ const BlogsPage = () => {
                     <span className="flex items-center"><Calendar className="w-3 h-3 mr-1" /> {new Date(blog.createdAt || Date.now()).toLocaleDateString('en-AU', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                   </div>
 
-                  <h3 className="text-lg font-bold text-slate-900 group-hover:text-amber-400 transition-colors line-clamp-2 leading-snug">
+                  <h3 className="text-lg font-bold text-slate-900 group-hover:text-sky-500 transition-colors line-clamp-2 leading-snug">
                     {blog.title}
                   </h3>
 
@@ -246,10 +246,10 @@ const BlogsPage = () => {
 
               <div className="px-6 pb-6 pt-2 flex items-center justify-between border-t border-slate-200/60 mt-auto">
                 <div className="flex items-center space-x-2 text-xs text-slate-600 font-medium">
-                  <User className="w-3.5 h-3.5 text-amber-400" />
+                  <User className="w-3.5 h-3.5 text-sky-500" />
                   <span className="truncate max-w-[120px]">{blog.author || 'Aura Editorial'}</span>
                 </div>
-                <span className="text-xs font-bold text-amber-400 group-hover:translate-x-1 transition-transform flex items-center">
+                <span className="text-xs font-bold text-sky-500 group-hover:translate-x-1 transition-transform flex items-center">
                   Read <ArrowRight className="w-3.5 h-3.5 ml-1" />
                 </span>
               </div>
@@ -277,7 +277,7 @@ const BlogsPage = () => {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
               <div className="absolute bottom-6 left-6 right-6 space-y-2">
-                <span className="inline-block px-3 py-1 rounded-lg bg-amber-500 text-slate-950 font-black text-xs uppercase tracking-wider">
+                <span className="inline-block px-3 py-1 rounded-lg bg-sky-500 text-slate-950 font-black text-xs uppercase tracking-wider">
                   {activeBlogModal.category}
                 </span>
                 <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight">
@@ -289,12 +289,12 @@ const BlogsPage = () => {
             <div className="p-6 md:p-8 space-y-6">
               <div className="flex flex-wrap items-center justify-between text-xs text-slate-500 pb-4 border-b border-slate-200 gap-2">
                 <div className="flex items-center space-x-3">
-                  <User className="w-4 h-4 text-amber-400" />
+                  <User className="w-4 h-4 text-sky-500" />
                   <span className="font-bold text-slate-700">{activeBlogModal.author || 'Aura Editorial'}</span>
                 </div>
                 <div className="flex items-center space-x-4">
-                  <span className="flex items-center"><Clock className="w-3.5 h-3.5 mr-1 text-amber-400" /> {activeBlogModal.readTime || '5 min read'}</span>
-                  <span className="flex items-center"><Calendar className="w-3.5 h-3.5 mr-1 text-amber-400" /> {new Date(activeBlogModal.createdAt || Date.now()).toLocaleDateString()}</span>
+                  <span className="flex items-center"><Clock className="w-3.5 h-3.5 mr-1 text-sky-500" /> {activeBlogModal.readTime || '5 min read'}</span>
+                  <span className="flex items-center"><Calendar className="w-3.5 h-3.5 mr-1 text-sky-500" /> {new Date(activeBlogModal.createdAt || Date.now()).toLocaleDateString()}</span>
                 </div>
               </div>
 
@@ -318,14 +318,14 @@ const BlogsPage = () => {
                       href={activeBlogModal.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-4 py-2.5 rounded-xl bg-slate-100 border border-slate-300 text-amber-400 font-bold text-xs hover:bg-slate-200 transition-colors"
+                      className="px-4 py-2.5 rounded-xl bg-slate-100 border border-slate-300 text-sky-500 font-bold text-xs hover:bg-slate-200 transition-colors"
                     >
                       Read Full Media Source ↗
                     </a>
                   )}
                   <button
                     onClick={() => setActiveBlogModal(null)}
-                    className="px-5 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs hover:bg-amber-400 transition-colors"
+                    className="px-5 py-2.5 rounded-xl bg-sky-500 text-slate-950 font-bold text-xs hover:bg-sky-400 transition-colors"
                   >
                     Close Article
                   </button>

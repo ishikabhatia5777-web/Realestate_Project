@@ -24,12 +24,12 @@ const WishlistPage = () => {
 
         <div className="flex items-center space-x-3">
           <span className="px-4 py-2 rounded-2xl bg-white border border-slate-200 text-slate-600 text-xs font-bold flex items-center space-x-2">
-            <Sparkles className="w-4 h-4 text-amber-400" />
+            <Sparkles className="w-4 h-4 text-sky-500" />
             <span>Saved: {savedProperties.length} Properties</span>
           </span>
           <Link
             to="/properties"
-            className="px-4 py-2 rounded-2xl bg-amber-500 text-slate-950 font-extrabold text-xs hover:bg-amber-400 transition-all flex items-center space-x-1.5 shadow-md shadow-amber-500/20"
+            className="px-4 py-2 rounded-2xl bg-sky-500 text-slate-950 font-extrabold text-xs hover:bg-sky-400 transition-all flex items-center space-x-1.5 shadow-md shadow-sky-500/20"
           >
             <Building2 className="w-4 h-4" />
             <span>Browse All Listings</span>
@@ -51,7 +51,7 @@ const WishlistPage = () => {
           </div>
           <Link
             to="/properties"
-            className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black text-xs hover:from-amber-400 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/20 mt-2"
+            className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 text-slate-950 font-black text-xs hover:from-sky-400 hover:to-sky-500 transition-all shadow-lg shadow-sky-500/20 mt-2"
           >
             <span>Explore Properties Now</span>
             <ArrowRight className="w-4 h-4" />

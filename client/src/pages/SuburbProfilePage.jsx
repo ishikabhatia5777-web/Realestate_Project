@@ -54,7 +54,7 @@ const SuburbProfilePage = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
 
       {/* Back */}
-      <Link to="/properties" className="inline-flex items-center space-x-2 text-slate-500 hover:text-amber-400 transition-colors text-sm font-bold">
+      <Link to="/properties" className="inline-flex items-center space-x-2 text-slate-500 hover:text-sky-500 transition-colors text-sm font-bold">
         <ArrowLeft className="w-4 h-4" />
         <span>Back to Properties</span>
       </Link>
@@ -64,7 +64,7 @@ const SuburbProfilePage = () => {
         <div className="relative h-48 sm:h-64 bg-gradient-to-br from-slate-800 to-slate-900 flex items-end">
           <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&q=80&w=1200)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
           <div className="relative z-10 p-8">
-            <div className="flex items-center space-x-2 text-amber-400 text-xs font-bold uppercase tracking-widest mb-2">
+            <div className="flex items-center space-x-2 text-sky-500 text-xs font-bold uppercase tracking-widest mb-2">
               <MapPin className="w-4 h-4" />
               <span>Suburb Profile</span>
             </div>
@@ -131,15 +131,15 @@ const SuburbProfilePage = () => {
           <div className="space-y-3">
             {NEARBY_SCHOOLS.map((school, i) => (
               <div key={i} className="flex items-start space-x-3 p-3 rounded-xl bg-white border border-slate-200">
-                <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center flex-shrink-0">
-                  <Home className="w-4 h-4 text-amber-400" />
+                <div className="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/30 flex items-center justify-center flex-shrink-0">
+                  <Home className="w-4 h-4 text-sky-500" />
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-bold text-slate-900">{school.name}</p>
                   <p className="text-[11px] text-slate-500">{school.type} • {school.distance}</p>
                   <div className="flex items-center space-x-1 mt-1">
                     {[1,2,3,4,5].map(s => (
-                      <div key={s} className={`w-2 h-2 rounded-full ${s <= Math.round(school.rating) ? 'bg-amber-400' : 'bg-slate-200'}`} />
+                      <div key={s} className={`w-2 h-2 rounded-full ${s <= Math.round(school.rating) ? 'bg-sky-400' : 'bg-slate-200'}`} />
                     ))}
                     <span className="text-[10px] text-slate-500 ml-1">{school.rating}/5</span>
                   </div>
@@ -154,21 +154,21 @@ const SuburbProfilePage = () => {
       <div className="flex flex-wrap gap-3">
         <button
           onClick={() => navigate(`/properties?suburb=${suburb}&listingType=Sale`)}
-          className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold text-sm hover:from-amber-400 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/20 flex items-center space-x-2"
+          className="px-6 py-3 rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 text-slate-950 font-bold text-sm hover:from-sky-400 hover:to-sky-500 transition-all shadow-lg shadow-sky-500/20 flex items-center space-x-2"
         >
           <Search className="w-4 h-4" />
           <span>Properties for Sale in {suburb}</span>
         </button>
         <button
           onClick={() => navigate(`/properties?suburb=${suburb}&listingType=Rent`)}
-          className="px-6 py-3 rounded-xl bg-white border border-slate-300 text-slate-900 font-bold text-sm hover:border-amber-500 transition-colors flex items-center space-x-2"
+          className="px-6 py-3 rounded-xl bg-white border border-slate-300 text-slate-900 font-bold text-sm hover:border-sky-500 transition-colors flex items-center space-x-2"
         >
           <Home className="w-4 h-4" />
           <span>Rentals in {suburb}</span>
         </button>
         <button
           onClick={() => navigate(`/sold?suburb=${suburb}`)}
-          className="px-6 py-3 rounded-xl bg-white border border-slate-300 text-slate-900 font-bold text-sm hover:border-amber-500 transition-colors flex items-center space-x-2"
+          className="px-6 py-3 rounded-xl bg-white border border-slate-300 text-slate-900 font-bold text-sm hover:border-sky-500 transition-colors flex items-center space-x-2"
         >
           <DollarSign className="w-4 h-4" />
           <span>Sold in {suburb}</span>
@@ -179,7 +179,7 @@ const SuburbProfilePage = () => {
       <div className="space-y-6 border-t border-slate-200 pt-8">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-extrabold text-slate-900">Properties for Sale in {suburb}</h2>
-          <Link to={`/properties?suburb=${suburb}&listingType=Sale`} className="text-sm font-bold text-amber-400 hover:text-amber-300">
+          <Link to={`/properties?suburb=${suburb}&listingType=Sale`} className="text-sm font-bold text-sky-500 hover:text-amber-300">
             View All →
           </Link>
         </div>
@@ -191,7 +191,7 @@ const SuburbProfilePage = () => {
         ) : properties.length === 0 ? (
           <div className="py-12 text-center glass-panel rounded-2xl border border-slate-200">
             <p className="text-slate-500 font-semibold">No active listings currently in {suburb}.</p>
-            <Link to="/properties" className="mt-4 inline-block px-5 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs">
+            <Link to="/properties" className="mt-4 inline-block px-5 py-2 rounded-xl bg-sky-500 text-slate-950 font-bold text-xs">
               Explore All Properties
             </Link>
           </div>

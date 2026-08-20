@@ -69,18 +69,18 @@ const ForgotPasswordPage = () => {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="inline-flex items-center space-x-1.5 text-xs font-bold text-slate-500 hover:text-amber-400 transition-colors"
+            className="inline-flex items-center space-x-1.5 text-xs font-bold text-slate-500 hover:text-sky-500 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back</span>
           </button>
-          <Link to="/" className="text-xs font-bold text-slate-500 hover:text-amber-400 transition-colors">
+          <Link to="/" className="text-xs font-bold text-slate-500 hover:text-sky-500 transition-colors">
             Back to Home
           </Link>
         </div>
 
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl gold-gradient-bg flex items-center justify-center mx-auto shadow-lg shadow-amber-500/20">
+          <div className="w-12 h-12 rounded-2xl brand-gradient-bg flex items-center justify-center mx-auto shadow-lg shadow-sky-500/20">
             <Building2 className="w-6 h-6 text-slate-950 font-bold" />
           </div>
           <h2 className="text-2xl font-extrabold text-slate-900">
@@ -116,7 +116,7 @@ const ForgotPasswordPage = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@company.com"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-amber-500"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-sky-500"
                   required
                 />
               </div>
@@ -125,7 +125,7 @@ const ForgotPasswordPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold text-sm hover:from-amber-400 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 text-slate-950 font-bold text-sm hover:from-sky-400 hover:to-sky-500 transition-all shadow-lg shadow-sky-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Sending...' : 'Send OTP'}
             </button>
@@ -142,7 +142,7 @@ const ForgotPasswordPage = () => {
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))} // only numbers
                   placeholder="123456"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-center tracking-[0.5em] text-lg font-bold text-slate-900 focus:outline-none focus:border-amber-500"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-center tracking-[0.5em] text-lg font-bold text-slate-900 focus:outline-none focus:border-sky-500"
                   required
                 />
               </div>
@@ -151,7 +151,7 @@ const ForgotPasswordPage = () => {
             <button
               type="submit"
               disabled={loading || otp.length !== 6}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold text-sm hover:from-amber-400 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 text-slate-950 font-bold text-sm hover:from-sky-400 hover:to-sky-500 transition-all shadow-lg shadow-sky-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Verifying...' : 'Verify & Login'}
             </button>

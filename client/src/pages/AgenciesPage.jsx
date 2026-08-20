@@ -30,10 +30,10 @@ const AgenciesPage = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {agencies.map((agency) => (
-          <div key={agency._id} className="glass-panel rounded-2xl overflow-hidden border border-slate-200 space-y-4 hover:border-amber-500/40 transition-colors flex flex-col justify-between">
+          <div key={agency._id} className="glass-panel rounded-2xl overflow-hidden border border-slate-200 space-y-4 hover:border-sky-500/40 transition-colors flex flex-col justify-between">
             <div className="relative h-40 bg-white overflow-hidden">
               <img src={agency.coverImage} alt="Cover" className="w-full h-full object-cover" />
-              <div className="absolute top-3 right-3 px-2.5 py-1 rounded-md text-xs font-bold bg-amber-500 text-slate-950 flex items-center space-x-1">
+              <div className="absolute top-3 right-3 px-2.5 py-1 rounded-md text-xs font-bold bg-sky-500 text-slate-950 flex items-center space-x-1">
                 <Star className="w-3.5 h-3.5 fill-current" />
                 <span>{agency.rating || 4.9}</span>
               </div>
@@ -45,7 +45,7 @@ const AgenciesPage = () => {
                   <img src={agency.logo} alt="Logo" className="w-12 h-12 rounded-xl object-contain bg-white p-1 border border-slate-300" />
                   <div>
                     <h3 className="text-base font-bold text-slate-900">{agency.name}</h3>
-                    <p className="text-[11px] text-amber-400 font-semibold">{agency.licenseNumber}</p>
+                    <p className="text-[11px] text-sky-500 font-semibold">{agency.licenseNumber}</p>
                   </div>
                 </div>
                 <p className="text-xs text-slate-500 line-clamp-3">{agency.description}</p>
@@ -58,7 +58,7 @@ const AgenciesPage = () => {
                 </div>
                 <Link
                   to={`/agencies/${agency._id}`}
-                  className="block w-full text-center py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 font-bold hover:bg-amber-500 hover:text-slate-950 transition-colors"
+                  className="block w-full text-center py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 font-bold hover:bg-sky-500 hover:text-slate-950 transition-colors"
                 >
                   View Agency Profile
                 </Link>

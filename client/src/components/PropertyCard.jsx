@@ -21,7 +21,7 @@ const PropertyCard = ({ property }) => {
     <motion.div
       whileHover={{ y: -6 }}
       transition={{ duration: 0.25 }}
-      className="group glass-panel rounded-2xl overflow-hidden border border-slate-200/80 hover:border-amber-500/40 transition-all duration-300 shadow-xl"
+      className="group glass-panel rounded-2xl overflow-hidden border border-slate-200/80 hover:border-sky-500/40 transition-all duration-300 shadow-xl"
     >
       {/* Image Container */}
       <Link to={`/properties/${property._id}`} className="block relative aspect-[4/3] overflow-hidden bg-white">
@@ -37,11 +37,11 @@ const PropertyCard = ({ property }) => {
 
         {/* Top Badges */}
         <div className="absolute top-3 left-3 flex flex-wrap gap-2 z-10">
-          <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-white/90 backdrop-blur-md text-amber-400 border border-amber-500/30 uppercase tracking-wider">
+          <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-white/90 backdrop-blur-md text-sky-500 border border-sky-500/30 uppercase tracking-wider">
             {property.listingType === 'Sale' ? 'Buy' : property.listingType}
           </span>
           {property.tier === 'Premium' && (
-            <span className="px-2.5 py-1 rounded-md text-[11px] font-bold gold-gradient-bg text-slate-950 flex items-center space-x-1 shadow-md">
+            <span className="px-2.5 py-1 rounded-md text-[11px] font-bold brand-gradient-bg text-slate-950 flex items-center space-x-1 shadow-md">
               <Sparkles className="w-3 h-3" />
               <span>PREMIUM</span>
             </span>
@@ -90,11 +90,11 @@ const PropertyCard = ({ property }) => {
       {/* Details Body */}
       <div className="p-5 space-y-3">
         <div>
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-400/90 block">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-sky-500/90 block">
             {property.propertyType} • {property.address?.suburb}, {property.address?.state}
           </span>
           <Link to={`/properties/${property._id}`}>
-            <h3 className="text-base font-bold text-slate-900 group-hover:text-amber-400 transition-colors line-clamp-1 mt-0.5">
+            <h3 className="text-base font-bold text-slate-900 group-hover:text-sky-500 transition-colors line-clamp-1 mt-0.5">
               {property.title}
             </h3>
           </Link>
@@ -107,19 +107,19 @@ const PropertyCard = ({ property }) => {
         {/* Property Specs */}
         <div className="grid grid-cols-4 gap-2 py-2.5 px-3 rounded-xl bg-white/60 border border-slate-200/80 text-slate-600 text-xs">
           <div className="flex items-center space-x-1.5" title="Bedrooms">
-            <Bed className="w-4 h-4 text-amber-400" />
+            <Bed className="w-4 h-4 text-sky-500" />
             <span className="font-semibold">{property.bedrooms}</span>
           </div>
           <div className="flex items-center space-x-1.5" title="Bathrooms">
-            <Bath className="w-4 h-4 text-amber-400" />
+            <Bath className="w-4 h-4 text-sky-500" />
             <span className="font-semibold">{property.bathrooms}</span>
           </div>
           <div className="flex items-center space-x-1.5" title="Parking Spaces">
-            <Car className="w-4 h-4 text-amber-400" />
+            <Car className="w-4 h-4 text-sky-500" />
             <span className="font-semibold">{property.parkingSpaces}</span>
           </div>
           <div className="flex items-center space-x-1.5" title="Land Area (sqm)">
-            <Maximize className="w-4 h-4 text-amber-400" />
+            <Maximize className="w-4 h-4 text-sky-500" />
             <span className="font-semibold">{property.landArea || property.floorArea || 0}m²</span>
           </div>
         </div>
@@ -142,7 +142,7 @@ const PropertyCard = ({ property }) => {
                     requireAuth('Please sign in to buy or reserve this property');
                   }
                 }}
-                className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold text-xs hover:from-amber-400 hover:to-amber-500 transition-all shadow-md shadow-amber-500/20 flex items-center space-x-1"
+                className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-sky-500 to-sky-600 text-slate-950 font-extrabold text-xs hover:from-sky-400 hover:to-sky-500 transition-all shadow-md shadow-sky-500/20 flex items-center space-x-1"
               >
                 <ShoppingBag className="w-3.5 h-3.5" />
                 <span>{property.listingType === 'Rent' ? 'Rent Now' : 'Buy Property'}</span>

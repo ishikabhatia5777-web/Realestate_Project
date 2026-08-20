@@ -96,7 +96,7 @@ const AdminDashboard = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-900">
         <div className="text-center space-y-4">
-          <div className="w-12 h-12 rounded-full border-4 border-amber-500 border-t-transparent animate-spin mx-auto"></div>
+          <div className="w-12 h-12 rounded-full border-4 border-sky-500 border-t-transparent animate-spin mx-auto"></div>
           <p className="text-sm font-bold text-slate-500">Verifying session...</p>
         </div>
       </div>
@@ -116,20 +116,20 @@ const AdminDashboard = () => {
         <div className="flex space-x-2 bg-white p-1 rounded-xl border border-slate-200 text-xs font-bold">
           <button
             onClick={() => setActiveTab('metrics')}
-            className={`px-4 py-2 rounded-lg transition-all ${activeTab === 'metrics' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
+            className={`px-4 py-2 rounded-lg transition-all ${activeTab === 'metrics' ? 'bg-sky-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
           >
             Overview Metrics
           </button>
           <button
             onClick={() => setActiveTab('users')}
-            className={`px-4 py-2 rounded-lg transition-all ${activeTab === 'users' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
+            className={`px-4 py-2 rounded-lg transition-all ${activeTab === 'users' ? 'bg-sky-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
           >
             Users & RBAC ({users.length})
           </button>
 
           <button
             onClick={() => setActiveTab('agents')}
-            className={`px-4 py-2 rounded-lg transition-all ${activeTab === 'agents' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
+            className={`px-4 py-2 rounded-lg transition-all ${activeTab === 'agents' ? 'bg-sky-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
           >
             Agents ({users.filter(u => u.role === 'agent').length})
           </button>
@@ -145,15 +145,15 @@ const AdminDashboard = () => {
             {/* Table Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-white/70">
               <div className="flex items-center space-x-2.5">
-                <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-                  <Activity className="w-4 h-4 text-amber-400" />
+                <div className="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center">
+                  <Activity className="w-4 h-4 text-sky-500" />
                 </div>
                 <div>
                   <h3 className="text-sm font-extrabold text-slate-900">Platform Activity Log</h3>
                   <p className="text-[11px] text-slate-500">Every admin action and system event is recorded below.</p>
                 </div>
               </div>
-              <span className="text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-full">
+              <span className="text-[10px] font-bold text-sky-500 bg-sky-500/10 border border-sky-500/20 px-2.5 py-1 rounded-full">
                 {logs.length} Total Events
               </span>
             </div>
@@ -206,7 +206,7 @@ const AdminDashboard = () => {
                         badge = { label: '🗑 Deleted', bg: 'bg-rose-500/10', text: 'text-rose-300', border: 'border-rose-500/20' };
                         what = log.details;
                       } else if (action.includes('ROLE') || action.includes('PERMISSION')) {
-                        badge = { label: '🛡 Role Change', bg: 'bg-amber-500/10', text: 'text-amber-300', border: 'border-amber-500/20' };
+                        badge = { label: '🛡 Role Change', bg: 'bg-sky-500/10', text: 'text-amber-300', border: 'border-sky-500/20' };
                         what = log.details;
                       } else if (action.includes('PAYMENT') || action.includes('STRIPE') || action.includes('TRANSACTION')) {
                         badge = { label: '💳 Payment', bg: 'bg-violet-500/10', text: 'text-violet-300', border: 'border-violet-500/20' };
@@ -275,7 +275,7 @@ const AdminDashboard = () => {
                 {users.map((u) => {
                   let roleBadge = { bg: 'bg-slate-100', text: 'text-slate-600' };
                   if (u.role === 'admin' || u.role === 'super_admin') roleBadge = { bg: 'bg-indigo-500/10', text: 'text-indigo-400' };
-                  if (u.role === 'agent' || u.role === 'agency') roleBadge = { bg: 'bg-amber-500/10', text: 'text-amber-400' };
+                  if (u.role === 'agent' || u.role === 'agency') roleBadge = { bg: 'bg-sky-500/10', text: 'text-sky-500' };
                   if (u.role === 'owner') roleBadge = { bg: 'bg-emerald-500/10', text: 'text-emerald-400' };
                   if (u.role === 'buyer') roleBadge = { bg: 'bg-blue-500/10', text: 'text-blue-400' };
 
@@ -297,7 +297,7 @@ const AdminDashboard = () => {
                         <select
                           value={u.role}
                           onChange={(e) => handleRoleChange(u._id, e.target.value)}
-                          className="px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-xs text-slate-900 hover:border-amber-500 transition-colors focus:outline-none focus:ring-1 focus:ring-amber-500 cursor-pointer w-32"
+                          className="px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-xs text-slate-900 hover:border-sky-500 transition-colors focus:outline-none focus:ring-1 focus:ring-amber-500 cursor-pointer w-32"
                         >
                           <option value="buyer">Buyer</option>
                           <option value="owner">Owner</option>
@@ -325,7 +325,7 @@ const AdminDashboard = () => {
                 <div 
                   key={agent._id} 
                   onClick={() => setSelectedAdminAgentId(selectedAdminAgentId === agent._id ? null : agent._id)}
-                  className={`p-4 rounded-xl border flex items-center space-x-3 cursor-pointer transition-colors ${selectedAdminAgentId === agent._id ? 'bg-slate-100 border-amber-500 ring-1 ring-amber-500' : 'bg-white border-slate-200 hover:bg-slate-100 hover:border-slate-300'}`}
+                  className={`p-4 rounded-xl border flex items-center space-x-3 cursor-pointer transition-colors ${selectedAdminAgentId === agent._id ? 'bg-slate-100 border-sky-500 ring-1 ring-amber-500' : 'bg-white border-slate-200 hover:bg-slate-100 hover:border-slate-300'}`}
                 >
                   <img src={agent.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400'} alt={agent.name} className="w-10 h-10 rounded-full object-cover border border-slate-200" />
                   <div>
@@ -340,7 +340,7 @@ const AdminDashboard = () => {
           {selectedAdminAgentId && (
             <div className="glass-panel p-6 rounded-2xl border border-slate-200 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
               <div className="flex items-center space-x-2 border-b border-slate-200 pb-4">
-                <FileText className="w-5 h-5 text-amber-500" />
+                <FileText className="w-5 h-5 text-sky-600" />
                 <h3 className="text-base font-bold text-slate-900">
                   Properties Managed by {users.find(u => u._id === selectedAdminAgentId)?.name}
                 </h3>
@@ -354,7 +354,7 @@ const AdminDashboard = () => {
                       </div>
                       <div className="flex-1 flex flex-col justify-center">
                         <h4 className="text-sm font-bold text-slate-900 line-clamp-1">{property.title}</h4>
-                        <p className="text-xs text-amber-400 font-semibold mt-1">${property.price?.toLocaleString()}</p>
+                        <p className="text-xs text-sky-500 font-semibold mt-1">${property.price?.toLocaleString()}</p>
                         <p className="text-[10px] text-slate-500 mt-1 line-clamp-1">{property.address?.suburb}, {property.address?.state}</p>
                       </div>
                     </div>
