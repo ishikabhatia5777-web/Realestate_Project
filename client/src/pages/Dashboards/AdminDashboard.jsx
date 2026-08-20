@@ -1,9 +1,4 @@
-const fs = require('fs');
-const path = require('path');
-
-const targetPath = path.resolve(__dirname, '../../../../client/src/pages/Dashboards/AdminDashboard.jsx');
-
-const newContent = `import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -183,7 +178,7 @@ const AdminDashboard = () => {
         {activeTab === 'metrics' && (
           <div className="space-y-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <KpiCard title="Total Revenue" value={\`$\${(metrics?.totalRevenue || 0).toLocaleString()}\`} icon={DollarSign} trend="+12.5%" trendUp={true} color="emerald" />
+              <KpiCard title="Total Revenue" value={`$${(metrics?.totalRevenue || 0).toLocaleString()}`} icon={DollarSign} trend="+12.5%" trendUp={true} color="emerald" />
               <KpiCard title="Total Users" value={metrics?.totalUsers || 0} icon={Users} trend="+8.2%" trendUp={true} color="blue" />
               <KpiCard title="Total Properties" value={metrics?.totalProperties || 0} icon={Building2} trend="+4.3%" trendUp={true} color="indigo" />
               <KpiCard title="Pending Approvals" value={metrics?.pendingListings || 0} icon={Clock} trend="-2.1%" trendUp={false} color="amber" />
@@ -214,7 +209,7 @@ const AdminDashboard = () => {
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                       <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} dy={10} />
-                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} tickFormatter={(val) => \`$\${val/1000}k\`} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} tickFormatter={(val) => `$${val/1000}k`} />
                       <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
                       <Area type="monotone" dataKey="revenue" stroke="#0ea5e9" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
                     </AreaChart>
@@ -364,14 +359,14 @@ const AdminDashboard = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 font-semibold">
-                          \${p.price?.toLocaleString()}
+                          ${p.price?.toLocaleString()}
                         </td>
                         <td className="px-6 py-4">
-                          <span className={\`px-2.5 py-1 rounded-md text-[10px] font-bold \${
+                          <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold ${
                             p.status === 'Published' ? 'bg-emerald-100 text-emerald-700' :
                             p.status === 'Pending Review' ? 'bg-amber-100 text-amber-700' :
                             'bg-slate-100 text-slate-700'
-                          }\`}>
+                          }`}>
                             {p.status || 'Draft'}
                           </span>
                         </td>
@@ -447,11 +442,11 @@ const AdminDashboard = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <span className={\`px-2.5 py-1 rounded-md text-[10px] font-bold capitalize \${
+                          <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold capitalize ${
                             u.role === 'admin' || u.role === 'super_admin' ? 'bg-purple-100 text-purple-700' :
                             u.role === 'agent' || u.role === 'agency' ? 'bg-sky-100 text-sky-700' :
                             'bg-slate-100 text-slate-700'
-                          }\`}>
+                          }`}>
                             {u.role}
                           </span>
                         </td>
@@ -508,7 +503,7 @@ const AdminDashboard = () => {
                           <p className="text-[10px] text-slate-500">{o.buyerId?.email}</p>
                         </td>
                         <td className="px-6 py-4 font-bold text-emerald-600">
-                          \${(o.offerAmount || 0).toLocaleString()}
+                          ${(o.offerAmount || 0).toLocaleString()}
                         </td>
                         <td className="px-6 py-4">
                           <span className="px-2.5 py-1 rounded-md text-[10px] font-bold bg-slate-100 text-slate-700">
@@ -550,10 +545,10 @@ const AdminDashboard = () => {
                         <td className="px-6 py-4 text-slate-600">{i.type}</td>
                         <td className="px-6 py-4 text-slate-500">{new Date(i.date).toLocaleDateString()}</td>
                         <td className="px-6 py-4">
-                           <span className={\`px-2.5 py-1 rounded-md text-[10px] font-bold \${
+                           <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold ${
                             i.status === 'Resolved' ? 'bg-emerald-100 text-emerald-700' :
                             'bg-amber-100 text-amber-700'
-                          }\`}>
+                          }`}>
                             {i.status}
                           </span>
                         </td>
@@ -600,10 +595,10 @@ const AdminDashboard = () => {
                           {b.type || 'In-Person'}
                         </td>
                         <td className="px-6 py-4">
-                          <span className={\`px-2.5 py-1 rounded-md text-[10px] font-bold \${
+                          <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold ${
                             b.status === 'Confirmed' ? 'bg-sky-100 text-sky-700' :
                             'bg-slate-100 text-slate-700'
-                          }\`}>
+                          }`}>
                             {b.status || 'Pending'}
                           </span>
                         </td>
@@ -640,12 +635,12 @@ const KpiCard = ({ title, value, icon: Icon, trend, trendUp, color }) => {
           <p className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">{title}</p>
           <h4 className="text-2xl font-extrabold text-slate-900 mt-2">{value}</h4>
         </div>
-        <div className={\`w-10 h-10 rounded-xl flex items-center justify-center border \${colors[color]}\`}>
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${colors[color]}`}>
           <Icon className="w-5 h-5" />
         </div>
       </div>
       <div className="mt-4 flex items-center gap-1.5 text-xs">
-        <span className={\`font-bold flex items-center gap-0.5 \${trendUp ? 'text-emerald-500' : 'text-rose-500'}\`}>
+        <span className={`font-bold flex items-center gap-0.5 ${trendUp ? 'text-emerald-500' : 'text-rose-500'}`}>
           {trendUp ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
           {trend}
         </span>
