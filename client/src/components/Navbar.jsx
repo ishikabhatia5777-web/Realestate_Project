@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -15,7 +15,9 @@ import {
   ShieldAlert,
   Menu,
   X,
-  Home
+  Home,
+  MessageSquare,
+  Bell
 } from 'lucide-react';
 
 const Navbar = ({ onOpenAIChat }) => {
@@ -24,8 +26,20 @@ const Navbar = ({ onOpenAIChat }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [settingsNavOpen, setSettingsNavOpen] = useState(false);
+  const settingsRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Close Settings dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (settingsRef.current && !settingsRef.current.contains(e.target)) {
+        setSettingsNavOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const isActive = (path) => {
     if (path === '/') return location.pathname === '/';
@@ -139,7 +153,7 @@ const Navbar = ({ onOpenAIChat }) => {
 
             {/* Settings Dropdown - shown ONLY for agents */}
             {user && user.role === 'agent' && (
-              <div className="relative">
+              <div className="relative" ref={settingsRef}>
                 <button
                   onClick={() => setSettingsNavOpen(!settingsNavOpen)}
                   className="flex items-center space-x-2 px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:text-sky-500 hover:border-sky-500/40 transition-all text-xs font-bold"
