@@ -47,18 +47,6 @@ const HeroSection = () => {
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="inline-flex items-center space-x-2 px-4 py-2 rounded-full glass-panel border border-amber-500/40 shadow-xl"
-        >
-          <Sparkles className="w-4 h-4 text-amber-400" />
-          <span className="text-xs font-bold text-slate-200 uppercase tracking-widest">
-            AUSTRALIA'S #1 AI-POWERED LUXURY PROPERTY PORTAL
-          </span>
-        </motion.div>
-
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
