@@ -243,7 +243,7 @@ const Navbar = ({ onOpenAIChat }) => {
 
                 {/* Dropdown Menu */}
                 {userDropdownOpen && (
-                  <div className="absolute right-0 mt-3 w-56 glass-panel rounded-xl shadow-2xl py-2 border border-slate-200 z-50">
+                  <div className="absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-2xl py-2 border border-slate-200 z-50">
                     <div className="px-4 py-2 border-b border-slate-200/80">
                       <p className="text-sm font-bold text-slate-900">{user.name}</p>
                       <p className="text-xs text-slate-500 truncate">{user.email}</p>
