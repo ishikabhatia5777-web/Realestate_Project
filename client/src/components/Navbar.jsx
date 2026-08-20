@@ -23,6 +23,7 @@ const Navbar = ({ onOpenAIChat }) => {
   const { isDark, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [settingsNavOpen, setSettingsNavOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -125,14 +126,58 @@ const Navbar = ({ onOpenAIChat }) => {
           {/* Actions & Profile */}
           <div className="hidden md:flex items-center space-x-4">
             
-            {/* AI Assistant Button */}
-            <button
-              onClick={onOpenAIChat}
-              className="flex items-center space-x-2 px-3.5 py-2 rounded-lg bg-gradient-to-r from-cyan-900/60 to-blue-900/60 border border-cyan-500/30 text-cyan-300 hover:text-slate-900 hover:border-cyan-400 transition-all shadow-sm"
-            >
-              <Bot className="w-4 h-4 text-cyan-400 animate-pulse" />
-              <span className="text-xs font-bold">Aura AI</span>
-            </button>
+            {/* AI Assistant Button - hidden for agents */}
+            {(!user || user.role !== 'agent') && (
+              <button
+                onClick={onOpenAIChat}
+                className="flex items-center space-x-2 px-3.5 py-2 rounded-lg bg-gradient-to-r from-cyan-900/60 to-blue-900/60 border border-cyan-500/30 text-cyan-300 hover:text-slate-900 hover:border-cyan-400 transition-all shadow-sm"
+              >
+                <Bot className="w-4 h-4 text-cyan-400 animate-pulse" />
+                <span className="text-xs font-bold">Aura AI</span>
+              </button>
+            )}
+
+            {/* Settings Dropdown - shown ONLY for agents */}
+            {user && user.role === 'agent' && (
+              <div className="relative">
+                <button
+                  onClick={() => setSettingsNavOpen(!settingsNavOpen)}
+                  className="flex items-center space-x-2 px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:text-sky-500 hover:border-sky-500/40 transition-all text-xs font-bold"
+                >
+                  <User className="w-4 h-4" />
+                  <span>Settings</span>
+                  <svg className={`w-3 h-3 transition-transform ${settingsNavOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {settingsNavOpen && (
+                  <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl border border-slate-200 shadow-xl z-50 py-1 overflow-hidden">
+                    <button
+                      onClick={() => { navigate('/dashboard/agent?tab=messages'); setSettingsNavOpen(false); }}
+                      className="w-full px-4 py-2.5 text-left flex items-center space-x-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-xs font-semibold transition-colors"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5" />
+                      <span>Live Chat Inbox</span>
+                    </button>
+                    <button
+                      onClick={() => { navigate('/dashboard/agent?tab=requests'); setSettingsNavOpen(false); }}
+                      className="w-full px-4 py-2.5 text-left flex items-center space-x-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-xs font-semibold transition-colors"
+                    >
+                      <Bell className="w-3.5 h-3.5" />
+                      <span>Connection Requests</span>
+                    </button>
+                    <button
+                      onClick={() => { navigate('/dashboard/agent?tab=profile'); setSettingsNavOpen(false); }}
+                      className="w-full px-4 py-2.5 text-left flex items-center space-x-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-xs font-semibold transition-colors"
+                    >
+                      <User className="w-3.5 h-3.5" />
+                      <span>Profile Settings</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
 
 
 
