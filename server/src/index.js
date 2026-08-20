@@ -247,3 +247,5 @@ server.listen(PORT, () => {
   console.log(`🌍 NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
   console.log(`🔗 CLIENT_URL: ${process.env.CLIENT_URL || 'not set (using production fallback)'}`);
 });
+ 
+ 
