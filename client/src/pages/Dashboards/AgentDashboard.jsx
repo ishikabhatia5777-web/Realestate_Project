@@ -353,8 +353,6 @@ const AgentDashboard = () => {
   const TABS = [
     { id: 'overview', label: 'Overview', icon: BarChart2 },
     { id: 'properties', label: 'Properties', icon: Building2 },
-    { id: 'leads', label: 'Leads', icon: Users },
-    { id: 'appointments', label: 'Appointments', icon: Calendar },
     { id: 'messages', label: 'Messages', icon: MessageSquare },
     { id: 'requests', label: 'Requests', icon: Bell },
     { id: 'profile', label: 'Profile', icon: User },
@@ -424,18 +422,6 @@ const AgentDashboard = () => {
                   className="w-full px-4 py-2.5 text-left flex items-center space-x-2 text-slate-600 hover:bg-slate-50 text-xs font-semibold"
                 >
                   <Building2 className="w-3.5 h-3.5" /> <span>Add Property</span>
-                </button>
-                <button
-                  onClick={() => { setIsAddModalOpen(false); setActiveTab('leads'); }}
-                  className="w-full px-4 py-2.5 text-left flex items-center space-x-2 text-slate-600 hover:bg-slate-50 text-xs font-semibold"
-                >
-                  <Users className="w-3.5 h-3.5" /> <span>Add Lead</span>
-                </button>
-                <button
-                  onClick={() => { setIsAddModalOpen(false); setActiveTab('appointments'); }}
-                  className="w-full px-4 py-2.5 text-left flex items-center space-x-2 text-slate-600 hover:bg-slate-50 text-xs font-semibold"
-                >
-                  <Calendar className="w-3.5 h-3.5" /> <span>Schedule Appointment</span>
                 </button>
                 <button
                   onClick={() => { setIsAddModalOpen(false); setActiveTab('messages'); }}
@@ -572,8 +558,6 @@ const AgentDashboard = () => {
               <div className="grid grid-cols-2 gap-3">
                 {[
                   { label: 'Add Property', icon: Plus, onClick: () => setIsAddModalOpen(true), color: 'sky' },
-                  { label: 'Add Lead', icon: UserPlus, onClick: () => setActiveTab('leads'), color: 'emerald' },
-                  { label: 'Schedule Appt.', icon: Calendar, onClick: () => setActiveTab('appointments'), color: 'violet' },
                   { label: 'Messages', icon: MessageSquare, onClick: () => setActiveTab('messages'), color: 'amber' },
                   { label: 'View Listings', icon: Building2, onClick: () => setActiveTab('properties'), color: 'rose' },
                   { label: 'View Requests', icon: Bell, onClick: () => setActiveTab('requests'), color: 'sky' },
@@ -594,7 +578,6 @@ const AgentDashboard = () => {
             <div className="glass-panel p-5 rounded-2xl border border-slate-200 space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-extrabold text-slate-900">Upcoming Appointments</h3>
-                <button onClick={() => setActiveTab('appointments')} className="text-xs text-sky-500 font-bold hover:underline">View All</button>
               </div>
               <div className="space-y-3">
                 {appointments.slice(0, 3).map(a => (
