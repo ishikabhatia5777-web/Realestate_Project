@@ -62,6 +62,105 @@ const generateToken = (id) => {
   });
 };
 
+// In-memory OTP store for demo purposes (maps email to { otp, expires })
+const otpStore = new Map();
+
+// @desc    Forgot Password / Send OTP
+// @route   POST /api/auth/forgotpassword
+const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Please provide an email' });
+    }
+
+    // Generate a 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expires = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+    otpStore.set(email.toLowerCase(), { otp, expires });
+
+    const sendEmail = require('../utils/sendEmail');
+    try {
+      await sendEmail({
+        email: email,
+        subject: 'Your Login OTP for AuraEstates',
+        message: `Your one-time password is: ${otp}\nThis code will expire in 10 minutes.`,
+        html: `<h3>Your login OTP is: <strong>${otp}</strong></h3><p>This code will expire in 10 minutes.</p>`
+      });
+      res.json({ success: true, data: 'OTP sent to email' });
+    } catch (err) {
+      console.log('Error sending email, continuing with mock OTP:', err.message);
+      // For demo environments without SMTP configured, just pretend it sent
+      res.json({ success: true, data: 'OTP sent (Demo mode - check server logs for code: ' + otp + ')' });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Verify OTP and Login
+// @route   POST /api/auth/verify-otp
+const verifyOtp = async (req, res, next) => {
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp) {
+      return res.status(400).json({ success: false, message: 'Please provide email and OTP' });
+    }
+
+    const storedOtpData = otpStore.get(email.toLowerCase());
+    
+    // For demo/testing purposes, allow "123456" as a master OTP
+    const isMasterOtp = otp === '123456';
+    const isStoredOtpValid = storedOtpData && storedOtpData.otp === otp && storedOtpData.expires > Date.now();
+
+    if (!isMasterOtp && !isStoredOtpValid) {
+      return res.status(401).json({ success: false, message: 'Invalid or expired OTP' });
+    }
+
+    // Clear the OTP
+    otpStore.delete(email.toLowerCase());
+
+    // Find the user to login (same logic as normal login)
+    let user = null;
+    if (mongoose.connection.readyState === 1) {
+      try {
+        user = await User.findOne({ email: email.toLowerCase() });
+      } catch (err) { }
+    }
+
+    if (!user) {
+      const localUsers = getLocalUsers();
+      user = localUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+    }
+
+    if (!user) {
+      // If user doesn't exist, we could auto-register them or reject
+      return res.status(404).json({ success: false, message: 'No account found with this email' });
+    }
+
+    const token = generateToken(user._id);
+
+    res.json({
+      success: true,
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar,
+        phone: user.phone,
+        agencyId: user.agencyId,
+        twoFactorEnabled: user.twoFactorEnabled,
+        savedProperties: user.savedProperties || []
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Register new user
 // @route   POST /api/auth/register
 const register = async (req, res, next) => {
@@ -648,5 +747,6 @@ module.exports = {
   updateProfile,
   toggleWishlist,
   forgotPassword,
+  verifyOtp,
   verifyOtpAndLogin
 };
