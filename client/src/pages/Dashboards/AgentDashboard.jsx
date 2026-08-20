@@ -226,7 +226,7 @@ const AgentDashboard = () => {
         fetchProperties({ agentId: user._id, limit: 500 }),
         fetchExpertRequests(),
       ]);
-      if (pRes.data?.success) setProperties(pRes.data.properties);
+      if (pRes.data?.success) setProperties(pRes.data.properties || []);
       if (erRes.data?.success) {
         setExpertRequests(erRes.data.requests || []);
         setExpertUnreadCount(erRes.data.unreadCount || 0);
@@ -309,7 +309,11 @@ const AgentDashboard = () => {
   const chartData = CHART_DATA[chartPeriod];
 
   // Filtered lists
-  const filtProp = properties.filter(p => p.title?.toLowerCase().includes(propSearch.toLowerCase()) || p.address?.suburb?.toLowerCase().includes(propSearch.toLowerCase()));
+  const filtProp = properties.filter(p => {
+    const titleMatch = (p.title || '').toLowerCase().includes(propSearch.toLowerCase());
+    const suburbMatch = (p.address?.suburb || '').toLowerCase().includes(propSearch.toLowerCase());
+    return titleMatch || suburbMatch;
+  });
   const filtLeads = leads.filter(l =>
     (l.name.toLowerCase().includes(leadSearch.toLowerCase()) || l.property.toLowerCase().includes(leadSearch.toLowerCase())) &&
     (leadFilter === 'All' || l.status === leadFilter)
