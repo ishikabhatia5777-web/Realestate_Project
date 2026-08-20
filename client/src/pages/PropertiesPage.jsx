@@ -241,6 +241,7 @@ const PropertiesPage = () => {
           )}
         </div>
       </div>
+    </div>
   );
 };
 
