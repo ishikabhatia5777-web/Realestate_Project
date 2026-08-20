@@ -155,16 +155,7 @@ const AdminDashboard = () => {
               </h1>
               <p className="text-xs text-slate-500 mt-1">Manage the platform, users, properties, and analytics.</p>
             </div>
-            
-            <div className="flex items-center gap-3">
-              <button onClick={loadAdminData} className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-colors">
-                <RefreshCw className="w-4 h-4" />
-              </button>
-              <button className="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition-colors flex items-center gap-2">
-                <FileText className="w-4 h-4" />
-                Export Report
-              </button>
-            </div>
+
           </div>
         </div>
       </div>
