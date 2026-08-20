@@ -238,7 +238,7 @@ const Navbar = ({ onOpenAIChat }) => {
                 </Link>
                 <Link
                   to="/register"
-                  className="px-4 py-2 rounded-lg text-sm font-bold bg-gradient-to-r from-sky-500 to-sky-600 text-slate-950 hover:from-sky-400 hover:to-sky-500 transition-all shadow-md shadow-sky-500/20"
+                  className="px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors"
                 >
                   Sign Up
                 </Link>
@@ -365,9 +365,9 @@ const Navbar = ({ onOpenAIChat }) => {
               <Link
                 to="/register"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center py-2.5 rounded-lg bg-sky-500 text-slate-950 font-bold text-sm"
+                className="w-full text-center py-2.5 rounded-lg border border-slate-300 text-slate-900 font-semibold text-sm"
               >
-                Create Account
+                Sign Up
               </Link>
             </div>
           )}
