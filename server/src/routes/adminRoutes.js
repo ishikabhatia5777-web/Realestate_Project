@@ -13,10 +13,15 @@ const {
   approveProperty,
   rejectProperty,
   getActivityLogs,
-  getAdminInquiries
+  getAdminInquiries,
+  uploadPropertiesCsv
 } = require('../controllers/adminController');
 const { protect } = require('../middlewares/auth');
 const { authorize } = require('../middlewares/rbac');
+const multer = require('multer');
+
+// Configure multer for memory storage
+const upload = multer({ storage: multer.memoryStorage() });
 
 router.get('/blogs', getBlogs);
 
@@ -29,6 +34,7 @@ router.put('/users/:id', updateUserRole);
 
 router.get('/properties/pending', getPendingProperties);
 router.get('/properties', getAdminProperties);
+router.post('/properties/upload-csv', upload.single('file'), uploadPropertiesCsv);
 router.delete('/properties/:id', deleteAdminProperty);
 router.patch('/properties/:id/approve', approveProperty);
 router.patch('/properties/:id/reject', rejectProperty);

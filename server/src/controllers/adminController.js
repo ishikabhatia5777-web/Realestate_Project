@@ -505,6 +505,92 @@ const getAdminInquiries = async (req, res, next) => {
   }
 };
 
+const fs = require('fs');
+const csv = require('csv-parser');
+const Property = require('../models/Property');
+
+// @desc    Upload properties via CSV
+// @route   POST /api/admin/properties/upload-csv
+const uploadPropertiesCsv = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No CSV file uploaded' });
+    }
+
+    const results = [];
+    const errors = [];
+
+    // Parse the CSV from memory buffer using stream.Readable
+    const { Readable } = require('stream');
+    const bufferStream = new Readable();
+    bufferStream.push(req.file.buffer);
+    bufferStream.push(null);
+
+    bufferStream
+      .pipe(csv({
+        mapHeaders: ({ header }) => header.trim().toLowerCase()
+      }))
+      .on('data', (data) => {
+        results.push(data);
+      })
+      .on('end', async () => {
+        const validProperties = [];
+
+        for (const [index, row] of results.entries()) {
+          try {
+            // Mapping logic for standard fields
+            const property = {
+              title: row.title || `Property ${index}`,
+              description: row.description || 'No description provided.',
+              propertyType: row.propertytype || 'Residential',
+              listingType: row.listingtype || 'Sale',
+              price: parseFloat(row.price) || 0,
+              address: {
+                street: row.street || 'Unknown Street',
+                suburb: row.suburb || 'Unknown Suburb',
+                city: row.city || 'Unknown City',
+                state: row.state || 'Unknown State',
+                postcode: row.postcode || '0000',
+                country: row.country || 'Australia'
+              },
+              bedrooms: parseInt(row.bedrooms) || 0,
+              bathrooms: parseInt(row.bathrooms) || 0,
+              parkingSpaces: parseInt(row.parkingspaces) || 0,
+              landArea: parseInt(row.landarea) || 0,
+              status: row.status || 'Published', // Defaults to Published if admin uploads
+              ownerId: req.user._id, // Set the admin as the owner for tracking
+              location: {
+                type: 'Point',
+                coordinates: [151.2093, -33.8688] // Default coordinates, can be geocoded later
+              }
+            };
+            validProperties.push(property);
+          } catch (err) {
+            errors.push(`Row ${index + 2}: ${err.message}`);
+          }
+        }
+
+        try {
+          if (validProperties.length > 0) {
+            await Property.insertMany(validProperties);
+          }
+          res.json({
+            success: true,
+            imported: validProperties.length,
+            failed: errors.length,
+            errors
+          });
+        } catch (dbErr) {
+          console.error('CSV Insert Error:', dbErr);
+          res.status(500).json({ success: false, message: 'Database insert failed', error: dbErr.message });
+        }
+      });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAdminMetrics,
   getUsers,
@@ -518,6 +604,7 @@ module.exports = {
   approveProperty,
   rejectProperty,
   getActivityLogs,
-  getAdminInquiries
+  getAdminInquiries,
+  uploadPropertiesCsv
 };
 

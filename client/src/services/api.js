@@ -93,6 +93,7 @@ export const fetchAdminTransactions = () => api.get('/admin/transactions');
 export const fetchAdminBlogs = () => api.get('/admin/blogs');
 export const createAdminBlog = (data) => api.post('/admin/blogs', data);
 export const fetchAdminInquiries = () => api.get('/admin/inquiries');
+export const uploadPropertiesCsv = (formData) => api.post('/admin/properties/upload-csv', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
 
 // Chat Inbox API
 export const fetchChatInbox = () => api.get('/chat/inbox');

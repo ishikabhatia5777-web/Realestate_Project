@@ -11,13 +11,14 @@ import {
   fetchAdminProperties,
   fetchOffers,
   fetchBookings,
-  fetchAdminInquiries
+  fetchAdminInquiries,
+  uploadPropertiesCsv
 } from '../../services/api';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, LineChart, Line } from 'recharts';
 import {
   ShieldCheck, Users, Building2, DollarSign, Activity, Check, X, FileText,
   BarChart2, MessageSquare, Bell, Search, Filter, ArrowUpRight,
-  ArrowDownRight, RefreshCw, Eye, Clock, Calendar, Briefcase, Plus, UserPlus
+  ArrowDownRight, RefreshCw, Eye, Clock, Calendar, Briefcase, Plus, UserPlus, UploadCloud
 } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -38,6 +39,7 @@ const AdminDashboard = () => {
   const [allOffers, setAllOffers] = useState([]);
   const [allBookings, setAllBookings] = useState([]);
   const [allInquiries, setAllInquiries] = useState([]);
+  const [uploadingCsv, setUploadingCsv] = useState(false);
 
   // Search states
   const [userSearch, setUserSearch] = useState('');
@@ -101,6 +103,31 @@ const AdminDashboard = () => {
       }
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleCsvUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    setUploadingCsv(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+      const res = await uploadPropertiesCsv(formData);
+      if (res.data?.success) {
+        alert(`Successfully imported ${res.data.imported} properties!`);
+        loadAdminData(); // Refresh the list
+      } else {
+        alert(`Upload failed: ${res.data?.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('CSV Upload Error:', error);
+      alert('An error occurred during CSV upload.');
+    } finally {
+      setUploadingCsv(false);
+      e.target.value = null; // reset input
     }
   };
 
@@ -304,6 +331,20 @@ const AdminDashboard = () => {
                 <button className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold flex items-center gap-2">
                   <Filter className="w-4 h-4" /> Filter Status
                 </button>
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept=".csv"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    onChange={handleCsvUpload}
+                    disabled={uploadingCsv}
+                    title="Upload CSV"
+                  />
+                  <button className="px-4 py-2 bg-indigo-500 text-white rounded-xl text-xs font-bold hover:bg-indigo-600 transition-colors flex items-center gap-2 w-full justify-center disabled:opacity-50">
+                    <UploadCloud className="w-4 h-4" /> 
+                    {uploadingCsv ? 'Uploading...' : 'Upload CSV'}
+                  </button>
+                </div>
                 <button className="px-4 py-2 bg-sky-500 text-white rounded-xl text-xs font-bold hover:bg-sky-600 transition-colors">
                   Add Property
                 </button>
