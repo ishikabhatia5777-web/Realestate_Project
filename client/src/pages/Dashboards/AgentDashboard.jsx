@@ -1,39 +1,205 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { fetchOffers, fetchBookings, fetchProperties, deleteProperty, respondOffer, fetchPaymentHistory, fetchExpertRequests, markExpertRequestAsRead, sendChatMessage, updateBookingStatus } from '../../services/api';
+import {
+  fetchProperties, deleteProperty,
+  fetchExpertRequests, markExpertRequestAsRead, sendChatMessage,
+  fetchOffers, fetchBookings
+} from '../../services/api';
 import InboxPanel from '../../components/InboxPanel';
-import { Calendar, DollarSign, MessageSquare, Check, X, ShieldCheck, Plus, Building2, Eye, Trash2, Tag, MapPin, CreditCard, Users, UserPlus, Bell, Phone, Mail, Home, User, Edit2 } from 'lucide-react';
 import AddPropertyModal from '../../components/AddPropertyModal';
-import PaymentModal from '../../components/PaymentModal';
 import EditProfileModal from '../../components/EditProfileModal';
+import {
+  Building2, Plus, Eye, Trash2, MapPin, User, Edit2,
+  Bell, MessageSquare, Check, X, Mail, Home,
+  TrendingUp, DollarSign, Users, Calendar, Search,
+  Filter, ChevronDown, ChevronUp, BarChart2, PieChart,
+  Activity, Star, Phone, Clock, AlertCircle, CheckCircle,
+  ArrowUp, ArrowDown, RefreshCw, Zap, Target, Award,
+  FileText, Send, MoreVertical, Tag, Briefcase
+} from 'lucide-react';
 
+// ─── Mock Data ──────────────────────────────────────────────────────────────
+const MOCK_LEADS = [
+  { id: 'l1', name: 'James Harrison', email: 'james@email.com', phone: '+61 400 111 222', property: 'Point Piper Villa', status: 'Hot', source: 'Website', date: '2026-08-19', budget: '$8M–$12M', notes: 'Very interested, wants inspection this week' },
+  { id: 'l2', name: 'Sophia Chen', email: 'sophia@email.com', phone: '+61 400 333 444', property: 'Bondi Penthouse', status: 'Warm', source: 'Referral', date: '2026-08-18', budget: '$3M–$5M', notes: 'Comparing 3 properties' },
+  { id: 'l3', name: 'Marcus White', email: 'marcus@email.com', phone: '+61 400 555 666', property: 'Toorak Mansion', status: 'Cold', source: 'Ad', date: '2026-08-17', budget: '$5M–$8M', notes: 'Early research phase' },
+  { id: 'l4', name: 'Emma Nguyen', email: 'emma@email.com', phone: '+61 400 777 888', property: 'Mosman Estate', status: 'Hot', source: 'Open House', date: '2026-08-16', budget: '$6M–$9M', notes: 'Pre-approved, ready to make offer' },
+  { id: 'l5', name: 'David Kim', email: 'david@email.com', phone: '+61 400 999 000', property: 'Vaucluse Residence', status: 'Warm', source: 'Website', date: '2026-08-15', budget: '$2M–$3M', notes: 'Looking for investment' },
+];
+
+const MOCK_APPOINTMENTS = [
+  { id: 'a1', client: 'James Harrison', property: 'Point Piper Villa', type: 'Inspection', date: '2026-08-21', time: '10:00 AM', status: 'Confirmed', address: '12 Wolseley Rd, Point Piper' },
+  { id: 'a2', client: 'Emma Nguyen', property: 'Mosman Estate', type: 'Valuation', date: '2026-08-22', time: '2:00 PM', status: 'Pending', address: '45 Raglan St, Mosman' },
+  { id: 'a3', client: 'Sophia Chen', property: 'Bondi Penthouse', type: 'Inspection', date: '2026-08-23', time: '11:30 AM', status: 'Confirmed', address: '88 Campbell Pde, Bondi' },
+  { id: 'a4', client: 'Marcus White', property: 'Toorak Mansion', type: 'Follow-up Call', date: '2026-08-24', time: '3:00 PM', status: 'Pending', address: 'Virtual' },
+];
+
+const MOCK_ACTIVITIES = [
+  { id: 'ac1', type: 'lead', text: 'New lead from James Harrison for Point Piper Villa', time: '2 min ago', icon: 'user', color: 'sky' },
+  { id: 'ac2', type: 'property', text: 'Your listing "Bondi Penthouse" received 12 new views', time: '15 min ago', icon: 'eye', color: 'emerald' },
+  { id: 'ac3', type: 'offer', text: 'Emma Nguyen submitted an offer of $8.2M on Mosman Estate', time: '1 hr ago', icon: 'dollar', color: 'amber' },
+  { id: 'ac4', type: 'appointment', text: 'Inspection confirmed with Sophia Chen for Bondi Penthouse', time: '3 hrs ago', icon: 'calendar', color: 'violet' },
+  { id: 'ac5', type: 'message', text: 'New message from David Kim about Vaucluse Residence', time: '5 hrs ago', icon: 'message', color: 'rose' },
+  { id: 'ac6', type: 'property', text: 'Listing "Toorak Mansion" moved to Featured tier', time: 'Yesterday', icon: 'star', color: 'sky' },
+];
+
+const CHART_DATA = {
+  '7d': [
+    { label: 'Mon', leads: 3, views: 45, conversions: 1 },
+    { label: 'Tue', leads: 5, views: 62, conversions: 2 },
+    { label: 'Wed', leads: 2, views: 38, conversions: 0 },
+    { label: 'Thu', leads: 7, views: 85, conversions: 3 },
+    { label: 'Fri', leads: 4, views: 71, conversions: 1 },
+    { label: 'Sat', leads: 6, views: 93, conversions: 2 },
+    { label: 'Sun', leads: 8, views: 110, conversions: 4 },
+  ],
+  '30d': [
+    { label: 'W1', leads: 18, views: 290, conversions: 7 },
+    { label: 'W2', leads: 24, views: 380, conversions: 9 },
+    { label: 'W3', leads: 15, views: 245, conversions: 5 },
+    { label: 'W4', leads: 31, views: 455, conversions: 12 },
+  ],
+  '90d': [
+    { label: 'Jul', leads: 72, views: 1100, conversions: 28 },
+    { label: 'Aug', leads: 88, views: 1370, conversions: 33 },
+    { label: 'Sep', leads: 65, views: 980, conversions: 22 },
+  ],
+};
+
+// ─── Sub-components ─────────────────────────────────────────────────────────
+
+const KPICard = ({ icon: Icon, label, value, sub, trend, color = 'sky', loading }) => {
+  const colors = {
+    sky: { bg: 'bg-sky-50', text: 'text-sky-500', border: 'border-sky-100', icon: 'bg-sky-500/10' },
+    emerald: { bg: 'bg-emerald-50', text: 'text-emerald-500', border: 'border-emerald-100', icon: 'bg-emerald-500/10' },
+    amber: { bg: 'bg-amber-50', text: 'text-amber-500', border: 'border-amber-100', icon: 'bg-amber-500/10' },
+    violet: { bg: 'bg-violet-50', text: 'text-violet-500', border: 'border-violet-100', icon: 'bg-violet-500/10' },
+    rose: { bg: 'bg-rose-50', text: 'text-rose-500', border: 'border-rose-100', icon: 'bg-rose-500/10' },
+  };
+  const c = colors[color] || colors.sky;
+
+  if (loading) return (
+    <div className="glass-panel p-5 rounded-2xl border border-slate-200 animate-pulse space-y-3">
+      <div className="h-4 bg-slate-200 rounded w-1/2" />
+      <div className="h-7 bg-slate-200 rounded w-2/3" />
+      <div className="h-3 bg-slate-200 rounded w-1/3" />
+    </div>
+  );
+
+  return (
+    <div className={`glass-panel p-5 rounded-2xl border ${c.border} hover:shadow-lg transition-all duration-200 group`}>
+      <div className="flex items-start justify-between mb-3">
+        <div className={`w-10 h-10 rounded-xl ${c.icon} flex items-center justify-center group-hover:scale-110 transition-transform`}>
+          <Icon className={`w-5 h-5 ${c.text}`} />
+        </div>
+        {trend !== undefined && (
+          <span className={`flex items-center text-xs font-bold px-2 py-1 rounded-lg ${trend >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-500'}`}>
+            {trend >= 0 ? <ArrowUp className="w-3 h-3 mr-0.5" /> : <ArrowDown className="w-3 h-3 mr-0.5" />}
+            {Math.abs(trend)}%
+          </span>
+        )}
+      </div>
+      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">{label}</p>
+      <p className={`text-2xl font-extrabold ${c.text}`}>{value}</p>
+      {sub && <p className="text-[11px] text-slate-400 mt-1">{sub}</p>}
+    </div>
+  );
+};
+
+const MiniBarChart = ({ data, metric, color }) => {
+  const max = Math.max(...data.map(d => d[metric]));
+  const barColor = { sky: 'bg-sky-500', emerald: 'bg-emerald-500', violet: 'bg-violet-500', amber: 'bg-amber-500' }[color] || 'bg-sky-500';
+  const textColor = { sky: 'text-sky-500', emerald: 'text-emerald-500', violet: 'text-violet-500', amber: 'text-amber-500' }[color] || 'text-sky-500';
+  return (
+    <div className="flex items-end gap-1 h-24">
+      {data.map((d, i) => (
+        <div key={i} className="flex-1 flex flex-col items-center gap-1">
+          <div className="w-full flex flex-col justify-end h-20">
+            <div
+              className={`${barColor} rounded-t-sm opacity-80 hover:opacity-100 transition-all duration-300`}
+              style={{ height: `${Math.max(4, (d[metric] / max) * 100)}%` }}
+              title={`${d.label}: ${d[metric]}`}
+            />
+          </div>
+          <span className="text-[9px] text-slate-400 font-medium">{d.label}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const StatusBadge = ({ status }) => {
+  const map = {
+    Hot: 'bg-rose-50 text-rose-500 border-rose-200',
+    Warm: 'bg-amber-50 text-amber-600 border-amber-200',
+    Cold: 'bg-slate-100 text-slate-500 border-slate-200',
+    Confirmed: 'bg-emerald-50 text-emerald-600 border-emerald-200',
+    Pending: 'bg-amber-50 text-amber-600 border-amber-200',
+    Cancelled: 'bg-rose-50 text-rose-500 border-rose-200',
+    Active: 'bg-sky-50 text-sky-500 border-sky-200',
+    Sold: 'bg-emerald-50 text-emerald-600 border-emerald-200',
+    Rented: 'bg-violet-50 text-violet-500 border-violet-200',
+  };
+  return (
+    <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold border ${map[status] || 'bg-slate-100 text-slate-500 border-slate-200'}`}>
+      {status}
+    </span>
+  );
+};
+
+const ActivityIcon = ({ type }) => {
+  const map = {
+    user: { icon: User, color: 'bg-sky-500/10 text-sky-500' },
+    eye: { icon: Eye, color: 'bg-emerald-500/10 text-emerald-500' },
+    dollar: { icon: DollarSign, color: 'bg-amber-500/10 text-amber-500' },
+    calendar: { icon: Calendar, color: 'bg-violet-500/10 text-violet-500' },
+    message: { icon: MessageSquare, color: 'bg-rose-500/10 text-rose-500' },
+    star: { icon: Star, color: 'bg-sky-500/10 text-sky-500' },
+  };
+  const { icon: Icon, color } = map[type] || map.user;
+  return (
+    <div className={`w-8 h-8 rounded-xl ${color} flex items-center justify-center shrink-0`}>
+      <Icon className="w-4 h-4" />
+    </div>
+  );
+};
+
+// ─── Main Dashboard ──────────────────────────────────────────────────────────
 const AgentDashboard = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Core data
   const [properties, setProperties] = useState([]);
-  const [offers, setOffers] = useState([]);
-  const [bookings, setBookings] = useState([]);
-  const [transactions, setTransactions] = useState([]);
-  const [activeTab, setActiveTab] = useState('properties');
   const [expertRequests, setExpertRequests] = useState([]);
   const [expertUnreadCount, setExpertUnreadCount] = useState(0);
   const [activeChatRequest, setActiveChatRequest] = useState(null);
+  const [leads, setLeads] = useState(MOCK_LEADS);
+  const [appointments, setAppointments] = useState(MOCK_APPOINTMENTS);
+  const [activities] = useState(MOCK_ACTIVITIES);
 
+  // UI state
+  const [activeTab, setActiveTab] = useState('overview');
+  const [loading, setLoading] = useState(true);
+  const [chartPeriod, setChartPeriod] = useState('7d');
+  const [propSearch, setPropSearch] = useState('');
+  const [leadSearch, setLeadSearch] = useState('');
+  const [leadFilter, setLeadFilter] = useState('All');
+  const [apptSearch, setApptSearch] = useState('');
+  const [notifOpen, setNotifOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
-  const [selectedPropertyId, setSelectedPropertyId] = useState(null);
-  const [paymentPackage, setPaymentPackage] = useState('Agency Pro Subscription');
-  const [paymentAmount, setPaymentAmount] = useState(499);
+  const [successMsg, setSuccessMsg] = useState('');
+  const [expandedLead, setExpandedLead] = useState(null);
 
+  // Auth guard
   useEffect(() => {
     if (!authLoading) {
-      if (!user) {
-        navigate('/login');
-      } else if (user.role !== 'agent') {
-        if (user.role === 'super_admin' || user.role === 'admin') navigate('/dashboard/admin');
+      if (!user) navigate('/login');
+      else if (user.role !== 'agent') {
+        if (user.role === 'admin' || user.role === 'super_admin') navigate('/dashboard/admin');
         else if (user.role === 'agency') navigate('/dashboard/agency');
         else if (user.role === 'seller') navigate('/dashboard/seller');
         else navigate('/dashboard/buyer');
@@ -41,26 +207,40 @@ const AgentDashboard = () => {
     }
   }, [user, authLoading, navigate]);
 
+  // URL tab sync
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tab = params.get('tab');
+    if (tab) setActiveTab(tab);
+  }, [location.search]);
+
+  // Load real data
+  useEffect(() => {
+    if (user && user.role === 'agent') loadData();
+  }, [user]);
+
   const loadData = async () => {
+    setLoading(true);
     try {
-      const [pRes, oRes, bRes, txRes, erRes] = await Promise.all([
+      const [pRes, erRes] = await Promise.all([
         fetchProperties({ agentId: user._id, limit: 500 }),
-        fetchOffers(),
-        fetchBookings(),
-        fetchPaymentHistory(),
-        fetchExpertRequests()
+        fetchExpertRequests(),
       ]);
-      if (pRes.data && pRes.data.success) setProperties(pRes.data.properties);
-      if (oRes.data && oRes.data.success) setOffers(oRes.data.offers);
-      if (bRes.data && bRes.data.success) setBookings(bRes.data.bookings);
-      if (txRes.data && txRes.data.success) setTransactions(txRes.data.transactions);
-      if (erRes.data && erRes.data.success) {
+      if (pRes.data?.success) setProperties(pRes.data.properties);
+      if (erRes.data?.success) {
         setExpertRequests(erRes.data.requests || []);
         setExpertUnreadCount(erRes.data.unreadCount || 0);
       }
     } catch (err) {
-      console.error('Error loading agent dashboard data:', err);
+      console.error('Dashboard load error:', err);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const showSuccess = (msg) => {
+    setSuccessMsg(msg);
+    setTimeout(() => setSuccessMsg(''), 3000);
   };
 
   const handleMarkRequestRead = async (id) => {
@@ -68,263 +248,383 @@ const AgentDashboard = () => {
       await markExpertRequestAsRead(id);
       setExpertRequests(prev => prev.map(r => r._id === id ? { ...r, isRead: true, status: 'contacted' } : r));
       setExpertUnreadCount(prev => Math.max(0, prev - 1));
-    } catch (err) {
-      console.error('Error marking request read:', err);
-    }
+    } catch (err) { console.error(err); }
   };
 
   const handleConnectToChat = async (req) => {
     try {
       const bId = req.buyerId?._id || req.buyerId;
       const pId = req.propertyId?._id || req.propertyId;
-      
-      // Send the takeover greeting message
-      await sendChatMessage({
-        receiverId: bId,
-        propertyId: pId,
-        text: `Hello ${req.buyerName}, I'm ${user.name} and I have joined the chat to assist you with ${req.propertyTitle}. How can I help you today?`
-      });
-
-      // Mark request as read
-      if (!req.isRead) {
-        await handleMarkRequestRead(req._id);
-      }
-
-      // Switch to inbox panel and pass the target user
+      await sendChatMessage({ receiverId: bId, propertyId: pId, text: `Hello ${req.buyerName}, I'm ${user.name} and I've joined the chat to assist you. How can I help?` });
+      if (!req.isRead) await handleMarkRequestRead(req._id);
       setActiveChatRequest({ buyerId: bId, propertyId: pId });
       setActiveTab('messages');
-      loadData(); // refresh inbox data implicitly
-
-    } catch (err) {
-      console.error('Error connecting to chat:', err);
-    }
-  };
-
-  useEffect(() => {
-    if (user && user.role === 'agent') {
-      loadData();
-    }
-  }, [user]);
-
-  // Read ?tab= from URL query params (set by Navbar Settings dropdown)
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const tab = params.get('tab');
-    if (tab) setActiveTab(tab);
-  }, [location.search]);
-
-  const handlePropertyAdded = (newProperty) => {
-    setProperties((prev) => [newProperty, ...prev]);
-    window.alert('Success! Your property has been successfully created and published.');
+    } catch (err) { console.error(err); }
   };
 
   const handleDeleteProperty = async (id) => {
-    if (!window.confirm('Are you sure you want to remove this property listing?')) return;
+    if (!window.confirm('Remove this listing?')) return;
     try {
       const res = await deleteProperty(id);
-      if (res.data && res.data.success) {
-        setProperties((prev) => prev.filter((p) => p._id !== id));
+      if (res.data?.success) {
+        setProperties(prev => prev.filter(p => p._id !== id));
+        showSuccess('Property removed successfully.');
       }
-    } catch (err) {
-      console.error('Error deleting property:', err);
-    }
+    } catch (err) { console.error(err); }
   };
 
-  const handleOfferAction = async (id, action) => {
-    try {
-      const res = await respondOffer(id, { action });
-      if (res.data && res.data.success) {
-        setOffers((prev) => prev.map((o) => (o._id === id ? res.data.offer : o)));
-      }
-    } catch (err) {
-      console.error(err);
-    }
+  const handlePropertyAdded = (p) => {
+    setProperties(prev => [p, ...prev]);
+    showSuccess('Property listed successfully!');
   };
 
-  const handleBookingAction = async (id, status) => {
-    try {
-      const res = await updateBookingStatus(id, status);
-      if (res.data && res.data.success) {
-        setBookings((prev) => prev.map((b) => (b._id === id ? { ...b, status: res.data.booking.status } : b)));
-      }
-    } catch (err) {
-      console.error(err);
-    }
+  const handleLeadStatus = (id, status) => {
+    setLeads(prev => prev.map(l => l.id === id ? { ...l, status } : l));
+    showSuccess(`Lead status updated to ${status}`);
   };
 
-  const handleOpenPayment = (propId, pkg, amt) => {
-    setSelectedPropertyId(propId);
-    setPaymentPackage(pkg);
-    setPaymentAmount(amt);
-    setIsPaymentModalOpen(true);
+  const handleDeleteLead = (id) => {
+    if (!window.confirm('Remove this lead?')) return;
+    setLeads(prev => prev.filter(l => l.id !== id));
+    showSuccess('Lead removed.');
   };
 
-  const handlePaymentSuccess = (tx) => {
-    setTransactions((prev) => [tx, ...prev]);
-    setIsPaymentModalOpen(false);
-    loadData();
+  const handleApptStatus = (id, status) => {
+    setAppointments(prev => prev.map(a => a.id === id ? { ...a, status } : a));
+    showSuccess(`Appointment ${status.toLowerCase()}.`);
   };
+
+  const handleDeleteAppt = (id) => {
+    if (!window.confirm('Remove this appointment?')) return;
+    setAppointments(prev => prev.filter(a => a.id !== id));
+    showSuccess('Appointment removed.');
+  };
+
+  // Derived KPIs
+  const active = properties.filter(p => p.listingType === 'Sale' && p.status !== 'Sold').length;
+  const sold = properties.filter(p => p.status === 'Sold').length;
+  const rented = properties.filter(p => p.listingType === 'Rent').length;
+  const totalRevenue = sold * 18500 + rented * 2800;
+  const hotLeads = leads.filter(l => l.status === 'Hot').length;
+  const chartData = CHART_DATA[chartPeriod];
+
+  // Filtered lists
+  const filtProp = properties.filter(p => p.title?.toLowerCase().includes(propSearch.toLowerCase()) || p.address?.suburb?.toLowerCase().includes(propSearch.toLowerCase()));
+  const filtLeads = leads.filter(l =>
+    (l.name.toLowerCase().includes(leadSearch.toLowerCase()) || l.property.toLowerCase().includes(leadSearch.toLowerCase())) &&
+    (leadFilter === 'All' || l.status === leadFilter)
+  );
+  const filtAppt = appointments.filter(a =>
+    a.client.toLowerCase().includes(apptSearch.toLowerCase()) || a.property.toLowerCase().includes(apptSearch.toLowerCase())
+  );
 
   if (authLoading || !user || user.role !== 'agent') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-900">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center space-y-4">
-          <div className="w-12 h-12 rounded-full border-4 border-sky-500 border-t-transparent animate-spin mx-auto"></div>
-          <p className="text-sm font-bold text-slate-500">Verifying session...</p>
+          <div className="w-12 h-12 rounded-full border-4 border-sky-500 border-t-transparent animate-spin mx-auto" />
+          <p className="text-sm font-bold text-slate-500">Verifying session…</p>
         </div>
       </div>
     );
   }
 
+  const TABS = [
+    { id: 'overview', label: 'Overview', icon: BarChart2 },
+    { id: 'properties', label: 'Properties', icon: Building2 },
+    { id: 'leads', label: 'Leads', icon: Users },
+    { id: 'appointments', label: 'Appointments', icon: Calendar },
+    { id: 'messages', label: 'Messages', icon: MessageSquare },
+    { id: 'requests', label: 'Requests', icon: Bell },
+    { id: 'profile', label: 'Profile', icon: User },
+  ];
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+
+      {/* Success Toast */}
+      {successMsg && (
+        <div className="fixed top-24 right-6 z-50 flex items-center space-x-2 bg-emerald-500 text-slate-950 px-5 py-3 rounded-xl shadow-xl font-bold text-sm animate-bounce">
+          <CheckCircle className="w-4 h-4" /> <span>{successMsg}</span>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-bold text-sky-500 uppercase tracking-widest block">REAL ESTATE AGENT PORTAL</span>
-          <h1 className="text-3xl font-extrabold text-slate-900">Agent Property Management</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">Agent Property Management</h1>
+          <p className="text-xs text-slate-500 mt-0.5">Welcome back, <span className="text-sky-500 font-bold">{user.name}</span> — here's your dashboard</p>
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center gap-3">
+          {/* Notifications */}
+          <div className="relative">
+            <button
+              onClick={() => setNotifOpen(!notifOpen)}
+              className="relative p-2.5 rounded-xl border border-slate-200 bg-white hover:border-sky-500/40 transition-all"
+            >
+              <Bell className="w-4 h-4 text-slate-600" />
+              {expertUnreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center">{expertUnreadCount}</span>
+              )}
+            </button>
+            {notifOpen && (
+              <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl border border-slate-200 shadow-2xl z-50 overflow-hidden">
+                <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+                  <p className="text-sm font-bold text-slate-900">Notifications</p>
+                  <button onClick={() => setNotifOpen(false)}><X className="w-4 h-4 text-slate-400" /></button>
+                </div>
+                <div className="divide-y divide-slate-100 max-h-72 overflow-y-auto">
+                  {activities.slice(0, 5).map(a => (
+                    <div key={a.id} className="flex items-start gap-3 px-4 py-3 hover:bg-slate-50 transition-colors">
+                      <ActivityIcon type={a.icon} />
+                      <div>
+                        <p className="text-xs text-slate-700 font-medium leading-snug">{a.text}</p>
+                        <p className="text-[10px] text-slate-400 mt-0.5">{a.time}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          {/* Quick Actions */}
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="px-5 py-3 rounded-2xl bg-gradient-to-r from-sky-500 to-sky-600 text-slate-950 font-extrabold text-xs flex items-center justify-center space-x-2 hover:from-sky-400 hover:to-sky-500 transition-all shadow-lg shadow-sky-500/20"
+            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 text-white font-extrabold text-xs flex items-center gap-2 hover:from-sky-400 hover:to-sky-500 transition-all shadow-lg shadow-sky-500/20"
           >
-            <Plus className="w-4 h-4" />
-            <span>Add New Property</span>
+            <Plus className="w-4 h-4" /> Add Property
+          </button>
+          <button
+            onClick={loadData}
+            className="p-2.5 rounded-xl border border-slate-200 bg-white hover:border-sky-500/40 text-slate-500 hover:text-sky-500 transition-all"
+            title="Refresh"
+          >
+            <RefreshCw className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      {/* Tabs - only Listed Properties */}
-      <div className="flex flex-wrap items-center gap-2 bg-white p-1.5 rounded-2xl border border-slate-200 text-xs font-bold w-fit">
-        <button
-          onClick={() => setActiveTab('properties')}
-          className={`px-4 py-2.5 rounded-xl transition-all ${activeTab === 'properties' ? 'bg-sky-500 text-slate-950 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
-        >
-          Listed Properties ({properties.length})
-        </button>
+      {/* Tab Navigation */}
+      <div className="flex overflow-x-auto gap-1 bg-white p-1.5 rounded-2xl border border-slate-200 w-fit max-w-full">
+        {TABS.map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            onClick={() => setActiveTab(id)}
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${activeTab === id ? 'bg-sky-500 text-white shadow-md' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'}`}
+          >
+            <Icon className="w-3.5 h-3.5" />
+            {label}
+            {id === 'requests' && expertUnreadCount > 0 && (
+              <span className="w-4 h-4 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center">{expertUnreadCount}</span>
+            )}
+          </button>
+        ))}
       </div>
 
-      {/* Tab Content: Profile */}
-      {activeTab === 'profile' && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-slate-900">Agent Profile Settings</h3>
-            <button
-              onClick={() => setIsEditProfileOpen(true)}
-              className="px-4 py-2 rounded-xl bg-sky-500 text-slate-950 font-bold text-xs flex items-center space-x-1.5 hover:bg-sky-400 transition-all"
-            >
-              <Edit2 className="w-3.5 h-3.5" />
-              <span>Edit Profile</span>
-            </button>
+      {/* ── OVERVIEW TAB ─────────────────────────────────────────────────────── */}
+      {activeTab === 'overview' && (
+        <div className="space-y-6">
+          {/* KPI Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <KPICard icon={Building2} label="Total Listings" value={properties.length} sub={`${active} active`} trend={12} color="sky" loading={loading} />
+            <KPICard icon={TrendingUp} label="Active / Sale" value={active} sub="On market" trend={5} color="emerald" loading={loading} />
+            <KPICard icon={CheckCircle} label="Sold" value={sold} sub="This year" trend={8} color="violet" loading={loading} />
+            <KPICard icon={Users} label="Hot Leads" value={hotLeads} sub={`${leads.length} total`} trend={-3} color="amber" loading={loading} />
+            <KPICard icon={DollarSign} label="Est. Commission" value={`$${(totalRevenue * 0.025).toLocaleString()}`} sub="at 2.5%" trend={15} color="rose" loading={loading} />
           </div>
-          
-          <div className="glass-panel p-6 rounded-2xl border border-slate-200 flex flex-col md:flex-row gap-6 items-start">
-            <div className="w-24 h-24 rounded-full bg-slate-100 overflow-hidden border-2 border-slate-300 shrink-0">
-              <img src={user.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400'} alt="Profile" className="w-full h-full object-cover" />
+
+          {/* Charts + Activity Row */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            {/* Chart Panel */}
+            <div className="lg:col-span-2 glass-panel p-6 rounded-2xl border border-slate-200 space-y-4">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div>
+                  <h3 className="text-sm font-extrabold text-slate-900">Performance Analytics</h3>
+                  <p className="text-xs text-slate-500">Leads, Views & Conversions</p>
+                </div>
+                <div className="flex gap-1">
+                  {['7d', '30d', '90d'].map(p => (
+                    <button
+                      key={p}
+                      onClick={() => setChartPeriod(p)}
+                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${chartPeriod === p ? 'bg-sky-500 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-1">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Leads</p>
+                  <MiniBarChart data={chartData} metric="leads" color="sky" />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Views</p>
+                  <MiniBarChart data={chartData} metric="views" color="emerald" />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Conversions</p>
+                  <MiniBarChart data={chartData} metric="conversions" color="violet" />
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-3 pt-2 border-t border-slate-100">
+                <div className="text-center">
+                  <p className="text-lg font-extrabold text-sky-500">{chartData.reduce((s, d) => s + d.leads, 0)}</p>
+                  <p className="text-[10px] text-slate-400 font-medium">Total Leads</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-lg font-extrabold text-emerald-500">{chartData.reduce((s, d) => s + d.views, 0)}</p>
+                  <p className="text-[10px] text-slate-400 font-medium">Total Views</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-lg font-extrabold text-violet-500">{chartData.reduce((s, d) => s + d.conversions, 0)}</p>
+                  <p className="text-[10px] text-slate-400 font-medium">Conversions</p>
+                </div>
+              </div>
             </div>
-            <div className="space-y-4 flex-1">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Full Name</p>
-                  <p className="text-sm font-bold text-slate-900">{user.name}</p>
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Email Address</p>
-                  <p className="text-sm font-bold text-slate-900">{user.email}</p>
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Phone Number</p>
-                  <p className="text-sm font-bold text-slate-900">{user.phone || 'Not provided'}</p>
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Role</p>
-                  <span className="inline-block mt-0.5 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded uppercase">
-                    {user.role}
-                  </span>
-                </div>
+
+            {/* Activity Feed */}
+            <div className="glass-panel p-5 rounded-2xl border border-slate-200 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-extrabold text-slate-900">Recent Activity</h3>
+                <Activity className="w-4 h-4 text-sky-500" />
+              </div>
+              <div className="space-y-3 overflow-y-auto max-h-64">
+                {activities.map(a => (
+                  <div key={a.id} className="flex items-start gap-2.5">
+                    <ActivityIcon type={a.icon} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-slate-700 font-medium leading-snug line-clamp-2">{a.text}</p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">{a.time}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Actions + Upcoming */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            {/* Quick Actions */}
+            <div className="glass-panel p-5 rounded-2xl border border-slate-200 space-y-4">
+              <h3 className="text-sm font-extrabold text-slate-900">Quick Actions</h3>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { label: 'Add Property', icon: Plus, onClick: () => setIsAddModalOpen(true), color: 'sky' },
+                  { label: 'Add Lead', icon: UserPlus, onClick: () => setActiveTab('leads'), color: 'emerald' },
+                  { label: 'Schedule Appt.', icon: Calendar, onClick: () => setActiveTab('appointments'), color: 'violet' },
+                  { label: 'Messages', icon: MessageSquare, onClick: () => setActiveTab('messages'), color: 'amber' },
+                  { label: 'View Listings', icon: Building2, onClick: () => setActiveTab('properties'), color: 'rose' },
+                  { label: 'View Requests', icon: Bell, onClick: () => setActiveTab('requests'), color: 'sky' },
+                ].map(({ label, icon: Icon, onClick, color }) => {
+                  const textMap = { sky: 'text-sky-500', emerald: 'text-emerald-500', violet: 'text-violet-500', amber: 'text-amber-500', rose: 'text-rose-500' };
+                  const bgMap = { sky: 'hover:bg-sky-50 hover:border-sky-200', emerald: 'hover:bg-emerald-50 hover:border-emerald-200', violet: 'hover:bg-violet-50 hover:border-violet-200', amber: 'hover:bg-amber-50 hover:border-amber-200', rose: 'hover:bg-rose-50 hover:border-rose-200' };
+                  return (
+                    <button key={label} onClick={onClick} className={`p-3 rounded-xl border border-slate-200 bg-white text-left flex items-center gap-2.5 transition-all ${bgMap[color]}`}>
+                      <Icon className={`w-4 h-4 ${textMap[color]}`} />
+                      <span className="text-xs font-bold text-slate-700">{label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Upcoming Appointments */}
+            <div className="glass-panel p-5 rounded-2xl border border-slate-200 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-extrabold text-slate-900">Upcoming Appointments</h3>
+                <button onClick={() => setActiveTab('appointments')} className="text-xs text-sky-500 font-bold hover:underline">View All</button>
+              </div>
+              <div className="space-y-3">
+                {appointments.slice(0, 3).map(a => (
+                  <div key={a.id} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                    <div className="w-9 h-9 rounded-xl bg-sky-500/10 flex items-center justify-center shrink-0">
+                      <Calendar className="w-4 h-4 text-sky-500" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold text-slate-900 truncate">{a.client}</p>
+                      <p className="text-[11px] text-sky-500 font-semibold truncate">{a.property}</p>
+                      <p className="text-[10px] text-slate-400">{a.date} • {a.time} • {a.type}</p>
+                    </div>
+                    <StatusBadge status={a.status} />
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Tab Content: Listed Properties */}
+      {/* ── PROPERTIES TAB ──────────────────────────────────────────────────── */}
       {activeTab === 'properties' && (
         <div className="space-y-4">
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div className="relative">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+              <input
+                type="text"
+                placeholder="Search listings…"
+                value={propSearch}
+                onChange={e => setPropSearch(e.target.value)}
+                className="pl-9 pr-4 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-sky-500 w-60"
+              />
+            </div>
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="px-4 py-2 rounded-xl bg-sky-500 text-white font-bold text-xs flex items-center gap-1.5 hover:bg-sky-400 transition-all shadow-md shadow-sky-500/20"
+            >
+              <Plus className="w-3.5 h-3.5" /> New Listing
+            </button>
+          </div>
 
-          {properties.length === 0 ? (
-            <div className="glass-panel p-10 rounded-3xl border border-slate-200 text-center space-y-3">
-              <Building2 className="w-10 h-10 text-slate-600 mx-auto" />
-              <p className="text-slate-500 text-xs">No properties listed yet.</p>
-              <button
-                onClick={() => setIsAddModalOpen(true)}
-                className="px-4 py-2 rounded-xl bg-sky-500 text-slate-950 font-bold text-xs"
-              >
-                Create First Property Listing
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {[1,2,3].map(i => (
+                <div key={i} className="glass-panel rounded-2xl border border-slate-200 animate-pulse">
+                  <div className="h-44 bg-slate-200 rounded-t-2xl" />
+                  <div className="p-4 space-y-2">
+                    <div className="h-3 bg-slate-200 rounded w-2/3" />
+                    <div className="h-5 bg-slate-200 rounded w-3/4" />
+                    <div className="h-3 bg-slate-200 rounded w-1/2" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : filtProp.length === 0 ? (
+            <div className="glass-panel p-12 rounded-3xl border border-slate-200 text-center space-y-3">
+              <Building2 className="w-10 h-10 text-slate-300 mx-auto" />
+              <p className="text-slate-500 text-sm font-semibold">{propSearch ? 'No listings match your search.' : 'No properties listed yet.'}</p>
+              <button onClick={() => setIsAddModalOpen(true)} className="px-5 py-2.5 rounded-xl bg-sky-500 text-white font-bold text-xs hover:bg-sky-400 transition-all">
+                Create First Listing
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {properties.map((p) => (
-                <div key={p._id} className="glass-panel rounded-2xl border border-slate-200 overflow-hidden flex flex-col justify-between">
-                  <div>
-                    <div className="relative h-44 bg-white">
-                      <img
-                        src={p.images?.[0] || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1200'}
-                        alt={p.title}
-                        className="w-full h-full object-cover"
-                      />
-                      <span className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-slate-50/80 backdrop-blur-md text-[11px] font-extrabold text-sky-500 border border-sky-500/20">
-                        For {p.listingType}
-                      </span>
-                      <span className="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-emerald-500/90 text-[11px] font-extrabold text-slate-950">
-                        {p.status || 'Published'}
-                      </span>
-                    </div>
-
-                    <div className="p-4 space-y-2">
-                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{p.propertyType} • Tier: {p.tier || 'Standard'}</span>
-                      <h4 className="text-sm font-bold text-slate-900 line-clamp-1">{p.title}</h4>
-                      <p className="text-base font-extrabold text-sky-500">
-                        ${p.price?.toLocaleString()} {p.listingType === 'Rent' ? '/ mo' : ''}
-                      </p>
-                      <p className="text-xs text-slate-500 flex items-center space-x-1">
-                        <MapPin className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
-                        <span className="truncate">{p.address?.street}, {p.address?.suburb}</span>
-                      </p>
-                    </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {filtProp.map(p => (
+                <div key={p._id} className="glass-panel rounded-2xl border border-slate-200 overflow-hidden hover:shadow-lg hover:border-sky-200 transition-all">
+                  <div className="relative h-44">
+                    <img src={p.images?.[0] || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=800'} alt={p.title} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 to-transparent" />
+                    <span className="absolute top-3 left-3 px-2 py-0.5 rounded-lg bg-white/90 text-[11px] font-bold text-sky-500 border border-sky-100">For {p.listingType}</span>
+                    <span className="absolute top-3 right-3 px-2 py-0.5 rounded-lg bg-emerald-500 text-[11px] font-bold text-white">{p.status || 'Published'}</span>
                   </div>
-
-                  <div className="p-4 pt-2 border-t border-slate-200 space-y-2">
-                    <div className="flex space-x-2">
-                      <Link
-                        to={`/properties/${p._id}`}
-                        className="flex-1 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-600 hover:text-slate-900 flex items-center justify-center space-x-1"
-                      >
-                        <Eye className="w-3.5 h-3.5" />
-                        <span>View</span>
+                  <div className="p-4 space-y-2">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{p.propertyType}</p>
+                    <h4 className="text-sm font-bold text-slate-900 line-clamp-1">{p.title}</h4>
+                    <p className="text-base font-extrabold text-sky-500">${p.price?.toLocaleString()}{p.listingType === 'Rent' ? '/mo' : ''}</p>
+                    <p className="text-xs text-slate-400 flex items-center gap-1">
+                      <MapPin className="w-3 h-3 shrink-0" /> {p.address?.street}, {p.address?.suburb}
+                    </p>
+                    <div className="flex gap-2 pt-2 border-t border-slate-100">
+                      <Link to={`/properties/${p._id}`} className="flex-1 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs font-bold text-slate-600 hover:text-sky-500 flex items-center justify-center gap-1 transition-colors">
+                        <Eye className="w-3.5 h-3.5" /> View
                       </Link>
-                      <button
-                        onClick={() => handleDeleteProperty(p._id)}
-                        className="px-3 py-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500 hover:text-slate-900 transition-all text-xs font-bold flex items-center justify-center"
-                      >
+                      <button onClick={() => handleDeleteProperty(p._id)} className="px-3 py-1.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-500 hover:bg-rose-500 hover:text-white transition-all text-xs font-bold">
                         <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2">
-                      <button
-                        onClick={() => handleOpenPayment(p._id, 'Featured Listing', 99)}
-                        className="py-1.5 rounded-lg bg-indigo-600/80 text-slate-900 font-bold text-[11px]"
-                      >
-                        Feature ($99)
-                      </button>
-                      <button
-                        onClick={() => handleOpenPayment(p._id, 'Premium Listing', 249)}
-                        className="py-1.5 rounded-lg brand-gradient-bg text-slate-950 font-extrabold text-[11px]"
-                      >
-                        Premium ($249)
                       </button>
                     </div>
                   </div>
@@ -335,9 +635,182 @@ const AgentDashboard = () => {
         </div>
       )}
 
+      {/* ── LEADS TAB ───────────────────────────────────────────────────────── */}
+      {activeTab === 'leads' && (
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="relative">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+              <input
+                type="text"
+                placeholder="Search leads…"
+                value={leadSearch}
+                onChange={e => setLeadSearch(e.target.value)}
+                className="pl-9 pr-4 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-sky-500 w-56"
+              />
+            </div>
+            {['All', 'Hot', 'Warm', 'Cold'].map(f => (
+              <button
+                key={f}
+                onClick={() => setLeadFilter(f)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${leadFilter === f ? 'bg-sky-500 text-white border-sky-500' : 'bg-white text-slate-500 border-slate-200 hover:border-sky-300'}`}
+              >
+                {f}
+              </button>
+            ))}
+            <button
+              onClick={() => {
+                const newLead = { id: `l${Date.now()}`, name: 'New Lead', email: 'new@email.com', phone: '+61 400 000 000', property: 'TBD', status: 'Warm', source: 'Manual', date: new Date().toISOString().split('T')[0], budget: 'TBD', notes: '' };
+                setLeads(prev => [newLead, ...prev]);
+                showSuccess('New lead added.');
+              }}
+              className="ml-auto px-4 py-2 rounded-xl bg-sky-500 text-white font-bold text-xs flex items-center gap-1.5 hover:bg-sky-400 transition-all"
+            >
+              <Plus className="w-3.5 h-3.5" /> Add Lead
+            </button>
+          </div>
 
+          {filtLeads.length === 0 ? (
+            <div className="glass-panel p-10 rounded-2xl border border-slate-200 text-center text-slate-400 text-sm">No leads found.</div>
+          ) : (
+            <div className="space-y-3">
+              {filtLeads.map(lead => (
+                <div key={lead.id} className="glass-panel rounded-2xl border border-slate-200 overflow-hidden">
+                  <div
+                    className="flex items-center justify-between p-4 cursor-pointer hover:bg-slate-50/50 transition-colors"
+                    onClick={() => setExpandedLead(expandedLead === lead.id ? null : lead.id)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-sky-100 flex items-center justify-center font-black text-sky-500 text-sm shrink-0">
+                        {lead.name[0]}
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-slate-900">{lead.name}</p>
+                        <p className="text-xs text-slate-500">{lead.property} • {lead.source} • {lead.date}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <StatusBadge status={lead.status} />
+                      {expandedLead === lead.id ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+                    </div>
+                  </div>
 
-      {/* Tab Content: Live Chat Messages Inbox */}
+                  {expandedLead === lead.id && (
+                    <div className="border-t border-slate-100 p-4 bg-slate-50/40 space-y-4">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Email</p>
+                          <a href={`mailto:${lead.email}`} className="text-xs text-sky-500 font-semibold">{lead.email}</a>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Phone</p>
+                          <p className="text-xs font-semibold text-slate-700">{lead.phone}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Budget</p>
+                          <p className="text-xs font-bold text-emerald-600">{lead.budget}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Notes</p>
+                          <p className="text-xs text-slate-600 line-clamp-2">{lead.notes || '—'}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-1">Status:</p>
+                        {['Hot', 'Warm', 'Cold'].map(s => (
+                          <button key={s} onClick={() => handleLeadStatus(lead.id, s)} className={`px-3 py-1 rounded-lg text-xs font-bold border transition-all ${lead.status === s ? 'bg-sky-500 text-white border-sky-500' : 'bg-white text-slate-500 border-slate-200 hover:border-sky-300'}`}>{s}</button>
+                        ))}
+                        <div className="ml-auto flex gap-2">
+                          <a href={`mailto:${lead.email}`} className="px-3 py-1.5 rounded-lg bg-sky-50 border border-sky-200 text-sky-500 text-xs font-bold flex items-center gap-1.5 hover:bg-sky-100 transition-colors">
+                            <Mail className="w-3 h-3" /> Email
+                          </a>
+                          <a href={`tel:${lead.phone}`} className="px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600 text-xs font-bold flex items-center gap-1.5 hover:bg-emerald-100 transition-colors">
+                            <Phone className="w-3 h-3" /> Call
+                          </a>
+                          <button onClick={() => handleDeleteLead(lead.id)} className="px-3 py-1.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-500 text-xs font-bold flex items-center gap-1.5 hover:bg-rose-100 transition-colors">
+                            <Trash2 className="w-3 h-3" /> Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── APPOINTMENTS TAB ─────────────────────────────────────────────────── */}
+      {activeTab === 'appointments' && (
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="relative">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+              <input
+                type="text"
+                placeholder="Search appointments…"
+                value={apptSearch}
+                onChange={e => setApptSearch(e.target.value)}
+                className="pl-9 pr-4 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-sky-500 w-60"
+              />
+            </div>
+            <button
+              onClick={() => {
+                const a = { id: `a${Date.now()}`, client: 'New Client', property: 'TBD', type: 'Inspection', date: new Date().toISOString().split('T')[0], time: '10:00 AM', status: 'Pending', address: 'TBD' };
+                setAppointments(prev => [a, ...prev]);
+                showSuccess('Appointment created.');
+              }}
+              className="ml-auto px-4 py-2 rounded-xl bg-sky-500 text-white font-bold text-xs flex items-center gap-1.5 hover:bg-sky-400 transition-all"
+            >
+              <Plus className="w-3.5 h-3.5" /> Schedule
+            </button>
+          </div>
+
+          {filtAppt.length === 0 ? (
+            <div className="glass-panel p-10 rounded-2xl border border-slate-200 text-center text-slate-400 text-sm">No appointments found.</div>
+          ) : (
+            <div className="space-y-3">
+              {filtAppt.map(a => (
+                <div key={a.id} className="glass-panel p-4 rounded-2xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:shadow-md transition-all">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center shrink-0">
+                      <Calendar className="w-5 h-5 text-sky-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-slate-900">{a.client}</p>
+                      <p className="text-xs text-sky-500 font-semibold">{a.property}</p>
+                      <div className="flex items-center gap-3 mt-1">
+                        <span className="text-[11px] text-slate-500 flex items-center gap-1"><Clock className="w-3 h-3" />{a.date} • {a.time}</span>
+                        <span className="text-[11px] text-slate-500 flex items-center gap-1"><Tag className="w-3 h-3" />{a.type}</span>
+                        <span className="text-[11px] text-slate-400 flex items-center gap-1"><MapPin className="w-3 h-3" />{a.address}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <StatusBadge status={a.status} />
+                    {a.status === 'Pending' && (
+                      <>
+                        <button onClick={() => handleApptStatus(a.id, 'Confirmed')} className="px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600 text-xs font-bold hover:bg-emerald-100 transition-colors flex items-center gap-1">
+                          <Check className="w-3 h-3" /> Confirm
+                        </button>
+                        <button onClick={() => handleApptStatus(a.id, 'Cancelled')} className="px-3 py-1.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-500 text-xs font-bold hover:bg-rose-100 transition-colors flex items-center gap-1">
+                          <X className="w-3 h-3" /> Cancel
+                        </button>
+                      </>
+                    )}
+                    <button onClick={() => handleDeleteAppt(a.id)} className="p-1.5 rounded-lg bg-slate-100 text-slate-400 hover:text-rose-500 transition-colors">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── MESSAGES TAB ─────────────────────────────────────────────────────── */}
       {activeTab === 'messages' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -347,98 +820,59 @@ const AgentDashboard = () => {
         </div>
       )}
 
-
-
-      {/* Tab Content: Expert Connection Requests */}
+      {/* ── REQUESTS TAB ─────────────────────────────────────────────────────── */}
       {activeTab === 'requests' && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-3">
             <div>
               <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <Bell className="w-4 h-4 text-rose-400" />
-                Buyer Connection Requests
+                <Bell className="w-4 h-4 text-rose-500" /> Connection Requests
               </h3>
-              <p className="text-xs text-slate-500 mt-0.5">Buyers who asked to connect with you through the 24/7 Live Chat</p>
+              <p className="text-xs text-slate-500 mt-0.5">Buyers who requested to connect with you via Live Chat</p>
             </div>
-            <span className="text-xs bg-rose-500/20 text-rose-400 border border-rose-500/30 px-3 py-1 rounded-full font-bold">
+            <span className="text-xs bg-rose-50 text-rose-500 border border-rose-200 px-3 py-1 rounded-full font-bold">
               {expertRequests.filter(r => !r.isRead).length} Unread
             </span>
           </div>
 
           {expertRequests.length === 0 ? (
             <div className="glass-panel p-12 rounded-3xl border border-slate-200 text-center space-y-3">
-              <Bell className="w-10 h-10 text-slate-600 mx-auto" />
+              <Bell className="w-10 h-10 text-slate-300 mx-auto" />
               <p className="text-slate-500 text-sm font-medium">No connection requests yet</p>
-              <p className="text-slate-500 text-xs">When a buyer clicks "Connect to Expert" in the live chat, their request will appear here.</p>
+              <p className="text-slate-400 text-xs">When a buyer clicks "Connect to Expert" in the live chat, it will appear here.</p>
             </div>
           ) : (
             <div className="space-y-3">
-              {expertRequests.map((req) => (
-                <div
-                  key={req._id}
-                  className={`rounded-2xl border p-5 transition-all ${req.isRead ? 'bg-white/50 border-slate-200' : 'bg-rose-950/20 border-rose-500/40 shadow-lg shadow-rose-500/5'}`}
-                >
+              {expertRequests.map(req => (
+                <div key={req._id} className={`rounded-2xl border p-5 transition-all ${req.isRead ? 'bg-white border-slate-200' : 'bg-rose-50/30 border-rose-300/50 shadow-sm shadow-rose-500/5'}`}>
                   <div className="flex items-start justify-between gap-4 flex-wrap">
-                    {/* Left: Buyer info */}
                     <div className="flex items-start gap-3 flex-1 min-w-0">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-base font-black shrink-0 ${req.isRead ? 'bg-slate-200 text-slate-600' : 'bg-rose-500/20 text-rose-400'}`}>
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-base shrink-0 ${req.isRead ? 'bg-slate-100 text-slate-600' : 'bg-rose-100 text-rose-500'}`}>
                         {(req.buyerName || 'B')[0].toUpperCase()}
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-sm font-bold text-slate-900">{req.buyerName}</span>
-                          {!req.isRead && (
-                            <span className="text-[10px] font-black bg-rose-500 text-slate-900 px-2 py-0.5 rounded-full uppercase tracking-wide animate-pulse">NEW</span>
-                          )}
-                          {req.status === 'contacted' && (
-                            <span className="text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full uppercase">Contacted</span>
-                          )}
+                          {!req.isRead && <span className="text-[10px] font-black bg-rose-500 text-white px-2 py-0.5 rounded-full uppercase tracking-wide">NEW</span>}
+                          {req.status === 'contacted' && <span className="text-[10px] font-bold bg-emerald-50 text-emerald-500 border border-emerald-200 px-2 py-0.5 rounded-full uppercase">Contacted</span>}
                         </div>
-                        <div className="flex items-center gap-3 mt-1 flex-wrap">
-                          {req.buyerEmail && (
-                            <a href={`mailto:${req.buyerEmail}`} className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1">
-                              <Mail className="w-3 h-3" /> {req.buyerEmail}
-                            </a>
-                          )}
-                        </div>
-
-                        {/* Property */}
-                        <div className="flex items-center gap-1 mt-2 text-xs text-sky-500 font-medium">
-                          <Home className="w-3 h-3" />
-                          <span>{req.propertyTitle || 'Unknown property'}</span>
-                        </div>
-
-                        {/* Message */}
-                        {req.buyerMessage && (
-                          <div className="mt-2 text-xs text-slate-500 italic bg-slate-100/60 rounded-lg px-3 py-2 border border-slate-300/50">
-                            "{req.buyerMessage}"
-                          </div>
-                        )}
-
-                        {/* Time */}
-                        <p className="text-[11px] text-slate-500 mt-2">
-                          {new Date(req.createdAt).toLocaleString('en-AU', { dateStyle: 'medium', timeStyle: 'short' })}
-                        </p>
+                        {req.buyerEmail && <a href={`mailto:${req.buyerEmail}`} className="text-xs text-sky-500 flex items-center gap-1 mt-1"><Mail className="w-3 h-3" />{req.buyerEmail}</a>}
+                        <p className="text-xs text-sky-500 font-medium mt-1 flex items-center gap-1"><Home className="w-3 h-3" />{req.propertyTitle || 'Unknown property'}</p>
+                        {req.buyerMessage && <div className="mt-2 text-xs text-slate-500 italic bg-white/60 rounded-lg px-3 py-2 border border-slate-200">"{req.buyerMessage}"</div>}
+                        <p className="text-[11px] text-slate-400 mt-2">{new Date(req.createdAt).toLocaleString('en-AU', { dateStyle: 'medium', timeStyle: 'short' })}</p>
                       </div>
                     </div>
-
-                    {/* Right: Action */}
                     <div className="flex flex-col gap-2 shrink-0">
                       {req.buyerEmail && (
-                        <a
-                          href={`mailto:${req.buyerEmail}?subject=Regarding ${encodeURIComponent(req.propertyTitle || 'your property enquiry')}&body=Hi ${encodeURIComponent(req.buyerName)},%0A%0AThank you for your interest. I'd love to discuss the property with you.%0A%0ABest regards`}
+                        <a href={`mailto:${req.buyerEmail}?subject=Regarding ${encodeURIComponent(req.propertyTitle || 'your property enquiry')}&body=Hi ${encodeURIComponent(req.buyerName)}, Thank you for your interest.`}
                           onClick={() => !req.isRead && handleMarkRequestRead(req._id)}
-                          className="px-3 py-2 rounded-xl bg-sky-500 text-slate-950 text-xs font-bold hover:bg-sky-400 transition-all flex items-center gap-1.5"
-                        >
-                          <Mail className="w-3 h-3" /> Reply via Email
+                          className="px-3 py-2 rounded-xl bg-sky-500 text-white text-xs font-bold hover:bg-sky-400 transition-all flex items-center gap-1.5">
+                          <Mail className="w-3 h-3" /> Reply
                         </a>
                       )}
                       {!req.isRead && (
-                        <button
-                          onClick={() => handleConnectToChat(req)}
-                          className="px-3 py-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold hover:bg-emerald-500/30 transition-all flex items-center gap-1.5"
-                        >
-                          <Check className="w-3 h-3" /> Approve & Connect
+                        <button onClick={() => handleConnectToChat(req)} className="px-3 py-2 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200 text-xs font-bold hover:bg-emerald-100 transition-all flex items-center gap-1.5">
+                          <Check className="w-3 h-3" /> Connect
                         </button>
                       )}
                     </div>
@@ -450,28 +884,61 @@ const AgentDashboard = () => {
         </div>
       )}
 
-      {/* Add Property Modal Form */}
-      <AddPropertyModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onPropertyAdded={handlePropertyAdded}
-      />
+      {/* ── PROFILE TAB ─────────────────────────────────────────────────────── */}
+      {activeTab === 'profile' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-base font-bold text-slate-900">Agent Profile Settings</h3>
+            <button
+              onClick={() => setIsEditProfileOpen(true)}
+              className="px-4 py-2 rounded-xl bg-sky-500 text-white font-bold text-xs flex items-center gap-1.5 hover:bg-sky-400 transition-all"
+            >
+              <Edit2 className="w-3.5 h-3.5" /> Edit Profile
+            </button>
+          </div>
+          <div className="glass-panel p-6 rounded-2xl border border-slate-200 flex flex-col md:flex-row gap-6 items-start">
+            <div className="w-24 h-24 rounded-2xl bg-slate-100 overflow-hidden border-2 border-slate-200 shrink-0">
+              <img src={user.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400'} alt="Profile" className="w-full h-full object-cover" />
+            </div>
+            <div className="space-y-4 flex-1">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {[
+                  { label: 'Full Name', value: user.name },
+                  { label: 'Email Address', value: user.email },
+                  { label: 'Phone Number', value: user.phone || 'Not provided' },
+                  { label: 'Role', value: user.role, badge: true },
+                  { label: 'Total Listings', value: properties.length },
+                  { label: 'Active Since', value: user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-AU', { year: 'numeric', month: 'long' }) : 'N/A' },
+                ].map(({ label, value, badge }) => (
+                  <div key={label}>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">{label}</p>
+                    {badge ? (
+                      <span className="inline-block px-2 py-0.5 bg-emerald-50 border border-emerald-200 text-emerald-600 text-[10px] font-bold rounded-full uppercase">{value}</span>
+                    ) : (
+                      <p className="text-sm font-bold text-slate-900">{value}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
 
-      {/* Payment Gateway Modal */}
-      <PaymentModal
-        isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
-        defaultPackage={paymentPackage}
-        defaultAmount={paymentAmount}
-        propertyId={selectedPropertyId}
-        onPaymentSuccess={handlePaymentSuccess}
-      />
+          {/* Performance Summary */}
+          <div className="glass-panel p-6 rounded-2xl border border-slate-200 space-y-4">
+            <h4 className="text-sm font-extrabold text-slate-900">Performance Summary</h4>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <KPICard icon={Building2} label="Total Listings" value={properties.length} color="sky" />
+              <KPICard icon={Users} label="Total Leads" value={leads.length} color="emerald" />
+              <KPICard icon={Calendar} label="Appointments" value={appointments.length} color="violet" />
+              <KPICard icon={Star} label="Hot Leads" value={hotLeads} color="amber" />
+            </div>
+          </div>
+        </div>
+      )}
 
-      {/* Edit Profile Modal */}
-      <EditProfileModal
-        isOpen={isEditProfileOpen}
-        onClose={() => setIsEditProfileOpen(false)}
-      />
+      {/* Modals */}
+      <AddPropertyModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} onPropertyAdded={handlePropertyAdded} />
+      <EditProfileModal isOpen={isEditProfileOpen} onClose={() => setIsEditProfileOpen(false)} />
     </div>
   );
 };
