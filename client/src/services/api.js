@@ -92,6 +92,7 @@ export const deleteAdminProperty = (id) => api.delete(`/admin/properties/${id}`)
 export const fetchAdminTransactions = () => api.get('/admin/transactions');
 export const fetchAdminBlogs = () => api.get('/admin/blogs');
 export const createAdminBlog = (data) => api.post('/admin/blogs', data);
+export const fetchAdminInquiries = () => api.get('/admin/inquiries');
 
 // Chat Inbox API
 export const fetchChatInbox = () => api.get('/chat/inbox');

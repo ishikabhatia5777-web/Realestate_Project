@@ -10,7 +10,8 @@ import {
   rejectProperty,
   fetchAdminProperties,
   fetchOffers,
-  fetchBookings
+  fetchBookings,
+  fetchAdminInquiries
 } from '../../services/api';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, LineChart, Line } from 'recharts';
 import {
@@ -58,13 +59,14 @@ const AdminDashboard = () => {
   const loadAdminData = async () => {
     setLoading(true);
     try {
-      const [mRes, uRes, pRes, allPropRes, offersRes, bookingsRes] = await Promise.all([
+      const [mRes, uRes, pRes, allPropRes, offersRes, bookingsRes, inqRes] = await Promise.all([
         fetchAdminMetrics().catch(() => ({ data: { success: false } })),
         fetchAdminUsers().catch(() => ({ data: { success: false } })),
         fetchProperties({ status: 'Pending Review' }).catch(() => ({ data: { success: false } })),
         fetchAdminProperties().catch(() => ({ data: { success: false } })),
         fetchOffers().catch(() => ({ data: { success: false, offers: [] } })),
-        fetchBookings().catch(() => ({ data: { success: false, bookings: [] } }))
+        fetchBookings().catch(() => ({ data: { success: false, bookings: [] } })),
+        fetchAdminInquiries().catch(() => ({ data: { success: false, inquiries: [] } }))
       ]);
 
       if (mRes.data?.success) {
@@ -78,13 +80,7 @@ const AdminDashboard = () => {
       
       if (offersRes.data?.success) setAllOffers(offersRes.data.offers || []);
       if (bookingsRes.data?.success) setAllBookings(bookingsRes.data.bookings || []);
-      
-      // Mock Inquiries
-      setAllInquiries([
-        { _id: '1', name: 'John Doe', email: 'john@example.com', type: 'General Question', status: 'Pending', date: new Date().toISOString() },
-        { _id: '2', name: 'Alice Smith', email: 'alice@example.com', type: 'Property Inquiry', status: 'Resolved', date: new Date(Date.now() - 86400000).toISOString() },
-        { _id: '3', name: 'Bob Jones', email: 'bob@example.com', type: 'Support', status: 'In Progress', date: new Date(Date.now() - 86400000 * 2).toISOString() }
-      ]);
+      if (inqRes.data?.success) setAllInquiries(inqRes.data.inquiries || []);
       
     } catch (err) {
       console.error('Failed to load admin data:', err);
@@ -539,17 +535,20 @@ const AdminDashboard = () => {
                     ) : allInquiries.map(i => (
                       <tr key={i._id} className="hover:bg-slate-50/50 transition-colors">
                         <td className="px-6 py-4">
-                          <p className="font-bold text-slate-900">{i.name}</p>
-                          <p className="text-[10px] text-slate-500">{i.email}</p>
+                          <p className="font-bold text-slate-900">{i.buyerName || 'Anonymous'}</p>
+                          <p className="text-[10px] text-slate-500">{i.buyerEmail || 'No email provided'}</p>
                         </td>
-                        <td className="px-6 py-4 text-slate-600">{i.type}</td>
-                        <td className="px-6 py-4 text-slate-500">{new Date(i.date).toLocaleDateString()}</td>
+                        <td className="px-6 py-4 text-slate-600 truncate max-w-[200px]" title={i.buyerMessage || 'Contact Request'}>
+                          {i.buyerMessage || 'Expert Connection Request'}
+                        </td>
+                        <td className="px-6 py-4 text-slate-500">{i.createdAt ? new Date(i.createdAt).toLocaleDateString() : 'N/A'}</td>
                         <td className="px-6 py-4">
-                           <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold ${
-                            i.status === 'Resolved' ? 'bg-emerald-100 text-emerald-700' :
+                           <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${
+                            i.status === 'closed' ? 'bg-emerald-100 text-emerald-700' :
+                            i.status === 'contacted' ? 'bg-sky-100 text-sky-700' :
                             'bg-amber-100 text-amber-700'
                           }`}>
-                            {i.status}
+                            {i.status || 'pending'}
                           </span>
                         </td>
                       </tr>

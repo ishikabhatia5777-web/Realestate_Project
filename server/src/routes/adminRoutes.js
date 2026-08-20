@@ -12,7 +12,8 @@ const {
   getPendingProperties,
   approveProperty,
   rejectProperty,
-  getActivityLogs
+  getActivityLogs,
+  getAdminInquiries
 } = require('../controllers/adminController');
 const { protect } = require('../middlewares/auth');
 const { authorize } = require('../middlewares/rbac');
@@ -33,6 +34,7 @@ router.patch('/properties/:id/approve', approveProperty);
 router.patch('/properties/:id/reject', rejectProperty);
 
 router.get('/transactions', getAdminTransactions);
+router.get('/inquiries', getAdminInquiries);
 router.get('/logs', getActivityLogs);
 
 router.post('/blogs', createBlog);

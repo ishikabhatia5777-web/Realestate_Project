@@ -68,42 +68,88 @@ const getAdminMetrics = async (req, res, next) => {
       totalAppointments = 12;
     }
 
-    // Generate mock chart data for interactive analytics
+    // Generate REAL chart data for interactive analytics
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
     
     // User Growth (last 6 months)
     const userGrowthData = [];
-    let baseUsers = Math.max(100, totalUsers - 50);
+    const revenueData = [];
+    
+    // Default placeholder structures (will populate with real aggregations)
     for (let i = 5; i >= 0; i--) {
-      const m = (currentMonth - i + 12) % 12;
-      baseUsers += Math.floor(Math.random() * 15) + 5;
+      const d = new Date(currentYear, currentMonth - i, 1);
+      const m = d.getMonth();
       userGrowthData.push({
         name: months[m],
-        users: baseUsers,
-        agents: Math.floor(baseUsers * 0.15)
+        users: 0,
+        agents: 0,
+        monthOffset: i // helper to match the aggregation
       });
-    }
-
-    // Revenue Data
-    const revenueData = [];
-    for (let i = 5; i >= 0; i--) {
-      const m = (currentMonth - i + 12) % 12;
       revenueData.push({
         name: months[m],
-        revenue: Math.floor(Math.random() * 5000) + 1000
+        revenue: 0,
+        monthOffset: i
       });
     }
 
-    // Property Trends Data
-    const propertyTrendsData = [];
-    for (let i = 5; i >= 0; i--) {
-      const m = (currentMonth - i + 12) % 12;
-      propertyTrendsData.push({
-        name: months[m],
-        newListings: Math.floor(Math.random() * 20) + 5,
-        sold: Math.floor(Math.random() * 10) + 2
-      });
+    try {
+      if (mongoose.connection.readyState === 1) {
+        // Aggregate User Growth
+        const sixMonthsAgo = new Date(currentYear, currentMonth - 5, 1);
+        
+        // Count users created before the 6 month window to have a base
+        let baseTotalUsers = await User.countDocuments({ createdAt: { $lt: sixMonthsAgo } });
+        let baseTotalAgents = await User.countDocuments({ createdAt: { $lt: sixMonthsAgo }, role: { $in: ['agent', 'agency'] } });
+
+        const userAggr = await User.aggregate([
+          { $match: { createdAt: { $gte: sixMonthsAgo } } },
+          { $group: {
+              _id: { month: { $month: '$createdAt' }, year: { $year: '$createdAt' } },
+              newUsers: { $sum: 1 },
+              newAgents: { $sum: { $cond: [{ $in: ['$role', ['agent', 'agency']] }, 1, 0] } }
+            }
+          },
+          { $sort: { '_id.year': 1, '_id.month': 1 } }
+        ]);
+
+        // Aggregate Revenue
+        const revAggr = await Transaction.aggregate([
+          { $match: { createdAt: { $gte: sixMonthsAgo }, status: 'succeeded' } },
+          { $group: {
+              _id: { month: { $month: '$createdAt' }, year: { $year: '$createdAt' } },
+              revenue: { $sum: '$amount' }
+            }
+          }
+        ]);
+
+        // Map aggregated results to our 6-month array
+        userGrowthData.forEach(item => {
+          const targetDate = new Date(currentYear, currentMonth - item.monthOffset, 1);
+          const monthNum = targetDate.getMonth() + 1;
+          const yearNum = targetDate.getFullYear();
+          
+          const match = userAggr.find(a => a._id.month === monthNum && a._id.year === yearNum);
+          if (match) {
+            baseTotalUsers += match.newUsers;
+            baseTotalAgents += match.newAgents;
+          }
+          item.users = baseTotalUsers;
+          item.agents = baseTotalAgents;
+        });
+
+        revenueData.forEach(item => {
+          const targetDate = new Date(currentYear, currentMonth - item.monthOffset, 1);
+          const monthNum = targetDate.getMonth() + 1;
+          const yearNum = targetDate.getFullYear();
+          
+          const match = revAggr.find(a => a._id.month === monthNum && a._id.year === yearNum);
+          item.revenue = match ? match.revenue : 0;
+        });
+      }
+    } catch (err) {
+      console.log('Failed to aggregate real chart data', err);
     }
 
     res.json({
@@ -120,8 +166,7 @@ const getAdminMetrics = async (req, res, next) => {
       },
       charts: {
         userGrowthData,
-        revenueData,
-        propertyTrendsData
+        revenueData
       },
       recentLogs
     });
@@ -441,6 +486,25 @@ const getActivityLogs = async (req, res, next) => {
   }
 };
 
+// @desc    Get all inquiries / contact requests
+// @route   GET /api/admin/inquiries
+const getAdminInquiries = async (req, res, next) => {
+  try {
+    let inquiries = [];
+    try {
+      if (mongoose.connection.readyState !== 1) {
+        throw new Error('Database offline');
+      }
+      inquiries = await ContactRequest.find().sort({ createdAt: -1 });
+    } catch (dbErr) {
+      inquiries = [];
+    }
+    res.json({ success: true, count: inquiries.length, inquiries });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAdminMetrics,
   getUsers,
@@ -453,5 +517,7 @@ module.exports = {
   getPendingProperties,
   approveProperty,
   rejectProperty,
-  getActivityLogs
+  getActivityLogs,
+  getAdminInquiries
 };
+
