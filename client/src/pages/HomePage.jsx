@@ -78,7 +78,7 @@ const HomePage = () => {
   }, []);
 
   return (
-    <div className="space-y-20 pb-20">
+    <div className="space-y-12 pb-12">
       
       {/* Hero Banner */}
       <HeroSection />

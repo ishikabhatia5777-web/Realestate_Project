@@ -18,7 +18,7 @@ const HeroSection = () => {
   };
 
   return (
-    <div className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-sky-50 via-white to-slate-100 pt-8 pb-16">
+    <div className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-sky-50 via-white to-slate-100 pt-8 pb-16">
       {/* Subtle decorative background shapes */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <div className="absolute -top-24 -right-24 w-[500px] h-[500px] rounded-full bg-sky-100/60 blur-3xl" />
