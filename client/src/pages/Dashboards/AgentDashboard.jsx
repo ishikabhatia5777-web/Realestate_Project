@@ -376,74 +376,11 @@ const AgentDashboard = () => {
           <p className="text-xs text-slate-500 mt-0.5">Welcome back, <span className="text-sky-500 font-bold">{user.name}</span> — here's your dashboard</p>
         </div>
         <div className="flex items-center gap-3">
-          {/* Notifications */}
-          <div className="relative">
-            <button
-              onClick={() => setNotifOpen(!notifOpen)}
-              className="relative p-2.5 rounded-xl border border-slate-200 bg-white hover:border-sky-500/40 transition-all"
-            >
-              <Bell className="w-4 h-4 text-slate-600" />
-              {expertUnreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center">{expertUnreadCount}</span>
-              )}
-            </button>
-            {notifOpen && (
-              <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl border border-slate-200 shadow-2xl z-50 overflow-hidden">
-                <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
-                  <p className="text-sm font-bold text-slate-900">Notifications</p>
-                  <button onClick={() => setNotifOpen(false)}><X className="w-4 h-4 text-slate-400" /></button>
-                </div>
-                <div className="divide-y divide-slate-100 max-h-72 overflow-y-auto">
-                  {activities.slice(0, 5).map(a => (
-                    <div key={a.id} className="flex items-start gap-3 px-4 py-3 hover:bg-slate-50 transition-colors">
-                      <ActivityIcon type={a.icon} />
-                      <div>
-                        <p className="text-xs text-slate-700 font-medium leading-snug">{a.text}</p>
-                        <p className="text-[10px] text-slate-400 mt-0.5">{a.time}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-          {/* Quick Actions Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => setIsAddModalOpen(!isAddModalOpen)}
-              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 text-white font-extrabold text-xs flex items-center gap-2 hover:from-sky-400 hover:to-sky-500 transition-all shadow-lg shadow-sky-500/20"
-            >
-              <Plus className="w-4 h-4" /> Quick Actions <ChevronDown className="w-3 h-3" />
-            </button>
-            {isAddModalOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl border border-slate-200 shadow-xl z-50 py-1 overflow-hidden">
-                <button
-                  onClick={() => { setIsAddModalOpen(false); /* Trigger Add Property logic if there was a separate modal */ }}
-                  className="w-full px-4 py-2.5 text-left flex items-center space-x-2 text-slate-600 hover:bg-slate-50 text-xs font-semibold"
-                >
-                  <Building2 className="w-3.5 h-3.5" /> <span>Add Property</span>
-                </button>
-                <button
-                  onClick={() => { setIsAddModalOpen(false); setActiveTab('messages'); }}
-                  className="w-full px-4 py-2.5 text-left flex items-center space-x-2 text-slate-600 hover:bg-slate-50 text-xs font-semibold"
-                >
-                  <MessageSquare className="w-3.5 h-3.5" /> <span>Messages</span>
-                </button>
-                <button
-                  onClick={() => { setIsAddModalOpen(false); setActiveTab('properties'); }}
-                  className="w-full px-4 py-2.5 text-left flex items-center space-x-2 text-slate-600 hover:bg-slate-50 text-xs font-semibold"
-                >
-                  <Eye className="w-3.5 h-3.5" /> <span>View Listings</span>
-                </button>
-              </div>
-            )}
-          </div>
           <button
-            onClick={loadData}
-            className="p-2.5 rounded-xl border border-slate-200 bg-white hover:border-sky-500/40 text-slate-500 hover:text-sky-500 transition-all"
-            title="Refresh"
+            onClick={() => setIsAddModalOpen(true)}
+            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 text-white font-extrabold text-xs flex items-center gap-2 hover:from-sky-400 hover:to-sky-500 transition-all shadow-lg shadow-sky-500/20"
           >
-            <RefreshCw className="w-4 h-4" />
+            <Plus className="w-4 h-4" /> Add Property
           </button>
         </div>
       </div>
