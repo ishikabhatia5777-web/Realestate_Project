@@ -13,10 +13,9 @@ import {
   Building2, Plus, Eye, Trash2, MapPin, User, Edit2,
   Bell, MessageSquare, Check, X, Mail, Home,
   TrendingUp, DollarSign, Users, Calendar, Search,
-  Filter, ChevronDown, ChevronUp, BarChart2, PieChart,
-  Activity, Star, Phone, Clock, AlertCircle, CheckCircle,
-  ArrowUp, ArrowDown, RefreshCw, Zap, Target, Award,
-  FileText, Send, MoreVertical, Tag, Briefcase
+  ChevronDown, ChevronUp, BarChart2,
+  Activity, Star, Phone, Clock, CheckCircle,
+  ArrowUp, ArrowDown, RefreshCw
 } from 'lucide-react';
 
 // ─── Mock Data ──────────────────────────────────────────────────────────────
@@ -301,15 +300,16 @@ const AgentDashboard = () => {
   };
 
   // Derived KPIs
-  const active = properties.filter(p => p.listingType === 'Sale' && p.status !== 'Sold').length;
-  const sold = properties.filter(p => p.status === 'Sold').length;
-  const rented = properties.filter(p => p.listingType === 'Rent').length;
+  const active = properties.filter(p => p && p.listingType === 'Sale' && p.status !== 'Sold').length;
+  const sold = properties.filter(p => p && p.status === 'Sold').length;
+  const rented = properties.filter(p => p && p.listingType === 'Rent').length;
   const totalRevenue = sold * 18500 + rented * 2800;
   const hotLeads = leads.filter(l => l.status === 'Hot').length;
   const chartData = CHART_DATA[chartPeriod];
 
   // Filtered lists
   const filtProp = properties.filter(p => {
+    if (!p) return false;
     const titleMatch = (p.title || '').toLowerCase().includes(propSearch.toLowerCase());
     const suburbMatch = (p.address?.suburb || '').toLowerCase().includes(propSearch.toLowerCase());
     return titleMatch || suburbMatch;
@@ -835,7 +835,7 @@ const AgentDashboard = () => {
               <p className="text-xs text-slate-500 mt-0.5">Buyers who requested to connect with you via Live Chat</p>
             </div>
             <span className="text-xs bg-rose-50 text-rose-500 border border-rose-200 px-3 py-1 rounded-full font-bold">
-              {expertRequests.filter(r => !r.isRead).length} Unread
+              {expertRequests.filter(r => r && !r.isRead).length} Unread
             </span>
           </div>
 
