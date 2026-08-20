@@ -629,7 +629,7 @@ const KpiCard = ({ title, value, icon: Icon, trend, trendUp, color }) => {
   };
 
   return (
-    <div className="glass-panel p-6 rounded-2xl border border-slate-200 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+    <div className="glass-panel p-6 rounded-2xl border border-slate-200 flex flex-col justify-center shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between">
         <div>
           <p className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">{title}</p>
@@ -638,13 +638,6 @@ const KpiCard = ({ title, value, icon: Icon, trend, trendUp, color }) => {
         <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${colors[color]}`}>
           <Icon className="w-5 h-5" />
         </div>
-      </div>
-      <div className="mt-4 flex items-center gap-1.5 text-xs">
-        <span className={`font-bold flex items-center gap-0.5 ${trendUp ? 'text-emerald-500' : 'text-rose-500'}`}>
-          {trendUp ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
-          {trend}
-        </span>
-        <span className="text-slate-400">vs last month</span>
       </div>
     </div>
   );
