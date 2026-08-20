@@ -14,7 +14,7 @@ const PropertiesPage = () => {
   const [viewMode, setViewMode] = useState(searchParams.get('view') === 'split' ? 'split' : 'grid');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
 
   const [filters, setFilters] = useState({
     search: searchParams.get('search') || '',
@@ -116,127 +116,131 @@ const PropertiesPage = () => {
   }, []);
 
   return (
-    <div className={`${viewMode === 'split' ? 'flex flex-col h-[calc(100vh-64px)]' : 'max-w-7xl mx-auto'} px-4 sm:px-6 lg:px-8 py-6 space-y-4`}>
+    <div className={`${viewMode === 'split' ? 'flex flex-col h-[calc(100vh-64px)]' : 'max-w-7xl mx-auto'} px-4 sm:px-6 lg:px-8 py-6 space-y-6`}>
       
-      {/* Top Search & Filter Bar */}
-      <div className={`glass-panel p-4 rounded-2xl border border-slate-800 space-y-4 ${viewMode === 'split' ? 'shrink-0' : ''}`}>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-extrabold text-white flex items-center gap-2">
-              {filters.listingType ? (filters.listingType === 'Sale' ? 'Real Estate & Properties to Buy' : 'Real Estate & Properties for Rent') : 'All Properties'}
-              {filters.suburb && <span className="text-amber-400">in {filters.suburb}</span>}
-            </h1>
-            <p className="text-sm text-slate-400 mt-1 flex items-center gap-2">
-              {loading ? (
-                <><Loader2 className="w-4 h-4 animate-spin" /> Searching...</>
-              ) : (
-                <><span className="font-bold text-white">{total}</span> properties {filters.listingType === 'Rent' ? 'for rent' : 'to buy'}</>
-              )}
-            </p>
-          </div>
-          
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center space-x-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition-all ${viewMode === 'grid' ? 'bg-amber-500 text-slate-950' : 'text-slate-400 hover:text-white'}`}
-              >
-                <Grid className="w-3.5 h-3.5" /> <span className="hidden sm:inline">List</span>
-              </button>
-              <button
-                onClick={() => setViewMode('split')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition-all ${viewMode === 'split' ? 'bg-amber-500 text-slate-950' : 'text-slate-400 hover:text-white'}`}
-              >
-                <Map className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Map</span>
-              </button>
-            </div>
-            <button 
-              onClick={() => setShowFilters(!showFilters)}
-              className={`px-4 py-2 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all ${showFilters ? 'bg-amber-500 text-slate-950 border-amber-500' : 'bg-slate-900 border-slate-700 text-white hover:border-amber-500'}`}
+      {/* Top Header Row */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-extrabold text-white flex items-center gap-2">
+            {filters.listingType ? (filters.listingType === 'Sale' ? 'Real Estate & Properties to Buy' : 'Real Estate & Properties for Rent') : 'All Properties'}
+            {filters.suburb && <span className="text-amber-400">in {filters.suburb}</span>}
+          </h1>
+          <p className="text-sm text-slate-400 mt-1 flex items-center gap-2">
+            {loading ? (
+              <><Loader2 className="w-4 h-4 animate-spin" /> Searching...</>
+            ) : (
+              <><span className="font-bold text-white">{total}</span> properties {filters.listingType === 'Rent' ? 'for rent' : 'to buy'}</>
+            )}
+          </p>
+        </div>
+        
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center space-x-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition-all ${viewMode === 'grid' ? 'bg-amber-500 text-slate-950' : 'text-slate-400 hover:text-white'}`}
             >
-              <Search className="w-3.5 h-3.5" />
-              <span>{showFilters ? 'Hide Filters' : 'More Filters'}</span>
+              <Grid className="w-3.5 h-3.5" /> <span className="hidden sm:inline">List</span>
+            </button>
+            <button
+              onClick={() => setViewMode('split')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition-all ${viewMode === 'split' ? 'bg-amber-500 text-slate-950' : 'text-slate-400 hover:text-white'}`}
+            >
+              <Map className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Map</span>
             </button>
           </div>
+          <button 
+            onClick={() => setShowFilters(!showFilters)}
+            className={`px-4 py-2 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all ${showFilters ? 'bg-amber-500 text-slate-950 border-amber-500' : 'bg-slate-900 border-slate-700 text-white hover:border-amber-500'}`}
+          >
+            <Search className="w-3.5 h-3.5" />
+            <span>{showFilters ? 'Hide Filters' : 'Show Filters'}</span>
+          </button>
         </div>
-
-        {/* Expandable Horizontal Filter Panel */}
-        {showFilters && (
-          <div className="pt-4 border-t border-slate-800">
-            <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4">
-               <PropertyFilters filters={filters} setFilters={setFilters} onReset={handleResetFilters} />
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Main Content Area */}
-      {viewMode === 'split' ? (
-        <div className="flex-1 flex gap-4 min-h-0">
-          {/* Left: Map */}
-          <div className="flex-1 rounded-2xl overflow-hidden border border-slate-800 shadow-xl hidden lg:block">
-            <PropertyMap properties={properties} />
-          </div>
-          {/* Right: Scrollable Grid */}
-          <div className="w-full lg:w-[45%] xl:w-[40%] overflow-y-auto pr-2 space-y-4 custom-scrollbar">
-            {loading ? (
-              <div className="flex flex-col gap-4">
-                {[1,2,3].map(i => <div key={i} className="h-64 glass-panel rounded-2xl animate-pulse border border-slate-800" />)}
+      <div className={`flex flex-col lg:flex-row gap-6 ${viewMode === 'split' ? 'flex-1 min-h-0' : ''}`}>
+        {/* Left Sidebar Filter Panel */}
+        {showFilters && (
+          <div className={`w-full lg:w-72 shrink-0 ${viewMode === 'split' ? 'overflow-y-auto pr-2 custom-scrollbar pb-6' : ''}`}>
+            <div className="glass-panel p-5 rounded-2xl border border-slate-800 space-y-4">
+              <div className="grid grid-cols-1 gap-4">
+                <PropertyFilters filters={filters} setFilters={setFilters} onReset={handleResetFilters} />
               </div>
-            ) : properties.length === 0 ? (
-              <div className="py-12 text-center glass-panel rounded-2xl border border-slate-800"><p className="text-slate-400">No properties found.</p></div>
-            ) : (
-              <div className="flex flex-col gap-4">
-                {properties.map(p => <PropertyCard key={p._id} property={p} />)}
-              </div>
-            )}
-            {/* Split view pagination */}
-            {!loading && totalPages > 1 && (
-               <div className="flex justify-between items-center p-4 glass-panel rounded-2xl border border-slate-800">
-                 <button disabled={page <= 1} onClick={() => setPage(p=>p-1)} className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs font-bold text-white disabled:opacity-50">Prev</button>
-                 <span className="text-xs font-bold text-slate-400">{page} of {totalPages}</span>
-                 <button disabled={page >= totalPages} onClick={() => setPage(p=>p+1)} className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs font-bold text-white disabled:opacity-50">Next</button>
-               </div>
-            )}
-          </div>
-        </div>
-      ) : (
-        <div className="space-y-6">
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="h-80 glass-panel rounded-2xl animate-pulse border border-slate-800" />)}
             </div>
-          ) : properties.length === 0 ? (
-            <div className="py-16 text-center glass-panel rounded-2xl border border-slate-800 space-y-4">
-               <Search className="w-12 h-12 mx-auto text-slate-600" />
-               <h3 className="text-lg font-bold text-white">No properties match your current criteria</h3>
-               <button onClick={handleResetFilters} className="px-6 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs">Reset All Filters</button>
+          </div>
+        )}
+
+        {/* Right main area */}
+        <div className={`flex-1 min-w-0 ${viewMode === 'split' ? 'h-full flex flex-col' : ''}`}>
+          {viewMode === 'split' ? (
+            <div className="flex-1 flex gap-4 min-h-0">
+              {/* Left: Map */}
+              <div className="flex-1 rounded-2xl overflow-hidden border border-slate-800 shadow-xl hidden lg:block">
+                <PropertyMap properties={properties} />
+              </div>
+              {/* Right: Scrollable Grid */}
+              <div className="w-full lg:w-[45%] xl:w-[40%] overflow-y-auto pr-2 space-y-4 custom-scrollbar">
+                {loading ? (
+                  <div className="flex flex-col gap-4">
+                    {[1,2,3].map(i => <div key={i} className="h-64 glass-panel rounded-2xl animate-pulse border border-slate-800" />)}
+                  </div>
+                ) : properties.length === 0 ? (
+                  <div className="py-12 text-center glass-panel rounded-2xl border border-slate-800"><p className="text-slate-400">No properties found.</p></div>
+                ) : (
+                  <div className="flex flex-col gap-4">
+                    {properties.map(p => <PropertyCard key={p._id} property={p} />)}
+                  </div>
+                )}
+                {/* Split view pagination */}
+                {!loading && totalPages > 1 && (
+                   <div className="flex justify-between items-center p-4 glass-panel rounded-2xl border border-slate-800">
+                     <button disabled={page <= 1} onClick={() => setPage(p=>p-1)} className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs font-bold text-white disabled:opacity-50">Prev</button>
+                     <span className="text-xs font-bold text-slate-400">{page} of {totalPages}</span>
+                     <button disabled={page >= totalPages} onClick={() => setPage(p=>p+1)} className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs font-bold text-white disabled:opacity-50">Next</button>
+                   </div>
+                )}
+              </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {properties.map(p => <PropertyCard key={p._id} property={p} />)}
-            </div>
-          )}
-          
-          {/* Grid view pagination */}
-          {!loading && totalPages > 1 && (
-            <div className="flex items-center justify-between pt-6 border-t border-slate-800/60 mt-4">
-              <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs font-extrabold text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-800 hover:border-amber-500/50 hover:text-white transition-all">
-                <ChevronLeft className="w-4 h-4" /><span>Previous</span>
-              </button>
-              <div className="flex items-center space-x-1">
-                <span className="text-xs font-bold text-slate-400">Page</span>
-                <span className="text-xs font-extrabold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">{page}</span>
-                <span className="text-xs font-bold text-slate-400">of {totalPages}</span>
-              </div>
-              <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs font-extrabold text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-800 hover:border-amber-500/50 hover:text-white transition-all">
-                <span>Next</span><ChevronRight className="w-4 h-4" />
-              </button>
+            <div className="space-y-6">
+              {loading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="h-80 glass-panel rounded-2xl animate-pulse border border-slate-800" />)}
+                </div>
+              ) : properties.length === 0 ? (
+                <div className="py-16 text-center glass-panel rounded-2xl border border-slate-800 space-y-4">
+                   <Search className="w-12 h-12 mx-auto text-slate-600" />
+                   <h3 className="text-lg font-bold text-white">No properties match your current criteria</h3>
+                   <button onClick={handleResetFilters} className="px-6 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs">Reset All Filters</button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {properties.map(p => <PropertyCard key={p._id} property={p} />)}
+                </div>
+              )}
+              
+              {/* Grid view pagination */}
+              {!loading && totalPages > 1 && (
+                <div className="flex items-center justify-between pt-6 border-t border-slate-800/60 mt-4">
+                  <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs font-extrabold text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-800 hover:border-amber-500/50 hover:text-white transition-all">
+                    <ChevronLeft className="w-4 h-4" /><span>Previous</span>
+                  </button>
+                  <div className="flex items-center space-x-1">
+                    <span className="text-xs font-bold text-slate-400">Page</span>
+                    <span className="text-xs font-extrabold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">{page}</span>
+                    <span className="text-xs font-bold text-slate-400">of {totalPages}</span>
+                  </div>
+                  <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs font-extrabold text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-800 hover:border-amber-500/50 hover:text-white transition-all">
+                    <span>Next</span><ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
-      )}
-    </div>
+      </div>
   );
 };
 
