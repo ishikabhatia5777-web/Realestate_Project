@@ -24,7 +24,20 @@ const RegisterPage = () => {
     try {
       const res = await register({ name, email, password, phone, role });
       if (res && res.success) {
-        navigate('/'); // Redirect to Homepage with Dashboard button shown in Navbar
+        const u = res.user;
+        if (!u) {
+          navigate('/');
+        } else if (u.role === 'super_admin' || u.role === 'admin') {
+          navigate('/dashboard/admin');
+        } else if (u.role === 'agency') {
+          navigate('/dashboard/agency');
+        } else if (u.role === 'agent') {
+          navigate('/dashboard/agent');
+        } else if (u.role === 'seller') {
+          navigate('/dashboard/seller');
+        } else {
+          navigate('/dashboard/buyer');
+        }
       }
     } catch (err) {
       const msg = err.response?.data?.message || err.message || 'Registration failed. Please try again.';

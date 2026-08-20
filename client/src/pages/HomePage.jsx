@@ -7,13 +7,27 @@ import PropertyMap from '../components/PropertyMap';
 import { fetchProperties, fetchAgencies, fetchAdminBlogs } from '../services/api';
 import { Building2, Sparkles, Award, ArrowRight, ShieldCheck, TrendingUp, MapPin, DollarSign, Home, Search } from 'lucide-react';
 
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const HomePage = () => {
+  const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+
   const [featuredProperties, setFeaturedProperties] = useState([]);
   const [allProperties, setAllProperties] = useState([]);
   const [agencies, setAgencies] = useState([]);
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Auto-redirect agents and admins to their dashboard if they try to view the homepage
+  useEffect(() => {
+    if (!authLoading && user) {
+      if (user.role === 'agent') navigate('/dashboard/agent', { replace: true });
+      else if (user.role === 'agency') navigate('/dashboard/agency', { replace: true });
+      else if (user.role === 'admin' || user.role === 'super_admin') navigate('/dashboard/admin', { replace: true });
+    }
+  }, [user, authLoading, navigate]);
 
   useEffect(() => {
     const loadHomeData = async () => {
