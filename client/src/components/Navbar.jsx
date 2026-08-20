@@ -93,9 +93,11 @@ const Navbar = ({ onOpenAIChat }) => {
 
           {/* Desktop Navigation Links */}
           <nav className="hidden md:flex items-center space-x-7">
-            <Link to="/" className={linkClass('/')}>
-              Home
-            </Link>
+            {(!user || user.role !== 'agent') && (
+              <Link to="/" className={linkClass('/')}>
+                Home
+              </Link>
+            )}
 
             {/* Show Buy, Rent, Sold, Agencies ONLY to Buyer or Guest users */}
             {(!user || user.role === 'buyer') && (
@@ -123,7 +125,7 @@ const Navbar = ({ onOpenAIChat }) => {
             )}
 
             {/* Direct Dashboard Nav Link for Logged In Users */}
-            {user && (
+            {user && user.role !== 'agent' && (
               <Link 
                 to={getDashboardRoute()} 
                 className={`px-3.5 py-1.5 rounded-xl border font-bold text-xs flex items-center space-x-1.5 transition-all shadow-sm ${
@@ -321,13 +323,15 @@ const Navbar = ({ onOpenAIChat }) => {
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="md:hidden glass-panel border-t border-slate-200 px-4 pt-4 pb-6 space-y-4">
-          <Link
-            to="/"
-            onClick={() => setMobileMenuOpen(false)}
-            className={mobileLinkClass('/')}
-          >
-            Home Page
-          </Link>
+          {(!user || user.role !== 'agent') && (
+            <Link
+              to="/"
+              onClick={() => setMobileMenuOpen(false)}
+              className={mobileLinkClass('/')}
+            >
+              Home Page
+            </Link>
+          )}
 
           {(!user || user.role === 'buyer') && (
             <>
@@ -374,18 +378,20 @@ const Navbar = ({ onOpenAIChat }) => {
 
           {user ? (
             <div className="pt-4 border-t border-slate-200 space-y-3">
-              <Link
-                to={getDashboardRoute()}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`w-full flex items-center justify-center space-x-2 py-2.5 rounded-lg font-bold text-sm ${
-                  location.pathname.startsWith('/dashboard')
-                    ? 'bg-sky-600 text-slate-900'
-                    : 'bg-sky-500 text-slate-950'
-                }`}
-              >
-                <LayoutDashboard className="w-4 h-4" />
-                <span>Go to Dashboard ({user.role})</span>
-              </Link>
+              {user.role !== 'agent' && (
+                <Link
+                  to={getDashboardRoute()}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`w-full flex items-center justify-center space-x-2 py-2.5 rounded-lg font-bold text-sm ${
+                    location.pathname.startsWith('/dashboard')
+                      ? 'bg-sky-600 text-slate-900'
+                      : 'bg-sky-500 text-slate-950'
+                  }`}
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  <span>Go to Dashboard ({user.role})</span>
+                </Link>
+              )}
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
