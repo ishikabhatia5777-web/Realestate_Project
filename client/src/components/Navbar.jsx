@@ -135,14 +135,7 @@ const Navbar = ({ onOpenAIChat }) => {
             </button>
 
 
-            {/* Theme Toggle Button */}
-            <button
-              onClick={toggleTheme}
-              className="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 hover:text-sky-600 dark:border-slate-200 dark:bg-white/60 dark:text-slate-600 dark:hover:text-sky-500 dark:hover:border-sky-500/30 transition-all"
-              title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-            >
-              {isDark ? <Sun className="w-4.5 h-4.5 text-sky-500" /> : <Moon className="w-4.5 h-4.5 text-slate-500" />}
-            </button>
+
 
             {/* Saved Wishlist (Shown ONLY to Buyer and Guest users) */}
             {(!user || user.role === 'buyer') && (
@@ -248,14 +241,7 @@ const Navbar = ({ onOpenAIChat }) => {
 
           {/* Mobile Menu Button */}
           <div className="flex md:hidden items-center space-x-3">
-            {/* Theme Toggle Button */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-lg border border-slate-200 bg-white text-slate-600 dark:border-slate-200 dark:bg-white/60 dark:text-slate-600"
-              title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-            >
-              {isDark ? <Sun className="w-5 h-5 text-sky-500" /> : <Moon className="w-5 h-5 text-slate-500" />}
-            </button>
+
 
             <button
               onClick={onOpenAIChat}
