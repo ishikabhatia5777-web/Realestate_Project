@@ -181,6 +181,13 @@ const Navbar = ({ onOpenAIChat }) => {
                       <Bell className="w-3.5 h-3.5" />
                       <span>Connection Requests</span>
                     </button>
+                    <button
+                      onClick={() => { navigate('/dashboard/agent?tab=profile'); setSettingsNavOpen(false); }}
+                      className="w-full px-4 py-2.5 text-left flex items-center space-x-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-xs font-semibold transition-colors"
+                    >
+                      <User className="w-3.5 h-3.5" />
+                      <span>Profile Settings</span>
+                    </button>
 
                   </div>
                 )}
