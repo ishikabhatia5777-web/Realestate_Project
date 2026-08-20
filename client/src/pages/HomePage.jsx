@@ -83,22 +83,6 @@ const HomePage = () => {
       {/* Hero Banner */}
       <HeroSection />
 
-
-
-      {/* Interactive Map Showcase Banner */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="glass-panel p-8 rounded-3xl border border-slate-200 space-y-6">
-          <div>
-            <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest block">INTERACTIVE GEOSPATIAL MAP</span>
-            <h3 className="text-2xl font-extrabold text-slate-900 mt-1">Explore All Properties by Geolocation & Radius</h3>
-            <p className="text-xs text-slate-500 mt-1">Viewing all database properties on Google Maps with live prices and details.</p>
-          </div>
-          <div className="h-[480px] rounded-2xl overflow-hidden border border-slate-200">
-            <PropertyMap properties={allProperties.length > 0 ? allProperties : featuredProperties} />
-          </div>
-        </div>
-      </section>
-
       {/* Top Agencies Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         <div className="text-center space-y-2">
@@ -206,6 +190,20 @@ const HomePage = () => {
               </div>
             </Link>
           ))}
+        </div>
+      </section>
+
+      {/* Interactive Map Showcase Banner */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="glass-panel p-8 rounded-3xl border border-slate-200 space-y-6">
+          <div>
+            <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest block">INTERACTIVE GEOSPATIAL MAP</span>
+            <h3 className="text-2xl font-extrabold text-slate-900 mt-1">Explore All Properties by Geolocation & Radius</h3>
+            <p className="text-xs text-slate-500 mt-1">Viewing all database properties on Google Maps with live prices and details.</p>
+          </div>
+          <div className="h-[480px] rounded-2xl overflow-hidden border border-slate-200">
+            <PropertyMap properties={allProperties.length > 0 ? allProperties : featuredProperties} />
+          </div>
         </div>
       </section>
 
