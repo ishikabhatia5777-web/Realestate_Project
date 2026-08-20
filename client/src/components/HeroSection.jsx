@@ -67,18 +67,18 @@ const HeroSection = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="max-w-4xl mx-auto glass-panel p-4 sm:p-6 rounded-3xl border border-slate-300/80 shadow-2xl space-y-4"
         >
-          {/* Tab buttons */}
-          <div className="flex items-center space-x-1 border-b border-slate-200 pb-3">
+          {/* Tab buttons - same segmented control style as PropertyFilters */}
+          <div className="grid grid-cols-3 gap-2 p-1 rounded-xl bg-white border border-slate-200">
             {tabs.map((t) => (
               <button
                 key={t.key}
                 onClick={() => setTab(t.key)}
-                className={`px-6 py-2.5 rounded-xl font-extrabold text-xs tracking-wider uppercase transition-all ${
+                className={`py-2.5 rounded-lg font-extrabold text-xs tracking-wider uppercase transition-all ${
                   tab === t.key
                     ? t.key === 'Sold'
-                      ? 'bg-slate-600 text-slate-900 shadow-lg'
-                      : 'bg-sky-500 text-slate-950 shadow-lg shadow-sky-500/20'
-                    : 'text-slate-500 hover:text-slate-900 hover:bg-white'
+                      ? 'bg-slate-500 text-white shadow-md'
+                      : 'bg-sky-500 text-white shadow-md shadow-sky-500/20'
+                    : 'text-slate-500 hover:text-slate-900'
                 }`}
               >
                 {t.label}
