@@ -347,39 +347,40 @@ const PropertyDetailPage = () => {
         {/* Right Column - Sidebar */}
         <div className="lg:col-span-4 space-y-6">
           
-          {/* Agent Enquiry Form (Inline) */}
-          <div className="glass-panel p-6 rounded-3xl border border-slate-800 sticky top-24 space-y-6">
-            <div className="text-center">
-              <div className="w-20 h-20 mx-auto rounded-full border-2 border-amber-500 overflow-hidden mb-3">
-                <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=200" alt="Agent" className="w-full h-full object-cover" />
+          <div className="sticky top-24 space-y-6">
+            {/* Agent Enquiry Form (Inline) */}
+            <div className="glass-panel p-6 rounded-3xl border border-slate-800 space-y-6">
+              <div className="text-center">
+                <div className="w-20 h-20 mx-auto rounded-full border-2 border-amber-500 overflow-hidden mb-3">
+                  <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=200" alt="Agent" className="w-full h-full object-cover" />
+                </div>
+                <h3 className="text-lg font-bold text-white">Alexander Prestige</h3>
+                <p className="text-xs text-amber-400">Lead Sales Agent</p>
               </div>
-              <h3 className="text-lg font-bold text-white">Alexander Prestige</h3>
-              <p className="text-xs text-amber-400">Lead Sales Agent</p>
+
+              <div className="flex gap-2">
+                <button onClick={() => setIsChatOpen(true)} className="flex-1 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors">
+                  <MessageSquare className="w-4 h-4" /> Message
+                </button>
+                <button className="flex-1 py-3 bg-slate-900 border border-slate-700 hover:border-amber-500 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors">
+                  <Phone className="w-4 h-4" /> Call
+                </button>
+              </div>
+
+              <form className="space-y-3 pt-4 border-t border-slate-800" onSubmit={e => { e.preventDefault(); alert('Enquiry sent!'); }}>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Enquire about this property</p>
+                <input type="text" placeholder="Full Name" className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-amber-500" required />
+                <input type="email" placeholder="Email Address" className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-amber-500" required />
+                <input type="tel" placeholder="Phone Number" className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-amber-500" required />
+                <textarea placeholder="I am interested in this property..." rows="3" className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-amber-500 resize-none" required></textarea>
+                <button type="submit" className="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold rounded-xl text-sm transition-all shadow-lg shadow-amber-500/20">
+                  Send Enquiry
+                </button>
+              </form>
             </div>
 
-            <div className="flex gap-2">
-              <button onClick={() => setIsChatOpen(true)} className="flex-1 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors">
-                <MessageSquare className="w-4 h-4" /> Message
-              </button>
-              <button className="flex-1 py-3 bg-slate-900 border border-slate-700 hover:border-amber-500 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors">
-                <Phone className="w-4 h-4" /> Call
-              </button>
-            </div>
-
-            <form className="space-y-3 pt-4 border-t border-slate-800" onSubmit={e => { e.preventDefault(); alert('Enquiry sent!'); }}>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Enquire about this property</p>
-              <input type="text" placeholder="Full Name" className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-amber-500" required />
-              <input type="email" placeholder="Email Address" className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-amber-500" required />
-              <input type="tel" placeholder="Phone Number" className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-amber-500" required />
-              <textarea placeholder="I am interested in this property..." rows="3" className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-amber-500 resize-none" required></textarea>
-              <button type="submit" className="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold rounded-xl text-sm transition-all shadow-lg shadow-amber-500/20">
-                Send Enquiry
-              </button>
-            </form>
-          </div>
-
-          {/* Suburb Profile Widget */}
-          <div className="glass-panel p-6 rounded-3xl border border-slate-800 space-y-4">
+            {/* Suburb Profile Widget */}
+            <div className="glass-panel p-6 rounded-3xl border border-slate-800 space-y-4">
              <div className="flex justify-between items-center">
                <h3 className="text-lg font-bold text-white">Suburb Insights</h3>
                <Link to={`/suburbs/${encodeURIComponent(property.address?.suburb)}`} className="text-xs font-bold text-amber-400 hover:text-amber-300">
@@ -403,6 +404,7 @@ const PropertyDetailPage = () => {
                  <span className="text-slate-400">Avg. Days on Market</span>
                  <span className="font-bold text-white">41 Days</span>
                </div>
+             </div>
              </div>
           </div>
         </div>
