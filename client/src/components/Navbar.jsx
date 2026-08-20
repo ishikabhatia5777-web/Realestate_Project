@@ -114,6 +114,14 @@ const Navbar = ({ onOpenAIChat }) => {
               <span className="text-xs font-bold">Aura AI</span>
             </button>
 
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              className="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 hover:text-amber-500 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300 dark:hover:text-amber-400 dark:hover:border-amber-500/30 transition-all"
+              title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            >
+              {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-500" />}
+            </button>
 
             {/* Saved Wishlist (Shown ONLY to Buyer and Guest users) */}
             {(!user || user.role === 'buyer') && (
@@ -215,6 +223,15 @@ const Navbar = ({ onOpenAIChat }) => {
 
           {/* Mobile Menu Button */}
           <div className="flex md:hidden items-center space-x-3">
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg border border-slate-200 bg-white text-slate-600 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300"
+              title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            >
+              {isDark ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-slate-500" />}
+            </button>
+
             <button
               onClick={onOpenAIChat}
               className="p-2 rounded-lg bg-cyan-950/60 text-cyan-400 border border-cyan-500/30"
