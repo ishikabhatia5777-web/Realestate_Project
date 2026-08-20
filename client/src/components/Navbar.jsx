@@ -17,7 +17,8 @@ import {
   X,
   Home,
   MessageSquare,
-  Bell
+  Bell,
+  Settings
 } from 'lucide-react';
 
 const Navbar = ({ onOpenAIChat }) => {
@@ -156,13 +157,10 @@ const Navbar = ({ onOpenAIChat }) => {
               <div className="relative" ref={settingsRef}>
                 <button
                   onClick={() => setSettingsNavOpen(!settingsNavOpen)}
-                  className="flex items-center space-x-2 px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:text-sky-500 hover:border-sky-500/40 transition-all text-xs font-bold"
+                  className="p-2.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:text-sky-500 hover:border-sky-500/40 transition-all"
+                  title="Settings"
                 >
-                  <User className="w-4 h-4" />
-                  <span>Settings</span>
-                  <svg className={`w-3 h-3 transition-transform ${settingsNavOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-                  </svg>
+                  <Settings className="w-4.5 h-4.5" />
                 </button>
 
                 {settingsNavOpen && (
