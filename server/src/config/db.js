@@ -10,14 +10,13 @@ if (process.env.NODE_ENV !== 'production') {
   }
 }
 
-const DEFAULT_ATLAS_URI = 'mongodb+srv://ishikabhatia5777_db_user:New_password@cluster0.afbmlyd.mongodb.net/realestate_db?retryWrites=true&w=majority';
 
 const connectDB = async () => {
   try {
     // Disable command buffering up front so operations fail fast if DB is disconnected
     mongoose.set('bufferCommands', false);
 
-    const mongoUri = process.env.MONGO_URI || DEFAULT_ATLAS_URI;
+    const mongoUri = process.env.MONGO_URI;
 
     const conn = await mongoose.connect(mongoUri, {
       serverSelectionTimeoutMS: 10000,
