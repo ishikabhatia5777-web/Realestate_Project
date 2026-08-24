@@ -5,7 +5,7 @@ import LiveChatModal from '../components/LiveChatModal';
 import PaymentModal from '../components/PaymentModal';
 import AppraisalReport from '../components/AppraisalReport';
 import { useAuth } from '../context/AuthContext';
-import { fetchPropertyById, fetchSimilarProperties, generatePropertyAppraisal } from '../services/api';
+import { fetchPropertyById, fetchSimilarProperties, generatePropertyAppraisal, sendChatMessage, sendGuestMessage } from '../services/api';
 import {
   Bed, Bath, Car, Maximize, MapPin, Calendar, DollarSign, MessageSquare,
   Share2, FileText, Sparkles, ShieldCheck, Check, School, Hospital, Bus, Heart, ShoppingBag, ArrowLeft,
@@ -37,6 +37,7 @@ const PropertyDetailPage = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [showPhone, setShowPhone] = useState(false);
 
   useEffect(() => {
     if (searchParams.get('buy') === 'true' && property) {
@@ -48,6 +49,51 @@ const PropertyDetailPage = () => {
       }
     }
   }, [searchParams, property, user]);
+
+  const handleSendEnquiry = async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const fullName = formData.get('fullName');
+    const email = formData.get('email');
+    const phone = formData.get('phone');
+    const message = formData.get('message');
+
+    const combinedMessage = `Property Enquiry:\nName: ${fullName}\nEmail: ${email}\nPhone: ${phone}\n\nMessage:\n${message}`;
+
+    const recipient = property?.agentId || property?.ownerId;
+    let receiverId = recipient?._id || recipient;
+
+    if (!receiverId || typeof receiverId !== 'string') {
+      receiverId = 'default';
+    }
+
+    try {
+      if (user) {
+        await sendChatMessage({
+          receiverId,
+          propertyId: property?._id,
+          text: combinedMessage
+        });
+        e.target.reset();
+        setIsChatOpen(true);
+      } else {
+        await sendGuestMessage({
+          receiverId,
+          propertyId: property?._id,
+          text: combinedMessage,
+          guestName: fullName,
+          guestEmail: email,
+          guestPhone: phone
+        });
+        e.target.reset();
+        alert('Enquiry sent! The agent has received your message and will contact you shortly.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to send enquiry. Please try again.');
+    }
+  };
 
   useEffect(() => {
     const loadDetail = async () => {
@@ -403,27 +449,36 @@ const PropertyDetailPage = () => {
             <div className="glass-panel p-6 rounded-3xl border border-slate-200 space-y-6">
               <div className="text-center">
                 <div className="w-20 h-20 mx-auto rounded-full border-2 border-sky-500 overflow-hidden mb-3">
-                  <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=200" alt="Agent" className="w-full h-full object-cover" />
+                  <img src={property.agentId?.avatar || property.agentId?.profilePicture || "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=200"} alt="Agent" className="w-full h-full object-cover" />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900">Alexander Prestige</h3>
-                <p className="text-xs text-sky-500">Lead Sales Agent</p>
+                <h3 className="text-lg font-bold text-slate-900">{property.agentId?.name || 'Real Estate Agent'}</h3>
+                <p className="text-xs text-sky-500">{property.agencyId?.name || 'Lead Sales Agent'}</p>
               </div>
 
               <div className="flex gap-2">
                 <button onClick={() => setIsChatOpen(true)} className="flex-1 py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors">
                   <MessageSquare className="w-4 h-4" /> Message
                 </button>
-                <button className="flex-1 py-3 bg-white border border-slate-300 hover:border-sky-500 text-slate-900 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors">
-                  <Phone className="w-4 h-4" /> Call
+                <button 
+                  onClick={() => {
+                    if (!showPhone) {
+                      setShowPhone(true);
+                    } else {
+                      window.location.href = 'tel:+61480089451';
+                    }
+                  }} 
+                  className="flex-1 py-3 bg-white border border-slate-300 hover:border-sky-500 text-slate-900 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors"
+                >
+                  <Phone className="w-4 h-4" /> {showPhone ? '+61 480089451' : 'Call'}
                 </button>
               </div>
 
-              <form className="space-y-3 pt-4 border-t border-slate-200" onSubmit={e => { e.preventDefault(); alert('Enquiry sent!'); }}>
+              <form className="space-y-3 pt-4 border-t border-slate-200" onSubmit={handleSendEnquiry}>
                 <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Enquire about this property</p>
-                <input type="text" placeholder="Full Name" className="w-full px-4 py-3 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-sky-500" required />
-                <input type="email" placeholder="Email Address" className="w-full px-4 py-3 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-sky-500" required />
-                <input type="tel" placeholder="Phone Number" className="w-full px-4 py-3 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-sky-500" required />
-                <textarea placeholder="I am interested in this property..." rows="3" className="w-full px-4 py-3 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-sky-500 resize-none" required></textarea>
+                <input type="text" name="fullName" placeholder="Full Name" className="w-full px-4 py-3 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-sky-500" required />
+                <input type="email" name="email" placeholder="Email Address" className="w-full px-4 py-3 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-sky-500" required />
+                <input type="tel" name="phone" placeholder="Phone Number" className="w-full px-4 py-3 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-sky-500" required />
+                <textarea name="message" placeholder="I am interested in this property..." rows="3" className="w-full px-4 py-3 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-sky-500 resize-none" required></textarea>
                 <button type="submit" className="w-full py-3 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-400 hover:to-sky-500 text-slate-950 font-bold rounded-xl text-sm transition-all shadow-lg shadow-sky-500/20">
                   Send Enquiry
                 </button>

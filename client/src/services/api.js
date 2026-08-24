@@ -70,6 +70,7 @@ export const updateBookingStatus = (id, status) => api.put(`/bookings/${id}/stat
 // Chat API
 export const fetchChatMessages = (receiverId, propertyId) => api.get(`/chat/${receiverId}`, { params: { propertyId } });
 export const sendChatMessage = (data) => api.post('/chat', data);
+export const sendGuestMessage = (data) => api.post('/chat/guest', data);
 
 // AI API
 export const generateAIDescription = (data) => api.post('/ai/generate-description', data);

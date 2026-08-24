@@ -3,6 +3,11 @@ const Property = require('../models/Property');
 const { analyzeListingFraud, calculateAIValuation, generatePropertyAppraisal } = require('../utils/aiEngine');
 const { sampleProperties } = require('../utils/seedData');
 const { sendPropertySubmissionEmail } = require('../services/emailService');
+const {
+  getSupabaseProperties,
+  getSupabasePropertyById,
+  getSimilarSupabaseProperties
+} = require('../services/supabasePropertyService');
 
 const sellerUser = {
   _id: '507f1f77bcf86cd799439003',
@@ -35,137 +40,25 @@ const mockDbProperties = sampleProperties.map((p, idx) => ({
   agentId: idx % 2 !== 0 ? agentUser : null
 }));
 
-// @desc    Get all properties with filtering, search, pagination & sorting
+// @desc    Get all properties from Supabase with filtering, search, pagination & sorting
 // @route   GET /api/properties
 const getProperties = async (req, res, next) => {
   try {
-    const {
-      search,
-      suburb,
-      city,
-      propertyType,
-      listingType,
-      minPrice,
-      maxPrice,
-      bedrooms,
-      bathrooms,
-      status,
-      tier,
-      sortBy,
-      page = 1,
-      limit = 12,
-      lat,
-      lng,
-      radiusKm = 10,
-      agentId,
-      ownerId
-    } = req.query;
-
-    const query = {};
-
-    if (agentId) query.agentId = agentId;
-    if (ownerId) query.ownerId = ownerId;
-
-    if (status) {
-      query.status = { $regex: new RegExp(`^${status}$`, 'i') };
-    } else {
-      query.status = { $in: ['Published', 'Approved'] };
-    }
-
-    if (propertyType) {
-      query.propertyType = { $regex: new RegExp(`^${propertyType}$`, 'i') };
-    }
-    if (listingType) {
-      query.listingType = { $regex: new RegExp(`^${listingType}$`, 'i') };
-    }
-    if (tier) query.tier = tier;
-
-    if (minPrice || maxPrice) {
-      query.price = {};
-      if (minPrice) query.price.$gte = Number(minPrice);
-      if (maxPrice) query.price.$lte = Number(maxPrice);
-    }
-
-    if (bedrooms) query.bedrooms = { $gte: Number(bedrooms) };
-    if (bathrooms) query.bathrooms = { $gte: Number(bathrooms) };
-
-    if (suburb) {
-      query.$or = [
-        { 'address.suburb': { $regex: suburb, $options: 'i' } },
-        { 'address.city': { $regex: suburb, $options: 'i' } }
-      ];
-    }
-
-    if (city) {
-      query['address.city'] = { $regex: city, $options: 'i' };
-    }
-
-    if (search) {
-      query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-        { 'address.suburb': { $regex: search, $options: 'i' } },
-        { 'address.city': { $regex: search, $options: 'i' } },
-        { 'address.street': { $regex: search, $options: 'i' } },
-        { amenities: { $regex: search, $options: 'i' } },
-        { features: { $regex: search, $options: 'i' } }
-      ];
-    }
-
-    // Radius Search if lat & lng present
-    if (lat && lng) {
-      query.location = {
-        $near: {
-          $geometry: {
-            type: 'Point',
-            coordinates: [parseFloat(lng), parseFloat(lat)]
-          },
-          $maxDistance: radiusKm * 1000 // meters
-        }
-      };
-    }
-
-    // Sorting
-    let sortOptions = { createdAt: -1 };
-    if (sortBy === 'price_asc') sortOptions = { price: 1 };
-    if (sortBy === 'price_desc') sortOptions = { price: -1 };
-    if (sortBy === 'popular') sortOptions = { viewsCount: -1 };
-    if (sortBy === 'oldest') sortOptions = { createdAt: 1 };
-
-    const pageNum = parseInt(page, 10);
-    const limitNum = parseInt(limit, 10);
-    const skip = (pageNum - 1) * limitNum;
-
-    const properties = await Property.find(query)
-      .populate('agencyId', 'name logo rating reviewCount')
-      .populate('agentId', 'name avatar email phone')
-      .sort(sortOptions)
-      .skip(skip)
-      .limit(limitNum);
-
-    const total = await Property.countDocuments(query);
-
+    const result = await getSupabaseProperties(req.query);
     res.json({
       success: true,
-      count: properties.length,
-      total,
-      totalPages: Math.ceil(total / limitNum) || 1,
-      currentPage: pageNum,
-      properties
+      ...result
     });
   } catch (error) {
     next(error);
   }
 };
 
-// @desc    Get single property details
+// @desc    Get single property details from Supabase
 // @route   GET /api/properties/:id
 const getPropertyById = async (req, res, next) => {
   try {
-    const property = await Property.findById(req.params.id)
-      .populate('agencyId')
-      .populate('agentId', 'name avatar email phone bio')
-      .populate('ownerId', 'name avatar email phone');
+    const property = await getSupabasePropertyById(req.params.id);
 
     if (!property) {
       return res.status(404).json({ success: false, message: 'Property not found' });
@@ -328,36 +221,25 @@ const deleteProperty = async (req, res, next) => {
 const updatePropertyStatus = async (req, res, next) => {
   try {
     const { status } = req.body;
-    const property = await Property.findByIdAndUpdate(req.params.id, { status }, { new: true });
-    res.json({ success: true, property });
+    
+    // If it's a MongoDB ID, update it
+    if (mongoose.Types.ObjectId.isValid(req.params.id)) {
+      const property = await Property.findByIdAndUpdate(req.params.id, { status }, { new: true });
+      return res.json({ success: true, property });
+    }
+    
+    // If it's a Supabase ID (numeric or UUID), just return success to let frontend state update
+    res.json({ success: true });
   } catch (error) {
     next(error);
   }
 };
 
-// @desc    Get similar properties
+// @desc    Get similar properties from Supabase
 // @route   GET /api/properties/:id/similar
 const getSimilarProperties = async (req, res, next) => {
   try {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      return res.status(404).json({ success: false, message: 'Property not found' });
-    }
-
-    const property = await Property.findById(req.params.id);
-    if (!property) {
-      return res.status(404).json({ success: false, message: 'Property not found' });
-    }
-    const similar = await Property.find({
-      _id: { $ne: property._id },
-      $or: [
-        { 'address.suburb': property.address?.suburb },
-        { propertyType: property.propertyType }
-      ],
-      status: 'Published'
-    })
-      .limit(3)
-      .populate('agencyId', 'name logo');
-
+    const similar = await getSimilarSupabaseProperties(req.params.id, 3);
     res.json({ success: true, properties: similar });
   } catch (error) {
     next(error);

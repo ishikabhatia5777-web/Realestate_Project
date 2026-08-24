@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { getMessages, sendMessage, getInbox, markThreadRead, getExpertRequests, markExpertRequestRead } = require('../controllers/chatController');
+const { getMessages, sendMessage, sendGuestMessage, getInbox, markThreadRead, getExpertRequests, markExpertRequestRead } = require('../controllers/chatController');
 const { protect } = require('../middlewares/auth');
 const { authorize } = require('../middlewares/rbac');
+
+router.post('/guest', sendGuestMessage);
 
 router.use(protect);
 router.get('/inbox', getInbox);
