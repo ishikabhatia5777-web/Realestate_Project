@@ -110,7 +110,6 @@ const getAgencies = async (req, res, next) => {
 // @route   GET /api/agencies/:id
 const getAgencyById = async (req, res, next) => {
   try {
-    let agency;
     let agents = [];
     let properties = [];
 
