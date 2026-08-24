@@ -460,71 +460,26 @@ const AgentDashboard = () => {
               </div>
             </div>
 
-            {/* Activity Feed */}
-            <div className="glass-panel p-5 rounded-2xl border border-slate-200 space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-extrabold text-slate-900">Recent Activity</h3>
-                <Activity className="w-4 h-4 text-sky-500" />
-              </div>
-              <div className="space-y-3 overflow-y-auto max-h-64">
-                {activities.map(a => (
-                  <div key={a.id} className="flex items-start gap-2.5">
-                    <ActivityIcon type={a.icon} />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs text-slate-700 font-medium leading-snug line-clamp-2">{a.text}</p>
-                      <p className="text-[10px] text-slate-400 mt-0.5">{a.time}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
 
-          {/* Quick Actions + Upcoming */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-            {/* Quick Actions */}
-            <div className="glass-panel p-5 rounded-2xl border border-slate-200 space-y-4">
-              <h3 className="text-sm font-extrabold text-slate-900">Quick Actions</h3>
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  { label: 'Add Property', icon: Plus, onClick: () => setIsAddModalOpen(true), color: 'sky' },
-                  { label: 'Messages', icon: MessageSquare, onClick: () => setActiveTab('messages'), color: 'amber' },
-                  { label: 'View Listings', icon: Building2, onClick: () => setActiveTab('properties'), color: 'rose' },
-                  { label: 'View Requests', icon: Bell, onClick: () => setActiveTab('requests'), color: 'sky' },
-                ].map(({ label, icon: Icon, onClick, color }) => {
-                  const textMap = { sky: 'text-sky-500', emerald: 'text-emerald-500', violet: 'text-violet-500', amber: 'text-amber-500', rose: 'text-rose-500' };
-                  const bgMap = { sky: 'hover:bg-sky-50 hover:border-sky-200', emerald: 'hover:bg-emerald-50 hover:border-emerald-200', violet: 'hover:bg-violet-50 hover:border-violet-200', amber: 'hover:bg-amber-50 hover:border-amber-200', rose: 'hover:bg-rose-50 hover:border-rose-200' };
-                  return (
-                    <button key={label} onClick={onClick} className={`p-3 rounded-xl border border-slate-200 bg-white text-left flex items-center gap-2.5 transition-all ${bgMap[color]}`}>
-                      <Icon className={`w-4 h-4 ${textMap[color]}`} />
-                      <span className="text-xs font-bold text-slate-700">{label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Upcoming Appointments */}
-            <div className="glass-panel p-5 rounded-2xl border border-slate-200 space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-extrabold text-slate-900">Upcoming Appointments</h3>
-              </div>
-              <div className="space-y-3">
-                {appointments.slice(0, 3).map(a => (
-                  <div key={a.id} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
-                    <div className="w-9 h-9 rounded-xl bg-sky-500/10 flex items-center justify-center shrink-0">
-                      <Calendar className="w-4 h-4 text-sky-500" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-bold text-slate-900 truncate">{a.client}</p>
-                      <p className="text-[11px] text-sky-500 font-semibold truncate">{a.property}</p>
-                      <p className="text-[10px] text-slate-400">{a.date} • {a.time} • {a.type}</p>
-                    </div>
-                    <StatusBadge status={a.status} />
-                  </div>
-                ))}
-              </div>
+          {/* Quick Actions */}
+          <div className="glass-panel p-5 rounded-2xl border border-slate-200 space-y-4">
+            <h3 className="text-sm font-extrabold text-slate-900">Quick Actions</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { label: 'Add Property', icon: Plus, onClick: () => setIsAddModalOpen(true), color: 'sky' },
+                { label: 'Messages', icon: MessageSquare, onClick: () => setActiveTab('messages'), color: 'amber' },
+                { label: 'View Listings', icon: Building2, onClick: () => setActiveTab('properties'), color: 'rose' },
+                { label: 'View Requests', icon: Bell, onClick: () => setActiveTab('requests'), color: 'sky' },
+              ].map(({ label, icon: Icon, onClick, color }) => {
+                const textMap = { sky: 'text-sky-500', emerald: 'text-emerald-500', violet: 'text-violet-500', amber: 'text-amber-500', rose: 'text-rose-500' };
+                const bgMap = { sky: 'hover:bg-sky-50 hover:border-sky-200', emerald: 'hover:bg-emerald-50 hover:border-emerald-200', violet: 'hover:bg-violet-50 hover:border-violet-200', amber: 'hover:bg-amber-50 hover:border-amber-200', rose: 'hover:bg-rose-50 hover:border-rose-200' };
+                return (
+                  <button key={label} onClick={onClick} className={`p-3 rounded-xl border border-slate-200 bg-white text-left flex items-center gap-2.5 transition-all ${bgMap[color]}`}>
+                    <Icon className={`w-4 h-4 ${textMap[color]}`} />
+                    <span className="text-xs font-bold text-slate-700">{label}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
