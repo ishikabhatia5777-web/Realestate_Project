@@ -13,8 +13,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 const connectDB = async () => {
   try {
-    mongoose.set('bufferCommands', false);
-    let mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/realestate_db';
+    let mongoUri = process.env.MONGO_URI || 'mongodb+srv://keshavarora459_db_user:oItrcf8uVtfmwIua@cluster0.c8f8m4p.mongodb.net/test?appName=Cluster0';
     
     await mongoose.connect(mongoUri, {
       serverSelectionTimeoutMS: 5000,
