@@ -31,6 +31,19 @@ api.interceptors.request.use((config) => {
   return config;
 }, (error) => Promise.reject(error));
 
+// Interceptor to fix broken source.unsplash.com images from backend
+api.interceptors.response.use((response) => {
+  if (response.data) {
+    let dataStr = JSON.stringify(response.data);
+    if (dataStr.includes('source.unsplash.com')) {
+      dataStr = dataStr.replace(/source\.unsplash\.com\/[0-9x]+\/\?/g, 'loremflickr.com/800/600/');
+      dataStr = dataStr.replace(/&sig=/g, '?lock=');
+      response.data = JSON.parse(dataStr);
+    }
+  }
+  return response;
+}, (error) => Promise.reject(error));
+
 // Auth API
 export const loginUser = (credentials) => api.post('/auth/login', credentials);
 export const registerUser = (userData) => api.post('/auth/register', userData);

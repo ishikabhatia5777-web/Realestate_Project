@@ -63,9 +63,9 @@ function mapSupabaseProperty(row) {
   };
   const keyword = imageKeywords[propertyType] || 'house,exterior';
   const images = [
-    `https://source.unsplash.com/800x600/?${keyword}&sig=${row.id}`,
-    `https://source.unsplash.com/800x600/?${keyword}&sig=${row.id + 100}`,
-    `https://source.unsplash.com/800x600/?interior,living,modern&sig=${row.id + 200}`
+    `https://loremflickr.com/800/600/${keyword}?lock=${row.id}`,
+    `https://loremflickr.com/800/600/${keyword}?lock=${row.id + 100}`,
+    `https://loremflickr.com/800/600/interior,living,modern?lock=${row.id + 200}`
   ];
 
   return {
