@@ -81,9 +81,18 @@ const RegisterPage = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          
-
-
+          <div className="space-y-1 text-xs">
+            <label className="font-bold text-slate-600">Account Type</label>
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:border-sky-500"
+            >
+              <option value="buyer">Buyer</option>
+              <option value="agent">Agent</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
           <div className="space-y-1 text-xs">
             <label className="font-bold text-slate-600">Full Name</label>
             <input

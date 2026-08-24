@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const ROLES = [
+  { id: 'admin', label: '🛡️ Admin', desc: 'Platform administrator' },
   { id: 'buyer', label: '🏠 Buyer', desc: 'Browse & purchase properties' },
   { id: 'seller', label: '🏷️ Seller', desc: 'List your property for sale' },
   { id: 'agent', label: '🤝 Agent', desc: 'Manage listings & clients' },
