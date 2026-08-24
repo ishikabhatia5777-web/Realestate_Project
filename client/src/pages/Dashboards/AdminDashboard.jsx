@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -18,7 +18,8 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import {
   ShieldCheck, Users, Building2, DollarSign, Activity, Check, X, FileText,
   BarChart2, MessageSquare, Bell, Search, Filter, ArrowUpRight,
-  ArrowDownRight, RefreshCw, Eye, Clock, Calendar, Briefcase, Plus, UserPlus, UploadCloud
+  ArrowDownRight, RefreshCw, Eye, Clock, Calendar, Briefcase, Plus, UserPlus, UploadCloud,
+  Download, AlertCircle, CheckCircle2, XCircle
 } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -40,6 +41,10 @@ const AdminDashboard = () => {
   const [allBookings, setAllBookings] = useState([]);
   const [allInquiries, setAllInquiries] = useState([]);
   const [uploadingCsv, setUploadingCsv] = useState(false);
+  const [csvResult, setCsvResult] = useState(null); // { imported, failed, errors[] }
+  const [showCsvModal, setShowCsvModal] = useState(false);
+  const csvInputRef = useRef(null);
+  const csvInputRef2 = useRef(null);
 
   // Search states
   const [userSearch, setUserSearch] = useState('');
@@ -117,18 +122,58 @@ const AdminDashboard = () => {
     try {
       const res = await uploadPropertiesCsv(formData);
       if (res.data?.success) {
-        alert(`Successfully imported ${res.data.imported} properties!`);
+        setCsvResult({
+          success: true,
+          imported: res.data.imported,
+          failed: res.data.failed,
+          errors: res.data.errors || []
+        });
+        setShowCsvModal(true);
         loadAdminData(); // Refresh the list
       } else {
-        alert(`Upload failed: ${res.data?.message || 'Unknown error'}`);
+        setCsvResult({
+          success: false,
+          imported: 0,
+          failed: 0,
+          errors: [res.data?.message || 'Unknown server error']
+        });
+        setShowCsvModal(true);
       }
     } catch (error) {
       console.error('CSV Upload Error:', error);
-      alert('An error occurred during CSV upload.');
+      setCsvResult({
+        success: false,
+        imported: 0,
+        failed: 0,
+        errors: [error?.response?.data?.message || 'A network error occurred during upload.']
+      });
+      setShowCsvModal(true);
     } finally {
       setUploadingCsv(false);
-      e.target.value = null; // reset input
+      if (csvInputRef.current) csvInputRef.current.value = null;
+      if (csvInputRef2.current) csvInputRef2.current.value = null;
     }
+  };
+
+  const handleDownloadTemplate = () => {
+    const headers = [
+      'title', 'description', 'propertyType', 'listingType', 'price',
+      'street', 'suburb', 'city', 'state', 'postcode', 'country',
+      'bedrooms', 'bathrooms', 'parkingSpaces', 'landArea', 'status'
+    ];
+    const sampleRow = [
+      'Luxury Beachfront Villa', 'Stunning 5-bed property with ocean views.', 'Villa', 'Sale', '1850000',
+      '12 Ocean Drive', 'Bondi Beach', 'Sydney', 'NSW', '2026', 'Australia',
+      '5', '3', '2', '650', 'Published'
+    ];
+    const csvContent = [headers.join(','), sampleRow.join(',')].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'properties_template.csv';
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const handleListingApproval = async (propId, status) => {
@@ -172,6 +217,74 @@ const AdminDashboard = () => {
 
   return (
     <div className="bg-slate-50 min-h-screen pb-20">
+
+      {/* CSV Result Modal */}
+      {showCsvModal && csvResult && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(15,23,42,0.6)', backdropFilter: 'blur(4px)' }}>
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-fade-in">
+            {/* Modal Header */}
+            <div className={`px-6 py-5 flex items-center gap-3 ${csvResult.success && csvResult.imported > 0 ? 'bg-emerald-50 border-b border-emerald-100' : 'bg-rose-50 border-b border-rose-100'}`}>
+              {csvResult.success && csvResult.imported > 0 ? (
+                <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0" />
+              ) : (
+                <XCircle className="w-6 h-6 text-rose-500 shrink-0" />
+              )}
+              <div>
+                <h2 className="font-extrabold text-slate-900 text-base">
+                  {csvResult.success && csvResult.imported > 0 ? 'CSV Import Complete' : 'CSV Import Failed'}
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  {csvResult.success && csvResult.imported > 0
+                    ? `Successfully processed your property CSV file.`
+                    : 'There was a problem importing the CSV.'}
+                </p>
+              </div>
+              <button onClick={() => setShowCsvModal(false)} className="ml-auto p-1 rounded-lg hover:bg-slate-100 text-slate-400">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Stats */}
+            <div className="px-6 py-5">
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 text-center">
+                  <p className="text-2xl font-extrabold text-emerald-600">{csvResult.imported}</p>
+                  <p className="text-xs text-emerald-700 font-semibold mt-1">Properties Imported</p>
+                </div>
+                <div className="bg-rose-50 border border-rose-100 rounded-xl p-4 text-center">
+                  <p className="text-2xl font-extrabold text-rose-600">{csvResult.failed}</p>
+                  <p className="text-xs text-rose-700 font-semibold mt-1">Rows Failed</p>
+                </div>
+              </div>
+
+              {/* Errors */}
+              {csvResult.errors && csvResult.errors.length > 0 && (
+                <div className="mt-2">
+                  <p className="text-xs font-bold text-slate-700 mb-2 flex items-center gap-1">
+                    <AlertCircle className="w-3.5 h-3.5 text-amber-500" /> Error Details
+                  </p>
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 max-h-40 overflow-y-auto space-y-1">
+                    {csvResult.errors.map((err, i) => (
+                      <p key={i} className="text-[11px] text-rose-600 font-mono">• {err}</p>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+              <button onClick={handleDownloadTemplate} className="px-4 py-2 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 flex items-center gap-2">
+                <Download className="w-3.5 h-3.5" /> Download Template
+              </button>
+              <button onClick={() => setShowCsvModal(false)} className="px-5 py-2 text-xs font-bold text-white bg-indigo-500 rounded-xl hover:bg-indigo-600">
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="bg-white border-b border-slate-200 sticky top-16 z-20 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between py-5 gap-4">
@@ -184,8 +297,16 @@ const AdminDashboard = () => {
             </div>
             
             <div className="flex items-center gap-3">
+              <button
+                onClick={handleDownloadTemplate}
+                className="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-50 transition-colors flex items-center gap-2"
+                title="Download CSV template with correct column headers"
+              >
+                <Download className="w-4 h-4" /> CSV Template
+              </button>
               <div className="relative">
                 <input
+                  ref={csvInputRef}
                   type="file"
                   accept=".csv"
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
@@ -193,9 +314,15 @@ const AdminDashboard = () => {
                   disabled={uploadingCsv}
                   title="Upload CSV"
                 />
-                <button className="px-4 py-2 bg-indigo-500 text-white rounded-xl text-xs font-bold hover:bg-indigo-600 transition-colors flex items-center gap-2 w-full justify-center disabled:opacity-50">
-                  <UploadCloud className="w-4 h-4" /> 
-                  {uploadingCsv ? 'Uploading...' : 'Upload Properties CSV'}
+                <button
+                  disabled={uploadingCsv}
+                  className="px-4 py-2 bg-indigo-500 text-white rounded-xl text-xs font-bold hover:bg-indigo-600 transition-colors flex items-center gap-2 w-full justify-center disabled:opacity-50"
+                >
+                  {uploadingCsv ? (
+                    <><div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" /> Uploading...</>
+                  ) : (
+                    <><UploadCloud className="w-4 h-4" /> Upload Properties CSV</>
+                  )}
                 </button>
               </div>
             </div>
@@ -350,6 +477,7 @@ const AdminDashboard = () => {
                 </button>
                 <div className="relative">
                   <input
+                    ref={csvInputRef2}
                     type="file"
                     accept=".csv"
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
@@ -357,9 +485,12 @@ const AdminDashboard = () => {
                     disabled={uploadingCsv}
                     title="Upload CSV"
                   />
-                  <button className="px-4 py-2 bg-indigo-500 text-white rounded-xl text-xs font-bold hover:bg-indigo-600 transition-colors flex items-center gap-2 w-full justify-center disabled:opacity-50">
-                    <UploadCloud className="w-4 h-4" /> 
-                    {uploadingCsv ? 'Uploading...' : 'Upload CSV'}
+                  <button disabled={uploadingCsv} className="px-4 py-2 bg-indigo-500 text-white rounded-xl text-xs font-bold hover:bg-indigo-600 transition-colors flex items-center gap-2 w-full justify-center disabled:opacity-50">
+                    {uploadingCsv ? (
+                      <><div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" /> Uploading...</>
+                    ) : (
+                      <><UploadCloud className="w-4 h-4" /> Upload CSV</>
+                    )}
                   </button>
                 </div>
                 <button className="px-4 py-2 bg-sky-500 text-white rounded-xl text-xs font-bold hover:bg-sky-600 transition-colors">
