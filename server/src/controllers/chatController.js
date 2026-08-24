@@ -245,10 +245,14 @@ const getThreadKey = (idA, idB, propId = '') => {
 // @route   POST /api/chat
 const sendMessage = async (req, res, next) => {
   try {
-    const { receiverId, propertyId, text } = req.body;
-    if (!receiverId) {
-      return res.status(400).json({ success: false, message: 'Please provide receiverId' });
+    let { receiverId, propertyId, text } = req.body;
+    
+    if (!receiverId || receiverId === 'default') {
+      const agentUser = getLocalUsers().find(u => u.role === 'agent');
+      if (agentUser) receiverId = String(agentUser._id);
+      else return res.status(400).json({ success: false, message: 'Please provide receiverId' });
     }
+
     if (!text || !text.trim()) {
       return res.status(400).json({ success: false, message: 'Please provide message text' });
     }
@@ -608,9 +612,126 @@ const markExpertRequestRead = async (req, res, next) => {
   }
 };
 
+const sendGuestMessage = async (req, res, next) => {
+  try {
+    let { receiverId, propertyId, text, guestName, guestEmail, guestPhone } = req.body;
+    
+    if (!receiverId || receiverId === 'default') {
+      const agentUser = getLocalUsers().find(u => u.role === 'agent');
+      if (agentUser) receiverId = String(agentUser._id);
+    }
+    
+    if (!receiverId || !text || !guestEmail) {
+      return res.status(400).json({ success: false, message: 'Missing required fields (receiverId, text, guestEmail)' });
+    }
+
+    let user = null;
+    if (mongoose.connection.readyState === 1) {
+      const User = require('../models/User');
+      user = await User.findOne({ email: guestEmail.toLowerCase() });
+      if (!user) {
+        user = await User.create({
+          name: guestName || 'Guest User',
+          email: guestEmail.toLowerCase(),
+          phone: guestPhone || '',
+          password: Math.random().toString(36).slice(-10),
+          role: 'buyer'
+        });
+      }
+    } else {
+      user = { _id: 'guest123', name: guestName, email: guestEmail, role: 'buyer' };
+    }
+
+    const senderId = user._id;
+
+    if (String(senderId) === String(receiverId)) {
+      return res.status(400).json({ success: false, message: 'Cannot send a message to yourself' });
+    }
+
+    let newMessage;
+    if (mongoose.connection.readyState === 1) {
+      const msgDoc = await Message.create({
+        senderId,
+        receiverId,
+        propertyId,
+        text
+      });
+      newMessage = await msgDoc.populate([
+        { path: 'senderId', select: 'name avatar role isOnline lastSeen' },
+        { path: 'receiverId', select: 'name avatar role' }
+      ]);
+    } else {
+      newMessage = {
+        _id: `msg-${Date.now()}`,
+        senderId: populateUser(senderId),
+        receiverId: populateUser(receiverId),
+        propertyId: propertyId ? populateProperty(propertyId) : null,
+        text,
+        isRead: false,
+        createdAt: new Date().toISOString()
+      };
+      getLocalMessages().push(newMessage);
+    }
+
+    const propertyObj = propertyId ? await populateProperty(propertyId) : null;
+    let supportReply = null;
+    const threadKey = getThreadKey(senderId, receiverId, propertyId);
+
+    if (!agentTookOverThreads.has(threadKey)) {
+      const aiResponseText = await generateSupportAgentReply(text, propertyObj);
+      if (mongoose.connection.readyState === 1) {
+        const supportMsg = await Message.create({
+          senderId: receiverId,
+          receiverId: senderId,
+          propertyId,
+          text: aiResponseText,
+          isAiReply: true
+        });
+        supportReply = await supportMsg.populate([
+          { path: 'senderId', select: 'name avatar role' },
+          { path: 'receiverId', select: 'name avatar role' }
+        ]);
+      } else {
+        supportReply = {
+          _id: `ai-${Date.now()}`,
+          senderId: populateUser(receiverId),
+          receiverId: populateUser(senderId),
+          propertyId: propertyId ? populateProperty(propertyId) : null,
+          text: aiResponseText,
+          isRead: false,
+          isAiReply: true,
+          createdAt: new Date().toISOString()
+        };
+        getLocalMessages().push(supportReply);
+      }
+    }
+
+    // Attempt to notify the agent via socket
+    try {
+      const io = require('../server').io;
+      if (io) {
+        io.emit('receive_message', newMessage);
+        if (supportReply) {
+          setTimeout(() => io.emit('receive_message', supportReply), 800);
+        }
+      }
+    } catch (e) {}
+
+    res.status(201).json({
+      success: true,
+      message: newMessage,
+      supportReply,
+      agentTookOver: agentTookOverThreads.has(threadKey)
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getMessages,
   sendMessage,
+  sendGuestMessage,
   getInbox,
   markThreadRead,
   getExpertRequests,
