@@ -99,16 +99,7 @@ const mockDbAgencies = sampleAgencies.map((a, idx) => ({
 // @route   GET /api/agencies
 const getAgencies = async (req, res, next) => {
   try {
-    let agencies = [];
-    try {
-      if (mongoose.connection.readyState !== 1) {
-        throw new Error('Database offline');
-      }
-      agencies = await Agency.find().populate('ownerId', 'name email avatar');
-    } catch (dbErr) {
-      console.log('Database offline. Serving mock agencies fallback.');
-      agencies = mockDbAgencies;
-    }
+    const agencies = await Agency.find().populate('ownerId', 'name email avatar');
     res.json({ success: true, count: agencies.length, agencies });
   } catch (error) {
     next(error);
@@ -123,31 +114,10 @@ const getAgencyById = async (req, res, next) => {
     let agents = [];
     let properties = [];
 
-    try {
-      if (mongoose.connection.readyState !== 1) {
-        throw new Error('Database offline');
-      }
-      agency = await Agency.findById(req.params.id).populate('ownerId', 'name email avatar phone');
-      if (agency) {
-        agents = await User.find({ agencyId: agency._id, role: 'agent' });
-        properties = await Property.find({ agencyId: agency._id, status: 'Published' });
-      }
-    } catch (dbErr) {
-      console.log('Database offline. Serving mock single agency details.');
-      agency = mockDbAgencies.find(a => a._id === req.params.id) || mockDbAgencies[0];
-      agents = [
-        { _id: '507f1f77bcf86cd799439002', name: 'Ishika (Agent)', email: 'ishikabhatia51@gmail.com', role: 'agent' },
-        { _id: '507f1f77bcf86cd799439005', name: 'Upansh (Agent)', email: 'upansh769@gmail.com', role: 'agent' },
-        { _id: '507f1f77bcf86cd799439006', name: 'Reet (Agent)', email: 'reet67711@gmail.com', role: 'agent' },
-        { _id: '507f1f77bcf86cd799439007', name: 'Ruhi (Agent)', email: 'ruhibhatia0022@gmail.com', role: 'agent' },
-        { _id: '507f1f77bcf86cd799439008', name: 'Saghun (Agent)', email: 'saghun8699@gmail.com', role: 'agent' }
-      ];
-      properties = require('../utils/seedData').sampleProperties.map((p, idx) => ({
-        ...p,
-        _id: `mock_prop_${idx}`,
-        agentId: agents[idx % agents.length]._id,
-        agencyId: agency._id
-      }));
+    const agency = await Agency.findById(req.params.id).populate('ownerId', 'name email avatar phone');
+    if (agency) {
+      agents = await User.find({ agencyId: agency._id, role: 'agent' });
+      properties = await Property.find({ agencyId: agency._id, status: 'Published' });
     }
 
     if (!agency) {
@@ -179,28 +149,12 @@ const createAgency = async (req, res, next) => {
       ownerId: req.user._id
     };
 
-    let agency;
-    try {
-      if (mongoose.connection.readyState !== 1) {
-        throw new Error('Database offline');
-      }
-      agency = await Agency.create(agencyData);
-
-      // Update user agency reference
-      await User.findByIdAndUpdate(req.user._id, {
-        agencyId: agency._id,
-        role: 'agency',
-        agencyVerificationStatus: 'pending'
-      });
-    } catch (dbErr) {
-      agency = {
-        ...agencyData,
-        _id: `507f1f77bcf86cd7994391${Math.floor(Math.random() * 90 + 10)}`,
-        status: 'pending',
-        createdAt: new Date()
-      };
-      mockDbAgencies.unshift(agency);
-    }
+    const agency = await Agency.create(agencyData);
+    await User.findByIdAndUpdate(req.user._id, {
+      agencyId: agency._id,
+      role: 'agency',
+      agencyVerificationStatus: 'pending'
+    });
 
     res.status(201).json({ success: true, agency });
   } catch (error) {
@@ -212,23 +166,9 @@ const createAgency = async (req, res, next) => {
 // @route   GET /api/agents
 const getAgents = async (req, res, next) => {
   try {
-    let agents = [];
-    try {
-      if (mongoose.connection.readyState !== 1) {
-        throw new Error('Database offline');
-      }
-      agents = await User.find({ role: 'agent', isActive: true })
-        .select('name email phone avatar bio licenseNumber role agencyId')
-        .populate('agencyId', 'name');
-      // If DB is online but empty, fall back to mock data so the page is never blank
-      if (agents.length === 0) {
-        console.log('No agents in DB. Serving mock agents fallback.');
-        agents = mockAgents;
-      }
-    } catch (dbErr) {
-      console.log('Database offline. Serving mock agents fallback.');
-      agents = mockAgents;
-    }
+    const agents = await User.find({ role: 'agent', isActive: true })
+      .select('name email phone avatar bio licenseNumber role agencyId')
+      .populate('agencyId', 'name');
     res.json({ success: true, count: agents.length, agents });
   } catch (error) {
     next(error);

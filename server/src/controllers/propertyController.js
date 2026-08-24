@@ -136,50 +136,14 @@ const getProperties = async (req, res, next) => {
     const limitNum = parseInt(limit, 10);
     const skip = (pageNum - 1) * limitNum;
 
-    let properties = [];
-    let total = 0;
+    const properties = await Property.find(query)
+      .populate('agencyId', 'name logo rating reviewCount')
+      .populate('agentId', 'name avatar email phone')
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limitNum);
 
-    try {
-      if (mongoose.connection.readyState !== 1) {
-        throw new Error('Database offline');
-      }
-      properties = await Property.find(query)
-        .populate('agencyId', 'name logo rating reviewCount')
-        .populate('agentId', 'name avatar email phone')
-        .sort(sortOptions)
-        .skip(skip)
-        .limit(limitNum);
-
-      total = await Property.countDocuments(query);
-    } catch (dbErr) {
-      console.log('Database offline. Serving mock properties fallback.');
-      // Filter mock properties using enhanced logic for offline mode
-      properties = mockDbProperties.filter(p => {
-        if (listingType && p.listingType !== listingType) return false;
-        if (propertyType && p.propertyType !== propertyType) return false;
-        if (suburb) {
-          const s = suburb.toLowerCase();
-          const matchSub = p.address?.suburb?.toLowerCase().includes(s) || p.address?.city?.toLowerCase().includes(s);
-          if (!matchSub) return false;
-        }
-        if (city && !p.address.city?.toLowerCase().includes(city.toLowerCase())) return false;
-        if (minPrice && p.price < Number(minPrice)) return false;
-        if (maxPrice && p.price > Number(maxPrice)) return false;
-        if (bedrooms && p.bedrooms < Number(bedrooms)) return false;
-        if (search) {
-          const kw = search.toLowerCase();
-          const matchKw =
-            p.title?.toLowerCase().includes(kw) ||
-            p.description?.toLowerCase().includes(kw) ||
-            p.address?.suburb?.toLowerCase().includes(kw) ||
-            p.address?.city?.toLowerCase().includes(kw) ||
-            p.address?.street?.toLowerCase().includes(kw);
-          if (!matchKw) return false;
-        }
-        return true;
-      });
-      total = properties.length;
-    }
+    const total = await Property.countDocuments(query);
 
     res.json({
       success: true,
@@ -198,24 +162,13 @@ const getProperties = async (req, res, next) => {
 // @route   GET /api/properties/:id
 const getPropertyById = async (req, res, next) => {
   try {
-    let property;
-    try {
-      if (mongoose.connection.readyState !== 1) {
-        throw new Error('Database offline');
-      }
-      property = await Property.findById(req.params.id)
-        .populate('agencyId')
-        .populate('agentId', 'name avatar email phone bio')
-        .populate('ownerId', 'name avatar email phone');
-    } catch (dbErr) {
-      console.log('Database error/offline when getting property:', dbErr.message);
-    }
+    const property = await Property.findById(req.params.id)
+      .populate('agencyId')
+      .populate('agentId', 'name avatar email phone bio')
+      .populate('ownerId', 'name avatar email phone');
 
     if (!property) {
-      if (mongoose.connection.readyState === 1) {
-        return res.status(404).json({ success: false, message: 'Property not found' });
-      }
-      property = mockDbProperties.find(p => p._id === req.params.id) || mockDbProperties[0];
+      return res.status(404).json({ success: false, message: 'Property not found' });
     }
 
     // Attach AI Valuation metrics
@@ -291,43 +244,27 @@ const createProperty = async (req, res, next) => {
 
     propertyData.aiFraudRiskScore = fraudAnalysis.riskScore;
 
-    let property;
-    try {
-      if (mongoose.connection.readyState !== 1) {
-        throw new Error('Database offline');
-      }
-      // Check duplicate listing detection (same address & title)
-      if (req.headers['x-test-mode'] === 'true') {
-        await Property.deleteMany({
-          title: propertyData.title,
-          'address.street': propertyData.address?.street
-        });
-      } else {
-        const existing = await Property.findOne({
-          title: propertyData.title,
-          'address.street': propertyData.address?.street
-        });
+    // Check duplicate listing detection (same address & title)
+    if (req.headers['x-test-mode'] === 'true') {
+      await Property.deleteMany({
+        title: propertyData.title,
+        'address.street': propertyData.address?.street
+      });
+    } else {
+      const existing = await Property.findOne({
+        title: propertyData.title,
+        'address.street': propertyData.address?.street
+      });
 
-        if (existing) {
-          return res.status(400).json({
-            success: false,
-            message: 'Duplicate listing detected with identical title and street address.'
-          });
-        }
+      if (existing) {
+        return res.status(400).json({
+          success: false,
+          message: 'Duplicate listing detected with identical title and street address.'
+        });
       }
-
-      property = await Property.create(propertyData);
-    } catch (dbErr) {
-      console.log('MongoDB connection offline/error, falling back to local object creation:', dbErr.message);
-      property = {
-        ...propertyData,
-        _id: `507f1f77bcf86cd799439${Math.floor(Math.random() * 9000 + 1000)}`,
-        createdAt: new Date(),
-        viewsCount: 1,
-        savedCount: 0
-      };
-      mockDbProperties.unshift(property);
     }
+
+    const property = await Property.create(propertyData);
 
     sendPropertySubmissionEmail({
       toEmail: req.user.email,
@@ -353,29 +290,13 @@ const updateProperty = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Property not found' });
     }
 
-    let property;
-    try {
-      if (mongoose.connection.readyState !== 1) {
-        throw new Error('Database offline');
-      }
-      property = await Property.findById(req.params.id);
+    const property = await Property.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true
+    });
 
-      if (!property) {
-        return res.status(404).json({ success: false, message: 'Property not found' });
-      }
-
-      property = await Property.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-        runValidators: true
-      });
-    } catch (dbErr) {
-      const idx = mockDbProperties.findIndex(p => p._id === req.params.id);
-      if (idx !== -1) {
-        mockDbProperties[idx] = { ...mockDbProperties[idx], ...req.body };
-        property = mockDbProperties[idx];
-      } else {
-        property = { _id: req.params.id, ...req.body };
-      }
+    if (!property) {
+      return res.status(404).json({ success: false, message: 'Property not found' });
     }
 
     res.json({ success: true, property });
@@ -388,23 +309,13 @@ const updateProperty = async (req, res, next) => {
 // @route   DELETE /api/properties/:id
 const deleteProperty = async (req, res, next) => {
   try {
-    try {
-      if (mongoose.connection.readyState !== 1) {
-        throw new Error('Database offline');
-      }
-      const property = await Property.findById(req.params.id);
+    const property = await Property.findById(req.params.id);
 
-      if (!property) {
-        return res.status(404).json({ success: false, message: 'Property not found' });
-      }
-
-      await property.deleteOne();
-    } catch (dbErr) {
-      const idx = mockDbProperties.findIndex(p => p._id === req.params.id);
-      if (idx !== -1) {
-        mockDbProperties.splice(idx, 1);
-      }
+    if (!property) {
+      return res.status(404).json({ success: false, message: 'Property not found' });
     }
+
+    await property.deleteOne();
 
     res.json({ success: true, message: 'Property listing removed' });
   } catch (error) {
@@ -417,21 +328,7 @@ const deleteProperty = async (req, res, next) => {
 const updatePropertyStatus = async (req, res, next) => {
   try {
     const { status } = req.body;
-    let property;
-    try {
-      if (mongoose.connection.readyState !== 1) {
-        throw new Error('Database offline');
-      }
-      property = await Property.findByIdAndUpdate(req.params.id, { status }, { new: true });
-    } catch (dbErr) {
-      const found = mockDbProperties.find(p => p._id === req.params.id);
-      if (found) {
-        found.status = status;
-        property = found;
-      } else {
-        property = { _id: req.params.id, status };
-      }
-    }
+    const property = await Property.findByIdAndUpdate(req.params.id, { status }, { new: true });
     res.json({ success: true, property });
   } catch (error) {
     next(error);
@@ -446,34 +343,20 @@ const getSimilarProperties = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Property not found' });
     }
 
-    let similar = [];
-    try {
-      if (mongoose.connection.readyState !== 1) {
-        throw new Error('Database offline');
-      }
-      const property = await Property.findById(req.params.id);
-      if (!property) {
-        return res.status(404).json({ success: false, message: 'Property not found' });
-      }
-      similar = await Property.find({
-        _id: { $ne: property._id },
-        $or: [
-          { 'address.suburb': property.address?.suburb },
-          { propertyType: property.propertyType }
-        ],
-        status: 'Published'
-      })
-        .limit(3)
-        .populate('agencyId', 'name logo');
-    } catch (dbErr) {
-      const currentProp = mockDbProperties.find(p => p._id === req.params.id);
-      if (!currentProp) {
-        return res.status(404).json({ success: false, message: 'Property not found' });
-      }
-      similar = mockDbProperties
-        .filter(p => p._id !== currentProp._id && (p.propertyType === currentProp.propertyType || p.address?.suburb === currentProp.address?.suburb))
-        .slice(0, 3);
+    const property = await Property.findById(req.params.id);
+    if (!property) {
+      return res.status(404).json({ success: false, message: 'Property not found' });
     }
+    const similar = await Property.find({
+      _id: { $ne: property._id },
+      $or: [
+        { 'address.suburb': property.address?.suburb },
+        { propertyType: property.propertyType }
+      ],
+      status: 'Published'
+    })
+      .limit(3)
+      .populate('agencyId', 'name logo');
 
     res.json({ success: true, properties: similar });
   } catch (error) {

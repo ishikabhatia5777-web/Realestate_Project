@@ -58,51 +58,30 @@ const processPayment = async (req, res, next) => {
       }
     }
 
-    let transaction;
-    try {
-      if (mongoose.connection.readyState !== 1) {
-        throw new Error('Database offline');
-      }
-      transaction = await Transaction.create({
-        userId: req.user._id,
-        propertyId: propertyId || null,
-        packageType,
-        amount: Number(amount),
-        currency: 'AUD',
-        status: 'succeeded',
-        paymentMethod: paymentMethod || 'Credit Card (Stripe Gateway)',
-        stripePaymentIntentId: intentId
-      });
+    let transaction = await Transaction.create({
+      userId: req.user._id,
+      propertyId: propertyId || null,
+      packageType,
+      amount: Number(amount),
+      currency: 'AUD',
+      status: 'succeeded',
+      paymentMethod: paymentMethod || 'Credit Card (Stripe Gateway)',
+      stripePaymentIntentId: intentId
+    });
 
-      if (propertyId) {
-        const tierMap = {
-          'Featured Listing': 'Featured',
-          'Premium Listing': 'Premium',
-          'Boost Listing': 'Boosted'
-        };
-
-        const newTier = tierMap[packageType] || 'Featured';
-        await Property.findByIdAndUpdate(propertyId, {
-          tier: newTier,
-          isBoosted: true,
-          boostExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-        });
-      }
-    } catch (dbErr) {
-      console.log('MongoDB connection offline/error, saving mock transaction:', dbErr.message);
-      transaction = {
-        _id: '507f1f77bcf86cd799439' + Math.floor(Math.random() * 9000 + 1000),
-        userId: req.user._id,
-        propertyId,
-        packageType,
-        amount: Number(amount),
-        currency: 'AUD',
-        status: 'succeeded',
-        paymentMethod: paymentMethod || 'Credit Card / Online Gateway',
-        stripePaymentIntentId: intentId,
-        createdAt: new Date()
+    if (propertyId) {
+      const tierMap = {
+        'Featured Listing': 'Featured',
+        'Premium Listing': 'Premium',
+        'Boost Listing': 'Boosted'
       };
-       mockTransactions.unshift(transaction);
+
+      const newTier = tierMap[packageType] || 'Featured';
+      await Property.findByIdAndUpdate(propertyId, {
+        tier: newTier,
+        isBoosted: true,
+        boostExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+      });
     }
 
     // ─── GUARANTEED ADMIN EMAIL NOTIFICATION ───
@@ -218,23 +197,14 @@ const processPayment = async (req, res, next) => {
 // @route   GET /api/payments/history
 const getPaymentHistory = async (req, res, next) => {
   try {
-    let transactions = [];
-    try {
-      if (mongoose.connection.readyState !== 1) {
-        throw new Error('Database offline');
-      }
-      const query = (req.user.role === 'admin' || req.user.role === 'super_admin')
-        ? {}
-        : { userId: req.user._id };
+    const query = (req.user.role === 'admin' || req.user.role === 'super_admin')
+      ? {}
+      : { userId: req.user._id };
 
-      transactions = await Transaction.find(query)
-        .populate('propertyId', 'title address images price')
-        .populate('userId', 'name email role')
-        .sort({ createdAt: -1 });
-    } catch (dbErr) {
-      console.log('MongoDB offline, serving local mock transactions');
-      transactions = mockTransactions;
-    }
+    const transactions = await Transaction.find(query)
+      .populate('propertyId', 'title address images price')
+      .populate('userId', 'name email role')
+      .sort({ createdAt: -1 });
 
     res.json({ success: true, count: transactions.length, transactions });
   } catch (error) {
