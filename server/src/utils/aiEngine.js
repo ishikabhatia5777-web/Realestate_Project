@@ -1,6 +1,7 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const fs = require('fs');
 const path = require('path');
+const { sampleProperties } = require('./seedData');
 // ─── Format property list into a readable context string for AI ───────────
 const buildPropertyContext = (properties) => {
   if (!properties || properties.length === 0) {

@@ -248,9 +248,17 @@ const sendMessage = async (req, res, next) => {
     let { receiverId, propertyId, text } = req.body;
     
     if (!receiverId || receiverId === 'default') {
-      const agentUser = getLocalUsers().find(u => u.role === 'agent');
-      if (agentUser) receiverId = String(agentUser._id);
-      else return res.status(400).json({ success: false, message: 'Please provide receiverId' });
+      if (mongoose.connection.readyState === 1) {
+        const User = require('../models/User');
+        const agentUser = await User.findOne({ email: 'ruhibhatia0022@gmail.com' }) || await User.findOne({ role: 'agent' });
+        if (agentUser) receiverId = String(agentUser._id);
+      } else {
+        const agentUser = getLocalUsers().find(u => u.role === 'agent');
+        if (agentUser) receiverId = String(agentUser._id);
+      }
+      if (!receiverId || receiverId === 'default') {
+        return res.status(400).json({ success: false, message: 'Please provide receiverId' });
+      }
     }
 
     if (!text || !text.trim()) {
@@ -617,12 +625,18 @@ const sendGuestMessage = async (req, res, next) => {
     let { receiverId, propertyId, text, guestName, guestEmail, guestPhone } = req.body;
     
     if (!receiverId || receiverId === 'default') {
-      const agentUser = getLocalUsers().find(u => u.role === 'agent');
-      if (agentUser) receiverId = String(agentUser._id);
+      if (mongoose.connection.readyState === 1) {
+        const User = require('../models/User');
+        const agentUser = await User.findOne({ email: 'ruhibhatia0022@gmail.com' }) || await User.findOne({ role: 'agent' });
+        if (agentUser) receiverId = String(agentUser._id);
+      } else {
+        const agentUser = getLocalUsers().find(u => u.role === 'agent');
+        if (agentUser) receiverId = String(agentUser._id);
+      }
     }
     
-    if (!receiverId || !text || !guestEmail) {
-      return res.status(400).json({ success: false, message: 'Missing required fields (receiverId, text, guestEmail)' });
+    if (!receiverId || receiverId === 'default' || !text || !guestEmail) {
+      return res.status(400).json({ success: false, message: 'Missing required fields (receiverId, text, guestEmail) or Agent not found' });
     }
 
     let user = null;

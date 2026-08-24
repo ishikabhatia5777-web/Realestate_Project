@@ -250,11 +250,16 @@ const getSimilarProperties = async (req, res, next) => {
 // @route   POST /api/properties/:id/appraisal
 const generateAppraisal = async (req, res, next) => {
   try {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      return res.status(404).json({ success: false, message: 'Property not found' });
+    let subjectProperty = null;
+
+    if (mongoose.Types.ObjectId.isValid(req.params.id)) {
+      subjectProperty = await Property.findById(req.params.id).lean();
+    }
+    
+    if (!subjectProperty) {
+      subjectProperty = await getSupabasePropertyById(req.params.id);
     }
 
-    const subjectProperty = await Property.findById(req.params.id);
     if (!subjectProperty) {
       return res.status(404).json({ success: false, message: 'Property not found' });
     }
@@ -262,10 +267,13 @@ const generateAppraisal = async (req, res, next) => {
     // Retrieve candidates using a sensible combination of valuation-relevant factors
     // Prioritize: same category, nearby location/suburb, similar size/beds, listing/sale status.
     const query = {
-      _id: { $ne: subjectProperty._id },
       propertyType: subjectProperty.propertyType,
       status: { $in: ['Published', 'Approved', 'Sold', 'Leased'] }
     };
+
+    if (mongoose.Types.ObjectId.isValid(subjectProperty._id)) {
+      query._id = { $ne: subjectProperty._id };
+    }
 
     if (subjectProperty.listingType) {
       query.listingType = subjectProperty.listingType;

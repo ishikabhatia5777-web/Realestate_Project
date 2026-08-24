@@ -13,8 +13,7 @@ const messageSchema = new mongoose.Schema(
       required: true
     },
     propertyId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Property'
+      type: String
     },
     text: {
       type: String,
