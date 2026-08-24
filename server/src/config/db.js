@@ -13,24 +13,19 @@ if (process.env.NODE_ENV !== 'production') {
 
 const connectDB = async () => {
   try {
-    // Disable command buffering up front so operations fail fast if DB is disconnected
     mongoose.set('bufferCommands', false);
-
-    const mongoUri = process.env.MONGO_URI;
-
-    const conn = await mongoose.connect(mongoUri, {
-      serverSelectionTimeoutMS: 10000,
-      socketTimeoutMS: 45000,
+    let mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/realestate_db';
+    
+    await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 5000,
     });
-
-    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
-    console.log(`📦 Database: ${conn.connection.name}`);
-
-    // Re-enable command buffering once successfully connected
+    console.log(`✅ MongoDB Connected: ${mongoose.connection.host}`);
+    console.log(`📦 Database: ${mongoose.connection.name}`);
+    
     mongoose.set('bufferCommands', true);
 
     mongoose.connection.on('disconnected', () => {
-      console.warn('⚠️  MongoDB disconnected. Switching to offline mode...');
+      console.warn('⚠️  MongoDB disconnected.');
       mongoose.set('bufferCommands', false);
     });
 
@@ -45,8 +40,9 @@ const connectDB = async () => {
 
   } catch (error) {
     console.error('❌ MongoDB Connection Failed:', error.message);
-    console.log('⚠️  Running in offline fallback mode (using in-memory sample data)');
     mongoose.set('bufferCommands', false);
+    // Exit process with failure since this is the primary database
+    process.exit(1);
   }
 };
 

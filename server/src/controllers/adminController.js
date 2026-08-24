@@ -12,18 +12,7 @@ const { sendPropertyApprovalEmail, sendPropertyRejectionEmail } = require('../se
 const fs = require('fs');
 const path = require('path');
 
-// Helper: load local users for offline fallback
-const getLocalUsers = () => {
-  try {
-    const usersFilePath = path.join(__dirname, '..', '..', 'data', 'users.json');
-    if (fs.existsSync(usersFilePath)) {
-      return JSON.parse(fs.readFileSync(usersFilePath, 'utf8'));
-    }
-  } catch (e) {}
-  return [];
-};
-
-
+// Strictly use MongoDB for users
 // @desc    Get Admin Dashboard KPI metrics
 // @route   GET /api/admin/metrics
 const getAdminMetrics = async (req, res, next) => {
@@ -179,26 +168,7 @@ const getAdminMetrics = async (req, res, next) => {
 // @route   GET /api/admin/users
 const getUsers = async (req, res, next) => {
   try {
-    let users = [];
-    try {
-      if (mongoose.connection.readyState !== 1) {
-        throw new Error('Database offline');
-      }
-      users = await User.find().sort({ createdAt: -1 });
-    } catch (dbErr) {
-      console.log('Database offline. Serving mock users roster.');
-      users = [
-        { _id: '507f1f77bcf86cd799439000', name: 'Ishika (Admin)', email: 'ishbhatia484@gmail.com', role: 'admin' },
-        { _id: '507f1f77bcf86cd799439001', name: 'Upvansh (Agency)', email: 'upvanshk@gmail.com', role: 'agency' },
-        { _id: '507f1f77bcf86cd799439002', name: 'Ishika (Agent)', email: 'ishikabhatia51@gmail.com', role: 'agent' },
-        { _id: '507f1f77bcf86cd799439003', name: 'Upvansh (Seller)', email: 'upvansh1234@gmail.com', role: 'seller' },
-        { _id: '507f1f77bcf86cd799439004', name: 'Ishika (Buyer)', email: 'ishikabhatia5777@gmail.com', role: 'buyer' },
-        { _id: '507f1f77bcf86cd799439005', name: 'Upansh (Agent)', email: 'upansh769@gmail.com', role: 'agent' },
-        { _id: '507f1f77bcf86cd799439006', name: 'Reet (Agent)', email: 'reet67711@gmail.com', role: 'agent' },
-        { _id: '507f1f77bcf86cd799439007', name: 'Ruhi (Agent)', email: 'ruhibhatia0022@gmail.com', role: 'agent' },
-        { _id: '507f1f77bcf86cd799439008', name: 'Saghun (Agent)', email: 'saghun8699@gmail.com', role: 'agent' }
-      ];
-    }
+    let users = await User.find().sort({ createdAt: -1 });
     res.json({ success: true, count: users.length, users });
   } catch (error) {
     next(error);
@@ -210,25 +180,7 @@ const getUsers = async (req, res, next) => {
 const updateUserRole = async (req, res, next) => {
   try {
     const { role } = req.body;
-    let user;
-    try {
-      if (mongoose.connection.readyState !== 1) {
-        throw new Error('Database offline');
-      }
-      user = await User.findByIdAndUpdate(req.params.id, { role }, { new: true });
-      
-      try {
-        await ActivityLog.create({
-          userId: req.user._id,
-          userName: req.user.name,
-          action: 'USER_ROLE_CHANGE',
-          details: `Changed user ${user?.email || req.params.id} role to ${role}`,
-          level: 'info'
-        });
-      } catch (logErr) {}
-    } catch (dbErr) {
-      user = { _id: req.params.id, role };
-    }
+    const user = await User.findByIdAndUpdate(req.params.id, { role }, { new: true });
 
     res.json({ success: true, user });
   } catch (error) {
@@ -378,16 +330,8 @@ const approveProperty = async (req, res, next) => {
     // Determine recipient (agent first, then owner)
     const recipient = property.agentId || property.ownerId;
     if (recipient && recipient.email) {
-      // Try to get email from local users file too (offline mode)
       let recipientEmail = recipient.email;
       let recipientName = recipient.name || 'Property Owner';
-      
-      // Also try local users file as fallback
-      if (!recipientEmail) {
-        const localUsers = getLocalUsers();
-        const localUser = localUsers.find(u => u._id === (property.agentId?._id || property.ownerId?._id)?.toString());
-        if (localUser) { recipientEmail = localUser.email; recipientName = localUser.name; }
-      }
 
       try {
         await sendPropertyApprovalEmail({
@@ -536,26 +480,38 @@ const uploadPropertiesCsv = async (req, res, next) => {
 
         for (const [index, row] of results.entries()) {
           try {
-            // Mapping logic for standard fields
+            // Helper to find a value by exact or partial key (since headers might be truncated)
+            const getVal = (possibleKeys, defaultVal) => {
+              for (const k of possibleKeys) {
+                if (row[k] !== undefined && row[k] !== '') {
+                  return row[k];
+                }
+              }
+              return defaultVal;
+            };
+
+            const rawPrice = getVal(['price'], '0');
+            const cleanPrice = typeof rawPrice === 'string' ? rawPrice.replace(/[^0-9.]/g, '') : rawPrice;
+
             const property = {
-              title: row.title || `Property ${index}`,
-              description: row.description || 'No description provided.',
-              propertyType: row.propertytype || 'Residential',
-              listingType: row.listingtype || 'Sale',
-              price: parseFloat(row.price) || 0,
+              title: getVal(['title'], `Property ${index}`),
+              description: getVal(['description', 'descriptio'], 'No description provided.'),
+              propertyType: getVal(['propertytype', 'propertyt'], 'Residential'),
+              listingType: getVal(['listingtype', 'listingtyp'], 'Sale'),
+              price: parseFloat(cleanPrice) || 0,
               address: {
-                street: row.street || 'Unknown Street',
-                suburb: row.suburb || 'Unknown Suburb',
-                city: row.city || 'Unknown City',
-                state: row.state || 'Unknown State',
-                postcode: row.postcode || '0000',
-                country: row.country || 'Australia'
+                street: getVal(['street'], 'Unknown Street'),
+                suburb: getVal(['suburb'], 'Unknown Suburb'),
+                city: getVal(['city'], 'Unknown City'),
+                state: getVal(['state'], 'Unknown State'),
+                postcode: getVal(['postcode'], '0000'),
+                country: getVal(['country'], 'Australia')
               },
-              bedrooms: parseInt(row.bedrooms) || 0,
-              bathrooms: parseInt(row.bathrooms) || 0,
-              parkingSpaces: parseInt(row.parkingspaces) || 0,
-              landArea: parseInt(row.landarea) || 0,
-              status: row.status || 'Published', // Defaults to Published if admin uploads
+              bedrooms: parseInt(getVal(['bedrooms', 'bedroom'], 0)) || 0,
+              bathrooms: parseInt(getVal(['bathrooms', 'bathroom'], 0)) || 0,
+              parkingSpaces: parseInt(getVal(['parkingspaces', 'parkingsp'], 0)) || 0,
+              landArea: parseInt(getVal(['landarea'], 0)) || 0,
+              status: getVal(['status'], 'Published'), // Defaults to Published if admin uploads
               ownerId: req.user._id, // Set the admin as the owner for tracking
               location: {
                 type: 'Point',

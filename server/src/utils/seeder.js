@@ -18,9 +18,24 @@ dotenv.config();
 
 const seedDB = async () => {
   try {
-    const mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/realestate_db';
-    await mongoose.connect(mongoUri);
-    console.log('✅ Connected to MongoDB for seeding...');
+    let mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/realestate_db';
+    
+    try {
+      await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 5000 });
+      console.log('✅ Connected to Local MongoDB for seeding...');
+    } catch (err) {
+      console.warn('⚠️  Local MongoDB Connection Failed:', err.message);
+      console.log('🚀 Starting in-memory MongoDB server for seeding as fallback...');
+      
+      const { MongoMemoryServer } = require('mongodb-memory-server');
+      const mongoServer = await MongoMemoryServer.create();
+      mongoUri = mongoServer.getUri();
+      
+      process.env.MONGO_URI = mongoUri;
+
+      await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 10000 });
+      console.log('✅ Connected to In-Memory MongoDB for seeding...');
+    }
 
     // Clear all collections
     await User.deleteMany();
@@ -266,11 +281,17 @@ const seedDB = async () => {
     console.log('   buyer       : buyer@gmail.com           / password123');
     console.log('✅ ================================\n');
 
-    process.exit(0);
+    // process.exit(0); // Removing so we can run programmatically
+    return true;
   } catch (error) {
     console.error('❌ Seeding Error:', error.message);
-    process.exit(1);
+    // process.exit(1);
+    throw error;
   }
 };
 
-seedDB();
+if (require.main === module) {
+  seedDB().then(() => process.exit(0)).catch(() => process.exit(1));
+}
+
+module.exports = seedDB;
