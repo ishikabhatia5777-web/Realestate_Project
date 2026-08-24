@@ -1,5 +1,6 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-
+const fs = require('fs');
+const path = require('path');
 // ─── Format property list into a readable context string for AI ───────────
 const buildPropertyContext = (properties) => {
   if (!properties || properties.length === 0) {
@@ -585,9 +586,324 @@ CRITICAL FORMATTING & STRUCTURE RULES:
 
   return `Thank you for reaching out regarding **${propTitle}**!\n\n• **📍 Suburb**: ${propSuburb}, ${propCity}\n• **💰 Price**: ${propPrice}${propPeriod}\n• **🛏️ Specs**: ${propBeds} Beds | ${propBaths} Baths\n\nHow can I assist you with this property today?`;
 };
+// ─── Property Appraisal Generator ─────────────────────────────────────────────
+const generatePropertyAppraisal = async (subjectProperty, candidates) => {
+  const groqKey = process.env.GROQ_API_KEY;
+  if (!groqKey) {
+    throw new Error('Groq configuration missing. Appraisal generation failed.');
+  }
 
-module.exports = { generateAIDescription, calculateAIValuation, analyzeListingFraud, processAIChat, generateSupportAgentReply };
+  // Determine category reference
+  const pType = subjectProperty.propertyType || '';
+  let refFileName = 'residential.md';
+  if (['Residential', 'Villa', 'Apartment', 'Townhouse'].includes(pType)) refFileName = 'residential.md';
+  else if (pType === 'Farm') refFileName = 'farm.md';
+  else if (pType === 'Land') refFileName = 'land.md';
+  else if (['Commercial', 'Office', 'Warehouse'].includes(pType)) refFileName = 'office.md';
 
+  // Load files
+  const skillDir = path.join(__dirname, '../../../.agents/skills/property-appraisal');
+  const skillPath = path.join(skillDir, 'SKILL.md');
+  const refPath = path.join(skillDir, 'references', refFileName);
+  const dataModeRefPath = path.join(skillDir, 'references', 'aura-estate-data-mode.md');
+
+  let skillContent = '';
+  let refContent = '';
+  let dataModeContent = '';
+  try {
+    skillContent = fs.readFileSync(skillPath, 'utf8');
+    refContent = fs.readFileSync(refPath, 'utf8');
+    dataModeContent = fs.readFileSync(dataModeRefPath, 'utf8');
+  } catch (err) {
+    throw new Error('Failed to load appraisal methodology files.');
+  }
+
+  // Clean & condense prompt contents to stay well within Groq TPM limits (under ~2500 system tokens)
+  const cleanDoc = (txt) => {
+    return txt
+      .replace(/```[\s\S]*?```/g, '') // remove large ascii diagrams & code blocks
+      .replace(/^[ \t]*#+ /gm, '## ') // normalize headers
+      .replace(/\n{3,}/g, '\n\n')    // condense multiple newlines
+      .trim();
+  };
+
+  const conciseSkill = cleanDoc(skillContent).slice(0, 2000);
+  const conciseDataMode = cleanDoc(dataModeContent).slice(0, 2000);
+  const conciseRef = cleanDoc(refContent).slice(0, 1000);
+
+  const systemPrompt = `You are an expert real estate appraiser executing the Aura Estate Property Appraisal Skill.
+
+### SKILL RULES & METHODOLOGY:
+${conciseSkill}
+
+### DATABASE-FIRST RULES:
+${conciseDataMode}
+
+### CATEGORY SPECIFICS:
+${conciseRef}
+
+CRITICAL DIRECTIVES:
+- mode: aura_estate_database
+- allow_external_market_research: false
+- Use ONLY the provided database records. Do NOT invent or hallucinate any figures/records.
+- Strictly distinguish between asking_price, listing_price, and sale_price. (For active listings, listing_price/asking_price equals the price field, and sale_price MUST be null).
+- Use null for missing/unavailable numeric values. Never invent missing database information.
+- DO NOT output reasoning, thinking process, or <think> tags. Start immediately with the character '{' and output strictly a single valid JSON object.
+
+JSON SCHEMA TO FOLLOW:
+
+{
+  "report": {
+    "title": "Property Appraisal Report",
+    "generated_at": "${new Date().toISOString()}",
+    "executive_summary": {
+      "estimated_value_range": { "low": 0, "high": 0, "currency": "AUD" },
+      "most_likely_value": 0,
+      "confidence": "High | Medium | Low",
+      "summary": "..."
+    },
+    "subject_property": {
+      "id": "...",
+      "property_type": "...",
+      "location": "...",
+      "listing_type": "...",
+      "asking_price": 0,
+      "sale_price": null,
+      "bedrooms": 0,
+      "bathrooms": 0,
+      "parking_spaces": 0,
+      "building_area": 0,
+      "land_area": 0,
+      "year_built": 0,
+      "condition": "...",
+      "status": "...",
+      "key_features": []
+    },
+    "valuation_approach": {
+      "method": "Direct Comparison Method",
+      "reason": "...",
+      "category_methodology": "..."
+    },
+    "market_evidence": {
+      "candidate_count": ${candidates.length},
+      "selected_comparable_count": 0,
+      "data_source": "Aura Estate Database",
+      "external_research_used": false
+    },
+    "comparables": [
+      {
+        "id": "...",
+        "location": "...",
+        "property_type": "...",
+        "listing_price": 0,
+        "asking_price": 0,
+        "sale_price": null,
+        "bedrooms": 0,
+        "bathrooms": 0,
+        "building_area": 0,
+        "land_area": 0,
+        "similarity": "High | Medium | Low"
+      }
+    ],
+    "comparable_analysis": [
+      {
+        "id": "...",
+        "similarity": "High | Medium | Low",
+        "why_selected": "...",
+        "similarities": [],
+        "differences": [],
+        "effect_on_valuation": "..."
+      }
+    ],
+    "adjustments": [
+      {
+        "factor": "...",
+        "comparable_id": "...",
+        "direction": "positive | negative | neutral",
+        "adjustment_amount": 0,
+        "reason": "..."
+      }
+    ],
+    "valuation_reconciliation": {
+      "method": "Weighted Average",
+      "weighting": "...",
+      "adjusted_indications": [],
+      "reconciliation_reasoning": "..."
+    },
+    "final_valuation": {
+      "low": 0,
+      "high": 0,
+      "most_likely": 0,
+      "currency": "AUD",
+      "reasoning": "..."
+    },
+    "key_value_drivers": {
+      "positive_factors": [],
+      "negative_factors": []
+    },
+    "risks_and_limitations": [],
+    "confidence_assessment": {
+      "level": "High | Medium | Low",
+      "explanation": "..."
+    },
+    "data_sources_and_assumptions": {
+      "primary_source": "Aura Estate Database",
+      "external_sources_used": false,
+      "candidate_count": ${candidates.length},
+      "comparable_count": 0,
+      "assumptions": [],
+      "missing_information": []
+    },
+    "disclaimer": "This property appraisal estimate is generated automatically using Aura Estate database evidence."
+  }
+}
+`;
+
+  const mapPropToContext = (p) => {
+    const minP = {
+      id: String(p._id),
+      cat: p.propertyType,
+      listType: p.listingType,
+      price: p.price,
+      loc: `${p.address?.street ? p.address.street + ', ' : ''}${p.address?.suburb}, ${p.address?.state}`,
+      beds: p.bedrooms,
+      baths: p.bathrooms,
+      parking: p.parkingSpaces,
+      landArea: p.landArea,
+      floorArea: p.floorArea,
+      yearBuilt: p.yearBuilt,
+      status: p.status
+    };
+    if (p.features && p.features.length) minP.feat = p.features.slice(0, 3);
+    return minP;
+  };
+
+  const subjectContext = mapPropToContext(subjectProperty);
+  const candidatesContext = candidates.map(mapPropToContext);
+
+  const userPrompt = `Generate a structured JSON property appraisal report for the subject property using the supplied comparables.
+
+SUBJECT PROPERTY:
+${JSON.stringify(subjectContext, null, 2)}
+
+CANDIDATE COMPARABLES (Aura Estate Database):
+${JSON.stringify(candidatesContext, null, 2)}
+`;
+
+  try {
+    const isGroq = groqKey.startsWith('gsk_');
+    const endpoint = isGroq ? 'https://api.groq.com/openai/v1/chat/completions' : 'https://api.openai.com/v1/chat/completions';
+    
+    let model = isGroq ? 'openai/gpt-oss-20b' : 'gpt-4o-mini';
+
+    let response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${groqKey}`
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.1,
+        max_tokens: 4500
+      })
+    });
+
+    let data = await response.json();
+
+    if (data.error && isGroq && (data.error.code === 'rate_limit_exceeded' || data.error.type === 'tokens')) {
+       console.warn("Primary model hit rate limit, falling back to qwen/qwen3.6-27b...");
+       model = 'qwen/qwen3.6-27b';
+       response = await fetch(endpoint, {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json',
+           'Authorization': `Bearer ${groqKey}`
+         },
+         body: JSON.stringify({
+           model,
+           messages: [
+             { role: 'system', content: systemPrompt },
+             { role: 'user', content: userPrompt }
+           ],
+           temperature: 0.1,
+           max_tokens: 4500
+         })
+       });
+       data = await response.json();
+    }
+
+    if (data.error) {
+       console.error("Groq API Error:", data.error);
+       if (data.error.code === 'rate_limit_exceeded') throw new Error('Groq rate limit exceeded. Please wait 1 minute before trying again.');
+       if (data.error.message && data.error.message.includes('token')) throw new Error('Groq token limit exceeded');
+       throw new Error(`Groq API Error: ${data.error.message || 'Unknown error'}`);
+    }
+
+    if (data.choices && data.choices[0] && data.choices[0].message) {
+      let rawContent = data.choices[0].message.content.trim();
+      
+      // Strip reasoning/think tags if present
+      rawContent = rawContent.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+
+      // Find start of JSON '{'
+      const firstBraceIndex = rawContent.indexOf('{');
+      if (firstBraceIndex !== -1) {
+        rawContent = rawContent.substring(firstBraceIndex);
+      }
+
+      // Safely strip markdown code fences if present
+      const jsonMatch = rawContent.match(/```(?:json)?\s*([\s\S]*?)\s*```/) || [null, rawContent];
+      const jsonStr = (jsonMatch[1] || rawContent).trim();
+
+      const safeParseJson = (str) => {
+        try {
+          return JSON.parse(str);
+        } catch (e) {
+          let cleaned = str.trim();
+          const stack = [];
+          let inString = false;
+          let escaped = false;
+          for (let i = 0; i < cleaned.length; i++) {
+            const char = cleaned[i];
+            if (escaped) { escaped = false; continue; }
+            if (char === '\\') { escaped = true; continue; }
+            if (char === '"') { inString = !inString; continue; }
+            if (!inString) {
+              if (char === '{' || char === '[') stack.push(char === '{' ? '}' : ']');
+              else if (char === '}' || char === ']') stack.pop();
+            }
+          }
+          if (inString) cleaned += '"';
+          while (stack.length > 0) cleaned += stack.pop();
+          return JSON.parse(cleaned);
+        }
+      };
+
+      try {
+        const parsed = safeParseJson(jsonStr);
+        if (parsed) {
+          return parsed.report ? parsed.report : parsed;
+        }
+        throw new Error("Empty JSON parsed");
+      } catch (parseErr) {
+        console.error("Failed to parse Groq JSON response:", rawContent);
+        throw new Error("Groq returned an invalid JSON response format.");
+      }
+    }
+    
+    throw new Error('Malformed AI response from Groq');
+  } catch (err) {
+    console.error('Appraisal Generation Error:', err);
+    throw err;
+  }
+};
+
+module.exports = { generateAIDescription, calculateAIValuation, analyzeListingFraud, processAIChat, generateSupportAgentReply, generatePropertyAppraisal };
 
 
 

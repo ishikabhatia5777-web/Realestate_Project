@@ -3,8 +3,9 @@ import { useParams, useSearchParams, Link } from 'react-router-dom';
 import PropertyCard from '../components/PropertyCard';
 import LiveChatModal from '../components/LiveChatModal';
 import PaymentModal from '../components/PaymentModal';
+import AppraisalReport from '../components/AppraisalReport';
 import { useAuth } from '../context/AuthContext';
-import { fetchPropertyById, fetchSimilarProperties } from '../services/api';
+import { fetchPropertyById, fetchSimilarProperties, generatePropertyAppraisal } from '../services/api';
 import {
   Bed, Bath, Car, Maximize, MapPin, Calendar, DollarSign, MessageSquare,
   Share2, FileText, Sparkles, ShieldCheck, Check, School, Hospital, Bus, Heart, ShoppingBag, ArrowLeft,
@@ -26,6 +27,9 @@ const PropertyDetailPage = () => {
   const [similarProperties, setSimilarProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
+  const [appraisalReport, setAppraisalReport] = useState(null);
+  const [appraisalLoading, setAppraisalLoading] = useState(false);
+  const [appraisalError, setAppraisalError] = useState(null);
 
   // Modals state
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -74,6 +78,23 @@ const PropertyDetailPage = () => {
       loadDetail();
     }
   }, [id]);
+
+  const handleGenerateAppraisal = async () => {
+    setAppraisalLoading(true);
+    setAppraisalError(null);
+    try {
+      const res = await generatePropertyAppraisal(id);
+      if (res.data && res.data.success) {
+        setAppraisalReport(res.data.report);
+      } else {
+        setAppraisalError(res.data.message || 'Failed to generate appraisal.');
+      }
+    } catch (err) {
+      setAppraisalError(err.response?.data?.message || 'An error occurred during appraisal generation.');
+    } finally {
+      setAppraisalLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -303,6 +324,36 @@ const PropertyDetailPage = () => {
                 <span className="text-sm font-bold text-slate-900">{property.yearBuilt || 2022}</span>
               </div>
             </div>
+          </div>
+
+          {/* Appraisal Section */}
+          <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-200 space-y-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold text-slate-900 flex items-center space-x-2">
+                <FileText className="w-6 h-6 text-sky-500" />
+                <span>AI Property Appraisal</span>
+              </h2>
+              <button 
+                onClick={handleGenerateAppraisal}
+                disabled={appraisalLoading}
+                className="px-4 py-2 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-400 hover:to-sky-500 text-white font-bold rounded-xl text-sm transition-all shadow-md disabled:opacity-50 flex items-center"
+              >
+                {appraisalLoading && <span className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin inline-block"></span>}
+                {appraisalLoading ? 'Generating...' : 'Generate Appraisal'}
+              </button>
+            </div>
+            
+            {appraisalError && (
+              <div className="p-4 bg-rose-50 text-rose-600 rounded-xl text-sm border border-rose-200">
+                {appraisalError}
+              </div>
+            )}
+            
+            {appraisalReport && (
+              <div className="mt-6 pt-6 border-t border-slate-200">
+                <AppraisalReport reportData={appraisalReport} />
+              </div>
+            )}
           </div>
 
           {/* Features */}

@@ -48,6 +48,7 @@ export const createProperty = (data) => api.post('/properties', data);
 export const updateProperty = (id, data) => api.put(`/properties/${id}`, data);
 export const deleteProperty = (id) => api.delete(`/properties/${id}`);
 export const updatePropertyStatus = (id, status) => api.patch(`/properties/${id}/status`, { status });
+export const generatePropertyAppraisal = (id) => api.post(`/properties/${id}/appraisal`);
 
 // Agencies API
 export const fetchAgencies = () => api.get('/agencies');

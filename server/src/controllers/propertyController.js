@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Property = require('../models/Property');
-const { analyzeListingFraud, calculateAIValuation } = require('../utils/aiEngine');
+const { analyzeListingFraud, calculateAIValuation, generatePropertyAppraisal } = require('../utils/aiEngine');
 const { sampleProperties } = require('../utils/seedData');
 const { sendPropertySubmissionEmail } = require('../services/emailService');
 
@@ -364,6 +364,69 @@ const getSimilarProperties = async (req, res, next) => {
   }
 };
 
+// @desc    Generate Property Appraisal (AI)
+// @route   POST /api/properties/:id/appraisal
+const generateAppraisal = async (req, res, next) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(404).json({ success: false, message: 'Property not found' });
+    }
+
+    const subjectProperty = await Property.findById(req.params.id);
+    if (!subjectProperty) {
+      return res.status(404).json({ success: false, message: 'Property not found' });
+    }
+
+    // Retrieve candidates using a sensible combination of valuation-relevant factors
+    // Prioritize: same category, nearby location/suburb, similar size/beds, listing/sale status.
+    const query = {
+      _id: { $ne: subjectProperty._id },
+      propertyType: subjectProperty.propertyType,
+      status: { $in: ['Published', 'Approved', 'Sold', 'Leased'] }
+    };
+
+    if (subjectProperty.listingType) {
+      query.listingType = subjectProperty.listingType;
+    }
+
+    if (subjectProperty.address && subjectProperty.address.suburb) {
+      // Prefer same suburb but don't strictly require it if there aren't enough comparables
+      // We'll just fetch a broader set and sort them by similarity (like suburb match)
+    }
+
+    // Fetch up to 3 candidates to save tokens
+    let candidates = await Property.find(query)
+      .limit(3)
+      .lean();
+
+    // Sort candidates to prioritize same suburb and similar bedrooms
+    candidates = candidates.sort((a, b) => {
+      let scoreA = 0;
+      let scoreB = 0;
+      if (a.address?.suburb === subjectProperty.address?.suburb) scoreA += 10;
+      if (b.address?.suburb === subjectProperty.address?.suburb) scoreB += 10;
+      
+      if (Math.abs((a.bedrooms || 0) - (subjectProperty.bedrooms || 0)) <= 1) scoreA += 5;
+      if (Math.abs((b.bedrooms || 0) - (subjectProperty.bedrooms || 0)) <= 1) scoreB += 5;
+
+      return scoreB - scoreA;
+    });
+
+    if (candidates.length === 0) {
+       return res.status(400).json({ success: false, message: 'No suitable comparable properties found for appraisal' });
+    }
+
+    const report = await generatePropertyAppraisal(subjectProperty, candidates);
+
+    res.json({ success: true, report });
+  } catch (error) {
+    if (error.message.includes('Groq')) {
+      return res.status(502).json({ success: false, message: error.message });
+    }
+    next(error);
+  }
+};
+
 module.exports = {
   getProperties,
   getPropertyById,
@@ -371,5 +434,6 @@ module.exports = {
   updateProperty,
   deleteProperty,
   updatePropertyStatus,
-  getSimilarProperties
+  getSimilarProperties,
+  generateAppraisal
 };
