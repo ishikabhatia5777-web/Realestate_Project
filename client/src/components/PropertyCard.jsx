@@ -74,7 +74,7 @@ const PropertyCard = ({ property }) => {
 
         {/* Price Tag Overlay at Bottom Left */}
         <div className="absolute bottom-3 left-3 z-10">
-          <p className="text-xl font-extrabold text-slate-900 tracking-tight drop-shadow-md">
+          <p className="text-xl font-extrabold text-white tracking-tight drop-shadow-md">
             {formatPrice(property.price, property.listingType, property.pricePeriod)}
           </p>
         </div>

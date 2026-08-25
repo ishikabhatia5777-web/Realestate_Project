@@ -7,7 +7,7 @@ async function uploadFile() {
   form.append('file', blob, 'test_upload.csv');
 
   try {
-    const res = await fetch('http://localhost:5000/api/admin/properties/upload-csv', {
+    const res = await fetch('http://localhost:5001/api/admin/properties/upload-csv', {
       method: 'POST',
       body: form,
       headers: {
