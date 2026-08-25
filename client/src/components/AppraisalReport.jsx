@@ -76,19 +76,19 @@ const AppraisalReport = ({ reportData }) => {
   const dataSources = report.data_sources_and_assumptions || {};
 
   return (
-    <div className="appraisal-report-container space-y-8 font-sans text-slate-800 print:text-black">
+    <div id="appraisal-report" className="appraisal-report-container space-y-8 font-sans text-slate-800 print:text-black">
       {/* 1. HEADER */}
-      <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-800 relative overflow-hidden print:bg-white print:text-black print:border-b print:border-slate-300 print:shadow-none print:p-0">
+      <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-800 relative overflow-hidden print:bg-slate-900 print:text-white print:p-6 print:rounded-2xl print:border-slate-800">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 relative z-10">
           <div>
-            <div className="flex items-center space-x-2 text-sky-400 font-semibold text-xs tracking-wider uppercase mb-1 print:text-slate-600">
+            <div className="flex items-center space-x-2 text-sky-400 font-semibold text-xs tracking-wider uppercase mb-1 print:text-sky-300">
               <Building2 className="w-4 h-4" />
               <span>Aura Estate • Luxury Real Estate</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white print:text-black">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white print:text-white">
               {report.title || 'Property Appraisal Report'}
             </h1>
-            <p className="text-slate-400 text-sm mt-1 print:text-slate-600 flex items-center gap-2 flex-wrap">
+            <p className="text-slate-400 text-sm mt-1 print:text-slate-300 flex items-center gap-2 flex-wrap">
               <span><MapPin className="w-3.5 h-3.5 inline mr-1 text-sky-400" />{formatVal(subject.location, 'Location not specified')}</span>
               <span>•</span>
               <span>{formatVal(subject.property_type, 'Property')}</span>
@@ -97,7 +97,7 @@ const AppraisalReport = ({ reportData }) => {
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 print:hidden">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 print:hidden no-print">
             <div className="flex items-center space-x-2">
               <span className="px-3 py-1 bg-sky-500/20 text-sky-300 text-xs font-medium rounded-full border border-sky-500/30">
                 Database-First Mode
@@ -107,10 +107,11 @@ const AppraisalReport = ({ reportData }) => {
               </span>
             </div>
             <button
+              type="button"
               onClick={handlePrint}
-              className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-400 hover:to-sky-500 text-white font-bold text-sm rounded-xl shadow-lg transition-all transform active:scale-95 cursor-pointer"
+              className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-400 hover:to-sky-500 text-white font-bold text-sm rounded-xl shadow-lg transition-all transform active:scale-95 cursor-pointer no-print print:hidden"
             >
-              <Printer className="w-4 h-4 mr-2" /> Print / Save as PDF
+              <Printer className="w-4 h-4 mr-2" /> Download Report as PDF
             </button>
           </div>
         </div>
@@ -603,28 +604,12 @@ const AppraisalReport = ({ reportData }) => {
         {formatVal(report.disclaimer, 'This property appraisal estimate is generated automatically using Aura Estate database evidence. It does not constitute a formal sworn valuation by a licensed valuer.')}
       </div>
 
-      {/* PRINT MEDIA CSS */}
+      {/* PRINT MEDIA CSS OVERRIDES */}
       <style>{`
         @media print {
-          body {
-            background: white !important;
-            color: black !important;
-          }
-          .appraisal-report-container {
-            width: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            box-shadow: none !important;
-          }
-          header, footer, nav, .print\\:hidden {
-            display: none !important;
-          }
-          .appraisal-report-container > div {
-            break-inside: avoid;
-            page-break-inside: avoid;
-            margin-bottom: 1.5rem !important;
-            box-shadow: none !important;
-            border-color: #cbd5e1 !important;
+          #appraisal-report {
+            display: block !important;
+            visibility: visible !important;
           }
         }
       `}</style>

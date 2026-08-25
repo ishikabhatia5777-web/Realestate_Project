@@ -40,25 +40,115 @@ const mockDbProperties = sampleProperties.map((p, idx) => ({
   agentId: idx % 2 !== 0 ? agentUser : null
 }));
 
-// @desc    Get all properties from Supabase with filtering, search, pagination & sorting
+// @desc    Get all properties with filtering, search, pagination & sorting (Supabase + MongoDB fallback)
 // @route   GET /api/properties
 const getProperties = async (req, res, next) => {
   try {
-    const result = await getSupabaseProperties(req.query);
+    let result = null;
+    try {
+      result = await getSupabaseProperties(req.query);
+    } catch (e) {
+      console.warn('Supabase fetch failed, falling back to MongoDB:', e.message);
+    }
+
+    if (result && result.properties && result.properties.length > 0) {
+      return res.json({
+        success: true,
+        ...result
+      });
+    }
+
+    // MongoDB Query Fallback
+    const {
+      search,
+      suburb,
+      city,
+      propertyType,
+      listingType,
+      minPrice,
+      maxPrice,
+      bedrooms,
+      bathrooms,
+      page = 1,
+      limit = 12,
+      sortBy
+    } = req.query;
+
+    const query = { status: { $in: ['Published', 'Approved', 'Submitted', 'Pending Review'] } };
+
+    if (listingType && listingType !== 'All') {
+      query.listingType = listingType;
+    }
+
+    if (propertyType && propertyType !== 'All') {
+      query.propertyType = propertyType;
+    }
+
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = Number(minPrice);
+      if (maxPrice) query.price.$lte = Number(maxPrice);
+    }
+
+    if (bedrooms) query.bedrooms = { $gte: Number(bedrooms) };
+    if (bathrooms) query.bathrooms = { $gte: Number(bathrooms) };
+
+    if (suburb) {
+      query['address.suburb'] = { $regex: suburb, $options: 'i' };
+    } else if (city) {
+      query['address.city'] = { $regex: city, $options: 'i' };
+    }
+
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { 'address.street': { $regex: search, $options: 'i' } },
+        { 'address.suburb': { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    const pageNum = parseInt(page, 10);
+    const limitNum = parseInt(limit, 10);
+    const skip = (pageNum - 1) * limitNum;
+
+    let sortOption = { createdAt: -1 };
+    if (sortBy === 'price_asc') sortOption = { price: 1 };
+    else if (sortBy === 'price_desc') sortOption = { price: -1 };
+    else if (sortBy === 'oldest') sortOption = { createdAt: 1 };
+
+    const total = await Property.countDocuments(query);
+    const properties = await Property.find(query)
+      .sort(sortOption)
+      .skip(skip)
+      .limit(limitNum)
+      .lean();
+
     res.json({
       success: true,
-      ...result
+      properties,
+      total,
+      totalPages: Math.ceil(total / limitNum) || 1,
+      currentPage: pageNum,
+      count: properties.length
     });
   } catch (error) {
     next(error);
   }
 };
 
-// @desc    Get single property details from Supabase
+// @desc    Get single property details (Supabase + MongoDB fallback)
 // @route   GET /api/properties/:id
 const getPropertyById = async (req, res, next) => {
   try {
-    const property = await getSupabasePropertyById(req.params.id);
+    let property = null;
+    try {
+      property = await getSupabasePropertyById(req.params.id);
+    } catch (e) {}
+
+    if (!property && mongoose.Types.ObjectId.isValid(req.params.id)) {
+      property = await Property.findById(req.params.id).lean();
+    }
 
     if (!property) {
       return res.status(404).json({ success: false, message: 'Property not found' });
