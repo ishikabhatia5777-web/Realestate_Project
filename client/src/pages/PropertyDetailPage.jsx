@@ -39,6 +39,7 @@ const PropertyDetailPage = () => {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [showPhone, setShowPhone] = useState(false);
   const [showEnquiryForm, setShowEnquiryForm] = useState(false);
+  const [enquirySent, setEnquirySent] = useState(false);
 
   useEffect(() => {
     if (searchParams.get('buy') === 'true' && property) {
@@ -67,9 +68,15 @@ Phone: ${phone}
 ${message}`;
 
     const recipient = property?.agentId || property?.ownerId;
-    let receiverId = recipient?._id || recipient;
+    // Safely extract a plain string ID, whether it's an ObjectId object or a plain string
+    let receiverId = recipient?._id
+      ? String(recipient._id)
+      : recipient
+        ? String(recipient)
+        : 'default';
 
-    if (!receiverId || typeof receiverId !== 'string') {
+    // If after stringification it looks like an object literal, reset to default
+    if (!receiverId || receiverId === '[object Object]' || receiverId.length < 5) {
       receiverId = 'default';
     }
 
@@ -81,7 +88,8 @@ ${message}`;
           text: combinedMessage
         });
         e.target.reset();
-        setIsChatOpen(true);
+        setEnquirySent(true);
+        setTimeout(() => { setEnquirySent(false); setShowEnquiryForm(false); }, 3000);
       } else {
         await sendGuestMessage({
           receiverId,
@@ -92,11 +100,11 @@ ${message}`;
           guestPhone: phone
         });
         e.target.reset();
-        alert('Enquiry sent! The agent has received your message and will contact you shortly.');
+        setEnquirySent(true);
+        setTimeout(() => { setEnquirySent(false); setShowEnquiryForm(false); }, 3000);
       }
     } catch (err) {
       console.error(err);
-      alert('Failed to send enquiry. Please try again.');
     }
   };
 
@@ -481,7 +489,15 @@ ${message}`;
                 </button>
               </div>
 
-              {showEnquiryForm && (
+              {enquirySent ? (
+                <div className="flex flex-col items-center justify-center py-6 space-y-2 text-center border-t border-slate-200 mt-4">
+                  <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center">
+                    <Check className="w-6 h-6 text-emerald-500" />
+                  </div>
+                  <p className="text-sm font-bold text-slate-900">Enquiry Sent!</p>
+                  <p className="text-xs text-slate-500">The agent will contact you shortly.</p>
+                </div>
+              ) : showEnquiryForm && (
                 <form className="space-y-3 pt-4 border-t border-slate-200" onSubmit={handleSendEnquiry}>
                   <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Enquire about this property</p>
                   <input type="text" name="fullName" placeholder="Full Name" className="w-full px-4 py-3 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-sky-500" required />
