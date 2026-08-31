@@ -548,7 +548,6 @@ ${message}`;
         propertyId={id}
         onPaymentSuccess={() => {
            setIsPaymentOpen(false);
-           alert('Payment successful! Your holding deposit has been secured.');
         }}
       />
       <LiveChatModal 
