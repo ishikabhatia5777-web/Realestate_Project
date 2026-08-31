@@ -210,48 +210,15 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
                     <label className="font-bold text-slate-500">CVC / CVV</label>
                     <input
                       type="password"
-            <div className="space-y-3 p-4 rounded-2xl bg-white border border-slate-200 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-slate-600 flex items-center space-x-1.5">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                  <span>Stripe Encrypted Card Checkout</span>
-                </span>
-                <span className="text-[10px] text-slate-500 font-mono">256-Bit SSL</span>
-              </div>
-
-              <div className="space-y-1">
-                <label className="font-bold text-slate-500">Card Number</label>
-                <input
-                  type="text"
-                  value={cardNumber}
-                  onChange={(e) => setCardNumber(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-mono"
-                  required
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-1">
-                  <label className="font-bold text-slate-500">Expiry (MM/YY)</label>
-                  <input
-                    type="text"
-                    value={expiry}
-                    onChange={(e) => setExpiry(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-mono"
-                    required
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="font-bold text-slate-500">CVC / CVV</label>
-                  <input
-                    type="password"
-                    value={cvc}
-                    onChange={(e) => setCvc(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-mono"
-                    required
-                  />
+                      value={cvc}
+                      onChange={(e) => setCvc(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-mono"
+                      required
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Total Amount Banner & Submit */}
             <div className="pt-2">
