@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const Property = require('../models/Property');
+const User = require('../models/User');
+const Agency = require('../models/Agency');
 const { analyzeListingFraud, calculateAIValuation, generatePropertyAppraisal } = require('../utils/aiEngine');
 const { sampleProperties } = require('../utils/seedData');
 const { sendPropertySubmissionEmail } = require('../services/emailService');
@@ -147,11 +149,43 @@ const getPropertyById = async (req, res, next) => {
     } catch (e) {}
 
     if (!property && mongoose.Types.ObjectId.isValid(req.params.id)) {
-      property = await Property.findById(req.params.id).lean();
+      property = await Property.findById(req.params.id)
+        .populate('agentId', 'name email avatar profilePicture phone')
+        .populate('agencyId', 'name logo')
+        .lean();
     }
 
     if (!property) {
       return res.status(404).json({ success: false, message: 'Property not found' });
+    }
+
+    // Fallback to a real agent if none is assigned (e.g. Supabase property without agent info)
+    if (!property.agentId) {
+      let fallbackAgent = await User.findOne({ email: 'ruhibhatia0022@gmail.com' }).lean();
+      if (!fallbackAgent) {
+        fallbackAgent = await User.findOne({ role: 'agent' }).lean();
+      }
+      
+      if (fallbackAgent) {
+        property.agentId = {
+          _id: fallbackAgent._id,
+          name: fallbackAgent.name,
+          email: fallbackAgent.email,
+          phone: fallbackAgent.phone,
+          avatar: fallbackAgent.profilePicture || fallbackAgent.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(fallbackAgent.name)}&background=random`
+        };
+
+        if (fallbackAgent.agencyId) {
+          const agency = await Agency.findById(fallbackAgent.agencyId).lean();
+          if (agency) {
+            property.agencyId = {
+              _id: agency._id,
+              name: agency.name,
+              logo: agency.logo
+            };
+          }
+        }
+      }
     }
 
     // Attach AI Valuation metrics

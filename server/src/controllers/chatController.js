@@ -388,48 +388,8 @@ const sendMessage = async (req, res, next) => {
         // supportReplyObj stays null → no AI message sent to buyer
 
       } else {
-        // ── Normal message: generate AI reply ────────────────────────────────
-        const supportResponseText = await generateSupportAgentReply({
-          buyerMessage: text,
-          buyerName: req.user?.name || 'Buyer',
-          agent: receiverUser,
-          property: propertyObj,
-          allProperties: allPublished
-        });
-
-        if (mongoose.connection.readyState === 1) {
-          try {
-            const aiMsg = await Message.create({
-              senderId: receiverId, receiverId: senderId, propertyId, text: supportResponseText
-            });
-            let dbSupportReply = await Message.findById(aiMsg._id)
-              .populate('senderId', 'name avatar role email')
-              .populate('receiverId', 'name avatar role email')
-              .populate('propertyId', 'title address images');
-            supportReplyObj = dbSupportReply ? dbSupportReply.toObject() : null;
-            if (supportReplyObj) supportReplyObj.isAiReply = true;
-          } catch (e) {}
-        }
-
-        if (!supportReplyObj) {
-          const localMsgs = getLocalMessages();
-          const newSupportMsg = {
-            _id: `msg_${Date.now() + 10}_${Math.random().toString(36).substr(2, 5)}`,
-            senderId: String(receiverId), receiverId: String(senderId),
-            propertyId: propertyId ? String(propertyId) : null,
-            text: supportResponseText, isRead: false,
-            createdAt: new Date(Date.now() + 500).toISOString()
-          };
-          localMsgs.push(newSupportMsg);
-          saveLocalMessages(localMsgs);
-          supportReplyObj = {
-            ...newSupportMsg,
-            senderId: populateUser(receiverId),
-            receiverId: populateUser(senderId),
-            propertyId: propertyId ? await populateProperty(propertyId) : null,
-            isAiReply: true
-          };
-        }
+        // AI reply disabled by user request.
+        supportReplyObj = null;
       }
     } catch (supportErr) {
       console.error('Failed to generate supporting agent reply:', supportErr);
@@ -620,6 +580,40 @@ const markExpertRequestRead = async (req, res, next) => {
   }
 };
 
+// @desc  Delete all messages in a thread
+// @route DELETE /api/chat/thread/:otherUserId
+const deleteThread = async (req, res, next) => {
+  try {
+    const { otherUserId } = req.params;
+    const currentUserId = String(req.user._id);
+
+    if (mongoose.connection.readyState === 1) {
+      try {
+        await Message.deleteMany({
+          $or: [
+            { senderId: currentUserId, receiverId: otherUserId },
+            { senderId: otherUserId, receiverId: currentUserId }
+          ]
+        });
+      } catch (e) {}
+    }
+
+    const localMsgs = getLocalMessages();
+    const filteredMsgs = localMsgs.filter(m => {
+      const mSender = String(m.senderId._id || m.senderId);
+      const mReceiver = String(m.receiverId._id || m.receiverId);
+      const match = (mSender === currentUserId && mReceiver === otherUserId) || 
+                    (mSender === otherUserId && mReceiver === currentUserId);
+      return !match;
+    });
+    saveLocalMessages(filteredMsgs);
+
+    res.json({ success: true, message: 'Chat thread deleted successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const sendGuestMessage = async (req, res, next) => {
   try {
     let { receiverId, propertyId, text, guestName, guestEmail, guestPhone } = req.body;
@@ -691,34 +685,8 @@ const sendGuestMessage = async (req, res, next) => {
     let supportReply = null;
     const threadKey = getThreadKey(senderId, receiverId, propertyId);
 
-    if (!agentTookOverThreads.has(threadKey)) {
-      const aiResponseText = await generateSupportAgentReply(text, propertyObj);
-      if (mongoose.connection.readyState === 1) {
-        const supportMsg = await Message.create({
-          senderId: receiverId,
-          receiverId: senderId,
-          propertyId,
-          text: aiResponseText,
-          isAiReply: true
-        });
-        supportReply = await supportMsg.populate([
-          { path: 'senderId', select: 'name avatar role' },
-          { path: 'receiverId', select: 'name avatar role' }
-        ]);
-      } else {
-        supportReply = {
-          _id: `ai-${Date.now()}`,
-          senderId: populateUser(receiverId),
-          receiverId: populateUser(senderId),
-          propertyId: propertyId ? populateProperty(propertyId) : null,
-          text: aiResponseText,
-          isRead: false,
-          isAiReply: true,
-          createdAt: new Date().toISOString()
-        };
-        getLocalMessages().push(supportReply);
-      }
-    }
+    // AI automatic reply disabled by user request
+    supportReply = null;
 
     // Attempt to notify the agent via socket
     try {
@@ -749,5 +717,6 @@ module.exports = {
   getInbox,
   markThreadRead,
   getExpertRequests,
-  markExpertRequestRead
+  markExpertRequestRead,
+  deleteThread
 };

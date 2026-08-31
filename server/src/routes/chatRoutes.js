@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getMessages, sendMessage, sendGuestMessage, getInbox, markThreadRead, getExpertRequests, markExpertRequestRead } = require('../controllers/chatController');
+const { getMessages, sendMessage, sendGuestMessage, getInbox, markThreadRead, getExpertRequests, markExpertRequestRead, deleteThread } = require('../controllers/chatController');
 const { protect } = require('../middlewares/auth');
 const { authorize } = require('../middlewares/rbac');
 
@@ -13,5 +13,6 @@ router.get('/expert-requests', authorize('agent', 'agency', 'seller', 'owner', '
 router.patch('/expert-requests/:id/read', authorize('agent', 'agency', 'seller', 'owner', 'admin', 'super_admin'), markExpertRequestRead);
 router.get('/:receiverId', getMessages);
 router.post('/', sendMessage);
+router.delete('/thread/:otherUserId', deleteThread);
 
 module.exports = router;

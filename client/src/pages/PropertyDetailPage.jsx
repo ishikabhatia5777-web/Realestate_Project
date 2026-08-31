@@ -38,6 +38,7 @@ const PropertyDetailPage = () => {
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [showPhone, setShowPhone] = useState(false);
+  const [showEnquiryForm, setShowEnquiryForm] = useState(false);
 
   useEffect(() => {
     if (searchParams.get('buy') === 'true' && property) {
@@ -59,7 +60,16 @@ const PropertyDetailPage = () => {
     const phone = formData.get('phone');
     const message = formData.get('message');
 
-    const combinedMessage = `Property Enquiry:\nName: ${fullName}\nEmail: ${email}\nPhone: ${phone}\n\nMessage:\n${message}`;
+    const propTitle = property?.title || 'Unknown Property';
+    const combinedMessage = `🏡 Property Enquiry: ${propTitle}
+
+— Contact Details —
+Name: ${fullName}
+Email: ${email}
+Phone: ${phone}
+
+— Message —
+${message}`;
 
     const recipient = property?.agentId || property?.ownerId;
     let receiverId = recipient?._id || recipient;
@@ -444,7 +454,7 @@ const PropertyDetailPage = () => {
         {/* Right Column - Sidebar */}
         <div className="lg:col-span-4 space-y-6">
           
-          <div className="sticky top-24 space-y-6">
+          <div className="sticky top-24 space-y-6 max-h-[calc(100vh-6rem)] overflow-y-auto pb-4 pr-1">
             {/* Agent Enquiry Form (Inline) */}
             <div className="glass-panel p-6 rounded-3xl border border-slate-200 space-y-6">
               <div className="text-center">
@@ -456,9 +466,12 @@ const PropertyDetailPage = () => {
               </div>
 
               <div className="flex gap-2">
-                <a href={`mailto:${property.agentId?.email || 'agent@example.com'}?subject=Enquiry regarding ${encodeURIComponent(property.title || 'Property')}`} className="flex-1 py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors">
+                <button 
+                  onClick={() => setShowEnquiryForm(!showEnquiryForm)} 
+                  className="flex-1 py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors"
+                >
                   <MessageSquare className="w-4 h-4" /> Message
-                </a>
+                </button>
                 <button 
                   onClick={() => {
                     if (!showPhone) {
@@ -473,16 +486,18 @@ const PropertyDetailPage = () => {
                 </button>
               </div>
 
-              <form className="space-y-3 pt-4 border-t border-slate-200" onSubmit={handleSendEnquiry}>
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Enquire about this property</p>
-                <input type="text" name="fullName" placeholder="Full Name" className="w-full px-4 py-3 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-sky-500" required />
-                <input type="email" name="email" placeholder="Email Address" className="w-full px-4 py-3 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-sky-500" required />
-                <input type="tel" name="phone" placeholder="Phone Number" className="w-full px-4 py-3 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-sky-500" required />
-                <textarea name="message" placeholder="I am interested in this property..." rows="3" className="w-full px-4 py-3 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-sky-500 resize-none" required></textarea>
-                <button type="submit" className="w-full py-3 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-400 hover:to-sky-500 text-slate-950 font-bold rounded-xl text-sm transition-all shadow-lg shadow-sky-500/20">
-                  Send Enquiry
-                </button>
-              </form>
+              {showEnquiryForm && (
+                <form className="space-y-3 pt-4 border-t border-slate-200" onSubmit={handleSendEnquiry}>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Enquire about this property</p>
+                  <input type="text" name="fullName" placeholder="Full Name" className="w-full px-4 py-3 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-sky-500" required />
+                  <input type="email" name="email" placeholder="Email Address" className="w-full px-4 py-3 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-sky-500" required />
+                  <input type="tel" name="phone" placeholder="Phone Number" className="w-full px-4 py-3 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-sky-500" required />
+                  <textarea name="message" placeholder="I am interested in this property..." rows="3" className="w-full px-4 py-3 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-sky-500 resize-none" required></textarea>
+                  <button type="submit" className="w-full py-3 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-400 hover:to-sky-500 text-slate-950 font-bold rounded-xl text-sm transition-all shadow-lg shadow-sky-500/20">
+                    Send Enquiry
+                  </button>
+                </form>
+              )}
             </div>
 
             {/* Suburb Profile Widget */}

@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useSocket } from '../../context/SocketContext';
 import {
   fetchProperties, deleteProperty, updatePropertyStatus,
   fetchExpertRequests, markExpertRequestAsRead, sendChatMessage,
-  fetchOffers, fetchBookings
+  fetchOffers, fetchBookings, fetchChatInbox
 } from '../../services/api';
 import InboxPanel from '../../components/InboxPanel';
 import AddPropertyModal from '../../components/AddPropertyModal';
@@ -148,6 +149,7 @@ const ActivityIcon = ({ type }) => {
 // ─── Main Dashboard ──────────────────────────────────────────────────────────
 const AgentDashboard = () => {
   const { user, loading: authLoading } = useAuth();
+  const { socket } = useSocket();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -155,6 +157,7 @@ const AgentDashboard = () => {
   const [properties, setProperties] = useState([]);
   const [expertRequests, setExpertRequests] = useState([]);
   const [expertUnreadCount, setExpertUnreadCount] = useState(0);
+  const [messagesUnreadCount, setMessagesUnreadCount] = useState(0);
   const [activeChatRequest, setActiveChatRequest] = useState(null);
   const [leads, setLeads] = useState(MOCK_LEADS);
   const [appointments, setAppointments] = useState(MOCK_APPOINTMENTS);
@@ -194,21 +197,52 @@ const AgentDashboard = () => {
     if (tab) setActiveTab(tab);
   }, [location.search]);
 
-  // Load real data
+  // Load real data and socket listening
   useEffect(() => {
-    if (user && user.role === 'agent') loadData();
+    if (user && user.role === 'agent') {
+      loadData();
+    }
   }, [user]);
+
+  useEffect(() => {
+    if (!socket || !user || user.role !== 'agent') return;
+    
+    const handleReceive = () => {
+      fetchChatInbox().then(res => {
+        if (res.data?.success) {
+          const totalUnread = res.data.threads.reduce((acc, t) => acc + (t.unreadCount || 0), 0);
+          setMessagesUnreadCount(totalUnread);
+        }
+      }).catch(() => {});
+    };
+    
+    socket.on('receive_message', handleReceive);
+    
+    // Also poll every 5s just like InboxPanel to keep it strictly synced
+    const interval = setInterval(handleReceive, 5000);
+    
+    return () => {
+      socket.off('receive_message', handleReceive);
+      clearInterval(interval);
+    };
+  }, [socket, user]);
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const [pRes, erRes, bRes, oRes] = await Promise.all([
+      const [pRes, erRes, bRes, oRes, cRes] = await Promise.all([
         fetchProperties({ agentId: user._id, limit: 500 }),
         fetchExpertRequests(),
         fetchBookings().catch(() => ({ data: { success: true, bookings: [] } })),
-        fetchOffers().catch(() => ({ data: { success: true, offers: [] } }))
+        fetchOffers().catch(() => ({ data: { success: true, offers: [] } })),
+        fetchChatInbox().catch(() => ({ data: { success: true, threads: [] } }))
       ]);
       
+      if (cRes.data?.success) {
+        const totalUnread = cRes.data.threads.reduce((acc, t) => acc + (t.unreadCount || 0), 0);
+        setMessagesUnreadCount(totalUnread);
+      }
+
       if (pRes.data?.success) {
         const fetchedProps = pRes.data.properties || [];
         const soldData = JSON.parse(localStorage.getItem('soldPropertyData') || '{}');
@@ -506,6 +540,9 @@ const AgentDashboard = () => {
             {id === 'requests' && expertUnreadCount > 0 && (
               <span className="w-4 h-4 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center">{expertUnreadCount}</span>
             )}
+            {id === 'messages' && messagesUnreadCount > 0 && (
+              <span className="w-4 h-4 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-[0_0_8px_rgba(244,63,94,0.8)] animate-pulse">{messagesUnreadCount}</span>
+            )}
           </button>
         ))}
       </div>
@@ -515,9 +552,9 @@ const AgentDashboard = () => {
         <div className="space-y-6">
           {/* KPI Grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
-            <KPICard icon={Building2} label="Total Listings" value={properties.length} sub={`${active} active`} trend={12} color="sky" loading={loading} />
-            <KPICard icon={TrendingUp} label="Active / Sale" value={active} sub="On market" trend={5} color="emerald" loading={loading} />
-            <KPICard icon={CheckCircle} label="Sold" value={sold} sub="This year" trend={8} color="violet" loading={loading} />
+            <KPICard icon={Building2} label="Total Listings" value={properties.length} sub={`${active} active`} color="sky" loading={loading} />
+            <KPICard icon={TrendingUp} label="Active / Sale" value={active} sub="On market" color="emerald" loading={loading} />
+            <KPICard icon={CheckCircle} label="Sold" value={sold} sub="This year" color="violet" loading={loading} />
           </div>
 
           {/* Charts Row */}
@@ -604,8 +641,9 @@ const AgentDashboard = () => {
                   <div className="relative h-44">
                     <img src={p.images?.[0] || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=800'} alt={p.title} className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 to-transparent" />
-                    <span className="absolute top-3 left-3 px-2 py-0.5 rounded-lg bg-white/90 text-[11px] font-bold text-sky-500 border border-sky-100">For {p.listingType}</span>
-                    <span className="absolute top-3 right-3 px-2 py-0.5 rounded-lg bg-emerald-500 text-[11px] font-bold text-white">{p.status || 'Published'}</span>
+                    {p.status === 'Sold' && (
+                      <span className="absolute top-3 right-3 px-2 py-0.5 rounded-lg bg-emerald-500 text-[11px] font-bold text-white">Sold</span>
+                    )}
                   </div>
                   <div className="p-4 space-y-2">
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{p.propertyType}</p>

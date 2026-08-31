@@ -183,12 +183,11 @@ const SellerDashboard = () => {
                         alt={p.title}
                         className="w-full h-full object-cover"
                       />
-                      <span className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-slate-50/80 backdrop-blur-md text-[11px] font-extrabold text-sky-500 border border-sky-500/20">
-                        For {p.listingType || 'Sale'}
-                      </span>
-                      <span className="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-emerald-500/90 text-[11px] font-extrabold text-slate-950">
-                        {p.status || 'Published'}
-                      </span>
+                      {p.status === 'Sold' && (
+                        <span className="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-emerald-500/90 text-[11px] font-extrabold text-slate-950">
+                          Sold
+                        </span>
+                      )}
                     </div>
 
                     <div className="p-4 space-y-2">

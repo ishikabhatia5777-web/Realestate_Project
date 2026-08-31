@@ -118,7 +118,12 @@ function mapSupabaseProperty(row) {
       email: row.agent_email || '',
       phone: row.agent_phone || '',
       avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(row.agent_name)}&background=random`
-    } : null,
+    } : {
+      name: 'ruhi',
+      email: 'ruhibhatia0022@gmail.com',
+      phone: '+91 9876543210',
+      avatar: `https://ui-avatars.com/api/?name=ruhi&background=random`
+    },
     agencyId: row.agent_agency ? {
       name: row.agent_agency,
       logo: `https://ui-avatars.com/api/?name=${encodeURIComponent(row.agent_agency)}&background=random`,

@@ -113,6 +113,7 @@ export const uploadPropertiesCsv = (formData) => api.post('/admin/properties/upl
 // Chat Inbox API
 export const fetchChatInbox = () => api.get('/chat/inbox');
 export const markThreadRead = (senderId) => api.patch(`/chat/read/${senderId}`);
+export const deleteChatThread = (otherUserId) => api.delete(`/chat/thread/${otherUserId}`);
 
 // Expert Connection Requests API
 export const fetchExpertRequests = () => api.get('/chat/expert-requests');

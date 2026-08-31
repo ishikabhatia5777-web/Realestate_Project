@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { fetchChatInbox, sendChatMessage, markThreadRead } from '../services/api';
+import { fetchChatInbox, sendChatMessage, markThreadRead, deleteChatThread } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
-import { MessageSquare, Send, User, Building2, CheckCheck, Clock, RefreshCw } from 'lucide-react';
+import { MessageSquare, Send, User, Building2, CheckCheck, Clock, RefreshCw, Trash2 } from 'lucide-react';
 
 const InboxPanel = ({ activeChatRequest }) => {
   const { user } = useAuth();
@@ -70,6 +70,27 @@ const InboxPanel = ({ activeChatRequest }) => {
       } catch (e) {}
     }
   };
+
+  const handleDeleteSpecificThread = async (e, thread) => {
+    if (e) e.stopPropagation();
+    if (!thread) return;
+    if (!window.confirm('Are you sure you want to delete this chat thread? This action cannot be undone.')) return;
+    
+    try {
+      const res = await deleteChatThread(thread.otherUser._id);
+      if (res.data?.success) {
+        setThreads(prev => prev.filter(t => t.threadId !== thread.threadId));
+        if (activeThread?.threadId === thread.threadId) {
+          setActiveThread(null);
+        }
+      }
+    } catch (err) {
+      console.error('Error deleting thread:', err);
+      alert('Failed to delete chat thread.');
+    }
+  };
+
+  const handleDeleteThread = (e) => handleDeleteSpecificThread(e, activeThread);
 
   const handleSendReply = async (e) => {
     e.preventDefault();
@@ -150,11 +171,20 @@ const InboxPanel = ({ activeChatRequest }) => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <h4 className="text-sm font-bold text-slate-900 truncate">{thread.otherUser?.name || 'User'}</h4>
-                      {thread.unreadCount > 0 && (
-                        <span className="w-5 h-5 rounded-full bg-sky-500 text-slate-950 font-black text-[10px] flex items-center justify-center">
-                          {thread.unreadCount}
-                        </span>
-                      )}
+                      <div className="flex items-center space-x-2">
+                        {thread.unreadCount > 0 && (
+                          <span className="w-5 h-5 rounded-full bg-sky-500 text-slate-950 font-black text-[10px] flex items-center justify-center">
+                            {thread.unreadCount}
+                          </span>
+                        )}
+                        <button
+                          onClick={(e) => handleDeleteSpecificThread(e, thread)}
+                          className="p-1 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all"
+                          title="Delete Chat"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
                     {thread.property && (
                       <p className="text-[11px] text-sky-500 font-semibold truncate flex items-center space-x-1 mt-0.5">
@@ -190,14 +220,6 @@ const InboxPanel = ({ activeChatRequest }) => {
                   <p className="text-xs text-slate-500 capitalize">{activeThread.otherUser?.role} • {activeThread.otherUser?.email}</p>
                 </div>
               </div>
-              {activeThread.property && (
-                <div className="text-right hidden sm:block">
-                  <span className="text-[10px] uppercase font-bold text-slate-500 block">Property</span>
-                  <span className="text-xs font-semibold text-sky-500 block truncate max-w-[200px]">
-                    {activeThread.property.title}
-                  </span>
-                </div>
-              )}
             </div>
 
             {/* Messages Feed */}
@@ -222,7 +244,7 @@ const InboxPanel = ({ activeChatRequest }) => {
                       className={`max-w-[78%] rounded-2xl px-4 py-2.5 text-xs shadow-lg ${
                         isMe
                           ? 'bg-gradient-to-r from-sky-500 to-sky-600 text-slate-950 font-medium rounded-tr-none shadow-sky-500/10'
-                          : 'bg-white text-slate-100 border border-cyan-500/30 rounded-tl-none'
+                          : 'bg-white text-slate-700 border border-cyan-500/30 rounded-tl-none'
                       }`}
                     >
                       {/* Sender Role & Name Badge Header */}
@@ -246,24 +268,6 @@ const InboxPanel = ({ activeChatRequest }) => {
               })}
             </div>
 
-            {/* Reply Input Box */}
-            <form onSubmit={handleSendReply} className="p-4 border-t border-slate-200 bg-slate-50/80 flex items-center space-x-3">
-              <input
-                type="text"
-                value={replyText}
-                onChange={(e) => setReplyText(e.target.value)}
-                placeholder={`Reply to ${activeThread.otherUser?.name}...`}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 text-xs focus:outline-none focus:border-sky-500"
-              />
-              <button
-                type="submit"
-                disabled={sending || !replyText.trim()}
-                className="px-4 py-2.5 rounded-xl bg-sky-500 text-slate-950 font-bold text-xs hover:bg-sky-400 disabled:opacity-50 transition-all flex items-center space-x-1.5"
-              >
-                <Send className="w-3.5 h-3.5" />
-                <span>{sending ? 'Sending...' : 'Send'}</span>
-              </button>
-            </form>
           </>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center p-8 text-slate-500 text-sm">
