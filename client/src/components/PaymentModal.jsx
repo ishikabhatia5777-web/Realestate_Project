@@ -174,37 +174,6 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
               </div>
             </div>
 
-            {/* Payment Method Selector */}
-            <div className="space-y-1 text-xs">
-              <label className="font-bold text-slate-600">Payment Method</label>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('Credit Card')}
-                  className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all flex items-center justify-center space-x-2 ${
-                    paymentMethod === 'Credit Card'
-                      ? 'bg-sky-500 text-slate-950 border-sky-500 shadow-md'
-                      : 'bg-white border-slate-200 text-slate-500 hover:text-slate-900'
-                  }`}
-                >
-                  <CreditCard className="w-4 h-4" />
-                  <span>Stripe Credit Card</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('Online NetBanking / UPI')}
-                  className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all flex items-center justify-center space-x-2 ${
-                    paymentMethod === 'Online NetBanking / UPI'
-                      ? 'bg-sky-500 text-slate-950 border-sky-500 shadow-md'
-                      : 'bg-white border-slate-200 text-slate-500 hover:text-slate-900'
-                  }`}
-                >
-                  <QrCode className="w-4 h-4" />
-                  <span>UPI / QR Scan</span>
-                </button>
-              </div>
-            </div>
-
             {/* Stripe Credit Card Form */}
             {paymentMethod === 'Credit Card' && (
               <div className="space-y-3 p-4 rounded-2xl bg-white border border-slate-200 text-xs">
@@ -241,71 +210,48 @@ const PaymentModal = ({ isOpen, onClose, defaultPackage = 'Featured Listing', de
                     <label className="font-bold text-slate-500">CVC / CVV</label>
                     <input
                       type="password"
-                      value={cvc}
-                      onChange={(e) => setCvc(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-mono"
-                      required
-                    />
-                  </div>
-                </div>
+            <div className="space-y-3 p-4 rounded-2xl bg-white border border-slate-200 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-slate-600 flex items-center space-x-1.5">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <span>Stripe Encrypted Card Checkout</span>
+                </span>
+                <span className="text-[10px] text-slate-500 font-mono">256-Bit SSL</span>
               </div>
-            )}
 
-            {/* UPI QR Code Scanner Section */}
-            {paymentMethod === 'Online NetBanking / UPI' && (
-              <div className="space-y-4 p-4 rounded-2xl bg-white border border-slate-200 text-xs text-center">
+              <div className="space-y-1">
+                <label className="font-bold text-slate-500">Card Number</label>
+                <input
+                  type="text"
+                  value={cardNumber}
+                  onChange={(e) => setCardNumber(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-mono"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <span className="font-extrabold text-slate-900 text-sm flex items-center justify-center space-x-1.5">
-                    <Smartphone className="w-4 h-4 text-sky-500" />
-                    <span>Scan QR Code to Pay</span>
-                  </span>
-                  <p className="text-slate-500 text-[11px]">
-                    Open Google Pay, PhonePe, Paytm, BHIM, or any UPI App and scan below
-                  </p>
-                </div>
-
-                {/* QR Image */}
-                <div className="inline-block p-3 rounded-2xl bg-white border border-slate-300 shadow-xl my-1">
-                  <img
-                    src={qrCodeUrl}
-                    alt="UPI Payment QR Code"
-                    className="w-44 h-44 mx-auto rounded-lg"
-                  />
-                  <span className="text-[11px] text-slate-900 font-black block mt-1.5 uppercase tracking-wider">
-                    SCAN TO PAY: ₹{inrAmount.toLocaleString('en-IN')} INR
-                  </span>
-                  <span className="text-[9px] text-slate-500 font-semibold block">
-                    (AUD ${amount} converted @ ₹55/AUD)
-                  </span>
-                </div>
-
-                {/* UPI VPA ID */}
-                <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-600">
-                  <span className="text-slate-500 font-medium">UPI VPA ID:</span>
-                  <span className="font-mono text-sky-500 font-bold">auraestates@icici</span>
-                  <button
-                    type="button"
-                    onClick={handleCopyUPI}
-                    className="p-1 rounded bg-slate-100 text-slate-600 hover:text-slate-900"
-                    title="Copy UPI ID"
-                  >
-                    {copiedUpi ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                  </button>
-                </div>
-
-                {/* Optional Ref UTR Input */}
-                <div className="space-y-1 text-left">
-                  <label className="font-bold text-slate-500 text-[11px]">UPI Transaction / Ref UTR Number (Optional)</label>
+                  <label className="font-bold text-slate-500">Expiry (MM/YY)</label>
                   <input
                     type="text"
-                    value={upiRefId}
-                    onChange={(e) => setUpiRefId(e.target.value)}
-                    placeholder="e.g. 420918239102"
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-mono text-xs"
+                    value={expiry}
+                    onChange={(e) => setExpiry(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-mono"
+                    required
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-500">CVC / CVV</label>
+                  <input
+                    type="password"
+                    value={cvc}
+                    onChange={(e) => setCvc(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-mono"
+                    required
                   />
                 </div>
               </div>
-            )}
+            </div>
 
             {/* Total Amount Banner & Submit */}
             <div className="pt-2">
