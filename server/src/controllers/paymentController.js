@@ -45,7 +45,7 @@ const processPayment = async (req, res, next) => {
           description: `AuraEstates Real Estate Platform - ${packageType}`,
           payment_method_types: ['card'],
           metadata: {
-            userId: req.user._id?.toString() || 'Guest',
+            userId: req.user?._id?.toString() || 'Guest',
             propertyId: propertyId || 'N/A',
             packageType
           }
@@ -59,7 +59,7 @@ const processPayment = async (req, res, next) => {
     }
 
     let transaction = await Transaction.create({
-      userId: req.user._id,
+      userId: req.user ? req.user._id : null,
       propertyId: propertyId || null,
       packageType,
       amount: Number(amount),

@@ -136,12 +136,6 @@ const PropertyCard = ({ property }) => {
             {(!user || user.role === 'buyer') && (
               <Link
                 to={`/properties/${property._id}?buy=true`}
-                onClick={(e) => {
-                  if (!user) {
-                    e.preventDefault();
-                    requireAuth('Please sign in to buy or reserve this property');
-                  }
-                }}
                 className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-sky-500 to-sky-600 text-slate-950 font-extrabold text-xs hover:from-sky-400 hover:to-sky-500 transition-all shadow-md shadow-sky-500/20 flex items-center space-x-1"
               >
                 <ShoppingBag className="w-3.5 h-3.5" />

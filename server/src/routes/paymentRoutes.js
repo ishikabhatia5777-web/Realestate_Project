@@ -4,14 +4,10 @@ const { processPayment, getPaymentHistory } = require('../controllers/paymentCon
 const { protect } = require('../middlewares/auth');
 const { authorize } = require('../middlewares/rbac');
 
-router.use(protect);
+// Allow guest checkout for deposits
+router.post('/checkout', processPayment);
 
-// Payment permissions granted exclusively to authorized user roles
-router.post(
-  '/checkout',
-  authorize('super_admin', 'admin', 'agency', 'agent', 'seller', 'buyer'),
-  processPayment
-);
+router.use(protect);
 
 router.get(
   '/history',

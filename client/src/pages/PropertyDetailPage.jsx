@@ -42,14 +42,9 @@ const PropertyDetailPage = () => {
 
   useEffect(() => {
     if (searchParams.get('buy') === 'true' && property) {
-      if (!user) {
-        requireAuth('Please sign in to buy or reserve this property');
-        setIsPaymentOpen(false);
-      } else {
-        setIsPaymentOpen(true);
-      }
+      setIsPaymentOpen(true);
     }
-  }, [searchParams, property, user]);
+  }, [searchParams, property]);
 
   const handleSendEnquiry = async (e) => {
     e.preventDefault();
