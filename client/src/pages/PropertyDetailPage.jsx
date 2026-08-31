@@ -540,6 +540,17 @@ ${message}`;
       )}
 
       {/* Modals */}
+      <PaymentModal
+        isOpen={isPaymentOpen}
+        onClose={() => setIsPaymentOpen(false)}
+        defaultPackage="Holding Deposit"
+        defaultAmount={5000}
+        propertyId={id}
+        onPaymentSuccess={() => {
+           setIsPaymentOpen(false);
+           alert('Payment successful! Your holding deposit has been secured.');
+        }}
+      />
       <LiveChatModal 
         isOpen={isChatOpen} 
         onClose={() => setIsChatOpen(false)} 
