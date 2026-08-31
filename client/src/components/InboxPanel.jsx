@@ -25,10 +25,11 @@ const InboxPanel = ({ activeChatRequest }) => {
 
   // Get the display name/email for a thread, preferring enquiry contact details
   const getThreadContact = (thread) => {
-    const firstMsg = thread.messages?.[thread.messages.length - 1] || thread.lastMessage;
-    const text = firstMsg?.text || '';
-    if (text.includes('Property Enquiry')) {
-      const { name, email } = parseEnquiryContact(text);
+    const enquiryMsg = thread.messages?.find(m => m.text?.includes('Property Enquiry')) || 
+                       (thread.lastMessage?.text?.includes('Property Enquiry') ? thread.lastMessage : null);
+    
+    if (enquiryMsg) {
+      const { name, email } = parseEnquiryContact(enquiryMsg.text);
       return {
         name: name || thread.otherUser?.name || 'Buyer',
         email: email || thread.otherUser?.email || '',
@@ -257,9 +258,15 @@ const InboxPanel = ({ activeChatRequest }) => {
                 const myId = String(user?._id);
                 const isMe = sId === myId;
 
+                let msgSenderName = activeThread.otherUser?.name || sObj?.name || 'Buyer';
+                if (!isMe && msg.text?.includes('Property Enquiry')) {
+                  const { name } = parseEnquiryContact(msg.text);
+                  if (name) msgSenderName = name;
+                }
+
                 const senderName = isMe
                   ? `${user?.name || 'You'} (You)`
-                  : (activeThread.otherUser?.name || sObj?.name || 'Buyer');
+                  : msgSenderName;
 
                 const senderRole = isMe
                   ? (user?.role === 'seller' ? '🏠 SELLER (YOU)' : user?.role === 'agent' ? '👩‍💼 AGENT (YOU)' : 'YOU')
