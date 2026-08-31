@@ -4,7 +4,7 @@ const dns = require('dns');
 // Use Google & Cloudflare DNS to resolve MongoDB Atlas SRV records when on local Node
 if (process.env.NODE_ENV !== 'production') {
   try {
-    dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
+    // dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
   } catch (dnsErr) {
     // Ignore DNS override errors in cloud containers
   }
