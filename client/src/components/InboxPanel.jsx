@@ -15,8 +15,9 @@ const InboxPanel = ({ activeChatRequest }) => {
 
   // Parse name/email from an enquiry message body ("Name: ...\nEmail: ...")
   const parseEnquiryContact = (text = '') => {
-    const nameMatch = text.match(/Name:\s*(.+)/);
-    const emailMatch = text.match(/Email:\s*(.+)/);
+    // case-insensitive, match up to newline/return
+    const nameMatch = text.match(/name:\s*([^\n\r]+)/i);
+    const emailMatch = text.match(/email:\s*([^\n\r]+)/i);
     return {
       name: nameMatch?.[1]?.trim() || null,
       email: emailMatch?.[1]?.trim() || null,
