@@ -38,3 +38,6 @@ pnpm-debug.log*
 .idea/
 .DS_Store
 Thumbs.db
+
+# Vite temporary cache files
+vite.config.js.timestamp-*
