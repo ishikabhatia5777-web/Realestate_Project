@@ -456,9 +456,9 @@ const PropertyDetailPage = () => {
               </div>
 
               <div className="flex gap-2">
-                <button onClick={() => setIsChatOpen(true)} className="flex-1 py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors">
+                <a href={`mailto:${property.agentId?.email || 'agent@example.com'}?subject=Enquiry regarding ${encodeURIComponent(property.title || 'Property')}`} className="flex-1 py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors">
                   <MessageSquare className="w-4 h-4" /> Message
-                </button>
+                </a>
                 <button 
                   onClick={() => {
                     if (!showPhone) {
