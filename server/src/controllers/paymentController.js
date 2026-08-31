@@ -69,7 +69,7 @@ const processPayment = async (req, res, next) => {
       stripePaymentIntentId: intentId
     });
 
-    if (propertyId) {
+    if (propertyId && mongoose.Types.ObjectId.isValid(propertyId)) {
       const tierMap = {
         'Featured Listing': 'Featured',
         'Premium Listing': 'Premium',
@@ -92,7 +92,7 @@ const processPayment = async (req, res, next) => {
       let propertyTitle = 'Property (ID: ' + propertyId + ')';
 
       try {
-        if (mongoose.connection.readyState === 1 && propertyId) {
+        if (mongoose.connection.readyState === 1 && propertyId && mongoose.Types.ObjectId.isValid(propertyId)) {
           const prop = await Property.findById(propertyId).populate('agentId ownerId');
           if (prop) {
             propertyTitle = prop.title;
