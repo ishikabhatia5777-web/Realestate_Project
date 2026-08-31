@@ -13,6 +13,33 @@ const InboxPanel = ({ activeChatRequest }) => {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
 
+  // Parse name/email from an enquiry message body ("Name: ...\nEmail: ...")
+  const parseEnquiryContact = (text = '') => {
+    const nameMatch = text.match(/Name:\s*(.+)/);
+    const emailMatch = text.match(/Email:\s*(.+)/);
+    return {
+      name: nameMatch?.[1]?.trim() || null,
+      email: emailMatch?.[1]?.trim() || null,
+    };
+  };
+
+  // Get the display name/email for a thread, preferring enquiry contact details
+  const getThreadContact = (thread) => {
+    const firstMsg = thread.messages?.[thread.messages.length - 1] || thread.lastMessage;
+    const text = firstMsg?.text || '';
+    if (text.includes('Property Enquiry')) {
+      const { name, email } = parseEnquiryContact(text);
+      return {
+        name: name || thread.otherUser?.name || 'Buyer',
+        email: email || thread.otherUser?.email || '',
+      };
+    }
+    return {
+      name: thread.otherUser?.name || 'Buyer',
+      email: thread.otherUser?.email || '',
+    };
+  };
+
   const loadInbox = async () => {
     try {
       const res = await fetchChatInbox();
@@ -170,7 +197,7 @@ const InboxPanel = ({ activeChatRequest }) => {
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-sm font-bold text-slate-900 truncate">{thread.otherUser?.name || 'User'}</h4>
+                      <h4 className="text-sm font-bold text-slate-900 truncate">{getThreadContact(thread).name}</h4>
                       <div className="flex items-center space-x-2">
                         {thread.unreadCount > 0 && (
                           <span className="w-5 h-5 rounded-full bg-sky-500 text-slate-950 font-black text-[10px] flex items-center justify-center">
@@ -216,8 +243,8 @@ const InboxPanel = ({ activeChatRequest }) => {
                   className="w-10 h-10 rounded-xl object-cover border border-sky-500/40"
                 />
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">{activeThread.otherUser?.name}</h4>
-                  <p className="text-xs text-slate-500 capitalize">{activeThread.otherUser?.role} • {activeThread.otherUser?.email}</p>
+                  <h4 className="text-sm font-bold text-slate-900">{getThreadContact(activeThread).name}</h4>
+                  <p className="text-xs text-slate-500 capitalize">{activeThread.otherUser?.role} • {getThreadContact(activeThread).email}</p>
                 </div>
               </div>
             </div>
